@@ -1,14 +1,9 @@
 <script setup>
-import TransactionModal from './components/TransactionModal.vue'
+import TransactionModal from "./components/TransactionModal.vue";
 </script>
 
 <template>
-  <!-- <router-view /> -->
-  <div>
-    <TransactionModal :isOpen="true" />
-  </div>
+  <router-view />
 </template>
 
-<style scoped>
-
-</style>
+<style scoped></style>

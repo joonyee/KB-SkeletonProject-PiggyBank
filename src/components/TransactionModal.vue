@@ -7,6 +7,7 @@
         <button class="close-button" @click="closeModal">&times;</button>
       </div>
 
+      <!-- 수입지출 선택 -->
       <div class="tab-container">
         <button
           class="tab-button"
@@ -25,16 +26,22 @@
         </button>
       </div>
 
+      <!-- 모달 바디:하위 내용들 -->
       <div class="modal-body">
+        <!-- 날짜 선택 -->
         <div class="form-group">
           <label>날짜</label>
           <input type="date" v-model="selectedDate" class="form-input" />
         </div>
+        <!-- 카테고리 선택 -->
         <div class="form-group">
           <label>카테고리</label>
           <div
             class="category-select"
-            :class="{ error: showCategoryError }"
+            :class="{
+              error: showCategoryError,
+              placeholder: !selectedCategory,
+            }"
             @click="openCategoryModal"
           >
             {{ selectedCategory || "선택해주세요" }}
@@ -44,6 +51,7 @@
           </div>
         </div>
 
+        <!-- 금액 입력 -->
         <div class="form-group">
           <label>금액</label>
           <input
@@ -54,6 +62,7 @@
           />
         </div>
 
+        <!-- 설명 추가 -->
         <div class="form-group">
           <label>설명</label>
           <input
@@ -64,6 +73,7 @@
           />
         </div>
 
+        <!-- 지불방법 -->
         <div class="form-group">
           <label>지불 방법</label>
           <div class="payment-method-container">
@@ -91,6 +101,7 @@
           </div>
         </div>
 
+        <!-- 지출성향 선택 -->
         <div class="form-group">
           <label>지출 성향</label>
           <div class="tendency-container">
@@ -159,8 +170,17 @@ export default {
       showCategoryError: false,
       isMobile: false,
       categories: {
-        income: ["월급", "이자", "여행이자", "기타소득", "주식소득"],
-        expense: ["식비", "교통비", "주거비", "통신비", "의료비"],
+        income: ["급여", "용돈", "부수입", "기타수입"],
+        expense: [
+          "식비",
+          "교통비",
+          "주거비",
+          "의류비",
+          "의료비",
+          "여가비",
+          "교육비",
+          "기타지출",
+        ],
       },
     };
   },
@@ -368,6 +388,10 @@ export default {
   box-sizing: border-box;
 }
 
+.form-input::placeholder {
+  color: var(--text-secondary);
+}
+
 .category-select {
   width: 100%;
   padding: 10px 12px;
@@ -375,9 +399,13 @@ export default {
   border-radius: 6px;
   background-color: var(--background-color);
   cursor: pointer;
-  color: #999;
+  color: var(--text-color);
   font: var(--ng-reg-14);
   box-sizing: border-box;
+}
+
+.category-select.placeholder {
+  color: var(--text-secondary); /* 카테고리 선택 전 */
 }
 
 .category-select.error {
@@ -403,7 +431,7 @@ export default {
   border-radius: 6px;
   background-color: var(--background-color);
   cursor: pointer;
-  color: #999;
+  color: var(--text-secondary);
   font: var(--ng-reg-14);
   transition: all 0.2s;
 }
@@ -426,7 +454,7 @@ export default {
   border: 1px solid #ddd;
   border-radius: 6px;
   background-color: #fff;
-  color: #999;
+  color: var(--text-secondary);
   font: var(--ng-reg-14);
   cursor: pointer;
   transition: background-color 0.2s, color 0.2s;
@@ -461,7 +489,7 @@ export default {
   background-color: #ffa6d8;
 }
 
-/* 크롬, 사파리, 엣지 */
+/* 크롬, 사파리, 엣지(금액에서 스핀버튼 제거를 위함)*/
 input[type="number"]::-webkit-outer-spin-button,
 input[type="number"]::-webkit-inner-spin-button {
   -webkit-appearance: none;
@@ -482,7 +510,7 @@ input[type="number"] {
   .modal.mobile {
     height: 100%;
     max-height: 100%;
-    overflow-y: auto; /* 📱 모바일에서만 세로 스크롤 허용 */
+    overflow-y: auto; /* 모바일에서만 세로 스크롤 허용 */
   }
 
   .modal-footer {

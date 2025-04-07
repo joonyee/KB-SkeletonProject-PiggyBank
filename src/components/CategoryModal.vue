@@ -7,6 +7,7 @@
         <button class="close-button" @click="closeModal">&times;</button>
       </div>
 
+      <!-- 수입지출 선택(처음 선택을 자동 반영) -->
       <div class="tab-container">
         <button
           class="tab-button"
@@ -52,8 +53,17 @@ export default {
     categories: {
       type: Object,
       default: () => ({
-        income: ["월급", "이자", "여행이자", "기타소득", "주식소득"],
-        expense: ["식비", "교통비", "주거비", "통신비", "의료비"],
+        income: ["급여", "용돈", "부수입", "기타수입"],
+        expense: [
+          "식비",
+          "교통비",
+          "주거비",
+          "의류비",
+          "의료비",
+          "여가비",
+          "교육비",
+          "기타지출",
+        ],
       }),
     },
   },
@@ -175,6 +185,7 @@ export default {
   border: none;
   border-radius: 6px;
   background: #f5f5f5;
+  color: #999;
   font: var(--ng-bold-14);
   cursor: pointer;
   transition: background-color 0.2s;
