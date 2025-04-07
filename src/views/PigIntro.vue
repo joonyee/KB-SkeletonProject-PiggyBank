@@ -1,22 +1,22 @@
 <script setup>
-import { ref } from 'vue'
-import PiggyFace from '@/components/Piggyface.vue'
+import { ref } from 'vue';
+import PiggyFace from '@/components/Piggyface.vue';
 
-const eyeOffset = ref({ x: 0, y: 0 })
+const eyeOffset = ref({ x: 0, y: 0 });
 
 const handleMouseMove = (e) => {
-  const centerX = window.innerWidth / 2
-  const centerY = window.innerHeight / 2
-  const dx = e.clientX - centerX
-  const dy = e.clientY - centerY
-  const angle = Math.atan2(dy, dx)
-  const distance = 8
+  const centerX = window.innerWidth / 2;
+  const centerY = window.innerHeight / 2;
+  const dx = e.clientX - centerX;
+  const dy = e.clientY - centerY;
+  const angle = Math.atan2(dy, dx);
+  const distance = 8;
 
   eyeOffset.value = {
     x: Math.cos(angle) * distance,
     y: Math.sin(angle) * distance,
-  }
-}
+  };
+};
 </script>
 
 <template>
@@ -26,10 +26,11 @@ const handleMouseMove = (e) => {
     <div class="buttons">
       <router-link to="/login" class="btn">로그인</router-link>
       <router-link to="/signup" class="btn">회원가입</router-link>
+      <router-link to="/ageExpenseAnalysis" class="btn">연령별분석</router-link>
+      <router-link to="/expenseList" class="btn">수입/지출</router-link>
     </div>
   </div>
 </template>
-
 
 <style scoped>
 .title {
@@ -40,7 +41,6 @@ const handleMouseMove = (e) => {
   font-family: 'Nanum Gothic', sans-serif;
   text-align: center;
 }
-
 
 .wrapper {
   position: fixed;
@@ -63,10 +63,13 @@ const handleMouseMove = (e) => {
 }
 
 @keyframes blinkAnim {
-  0%, 94%, 100% {
+  0%,
+  94%,
+  100% {
     transform: scaleY(1);
   }
-  95%, 97% {
+  95%,
+  97% {
     transform: scaleY(0.1);
   }
 }

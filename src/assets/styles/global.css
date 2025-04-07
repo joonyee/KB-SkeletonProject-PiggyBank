@@ -61,6 +61,8 @@
   --text-secondary: #969696;
   --text-white: #ffffff;
   --text-error: #e60000;
+  --text-income: #22c55e;
+  --text-expense: #ef4444;
 }
 
 body {
@@ -91,4 +93,18 @@ h6 {
 
 .text-white {
   color: var(--text-white);
+}
+
+.text-income {
+  color: var(--text-income);
+}
+
+.text-expense {
+  color: var(--text-expense);
+}
+
+.filter-icon img {
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
 }
