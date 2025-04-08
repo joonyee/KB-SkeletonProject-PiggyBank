@@ -5,7 +5,7 @@
       <h1 class="dashboardTitle">💡 Piggy Bank</h1>
       <div class="flex items-center gap-2 relative">
         <button @click="toggleDarkMode" class="darkModeButton">
-          {{ isDarkMode ? '☀️' : '🌙' }}
+          {{ isDarkMode ? "☀️" : "🌙" }}
         </button>
         <button class="mypageButton" @click="mypageClick">마이페이지</button>
         <button class="inputValue" @click="inputClick">새 거래추가</button>
@@ -27,7 +27,7 @@
         <div class="cardValue">₩{{ balance.toLocaleString() }}</div>
       </div>
       <!-- <div class="piggyAni"></div> -->
-<<<<<<< Updated upstream
+      <<<<<<< Updated upstream
       <div class="savingsCard">
         <div class="nowSavings">
           <div class="cardLabel" @click="savingClick">현재 저축률</div>
@@ -49,7 +49,7 @@
         <PieChart :chartData="chartData" />
       </div>
       <div class="piggyAni">
-        <FinalPig/>
+        <FinalPig />
       </div>
     </div>
 
@@ -84,17 +84,16 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
-import axios from 'axios';
-import CategoryPieChart from '@/components/CategoryPieChart.vue';
-import PieChart from '@/components/PieChart.vue';
-import { RouterLink } from 'vue-router';
+import { ref, computed, onMounted } from "vue";
+import axios from "axios";
+import CategoryPieChart from "@/components/CategoryPieChart.vue";
+import PieChart from "@/components/PieChart.vue";
+import { RouterLink } from "vue-router";
 import IndividualPig from "@/components/IndividualPig.vue";
 import PiggyFace from "@/components/Piggyface.vue";
 import PiggyfaceDefault from "@/components/PiggyfaceDefault.vue";
 import FinalPig from "@/components/FinalPig.vue";
-import {useMainStore} from "@/stores/store.js";
-
+import { useMainStore } from "@/stores/store.js";
 
 const store = useMainStore();
 console.log(store.savingsRate);
@@ -103,13 +102,13 @@ const toggleDropdown = () => {
   dropdownOpen.value = !dropdownOpen.value;
 };
 const logout = () => {
-  console.log('로그아웃 실행됨');
+  console.log("로그아웃 실행됨");
 };
 
 const isDarkMode = ref(false);
 const toggleDarkMode = () => {
   isDarkMode.value = !isDarkMode.value;
-  document.documentElement.classList.toggle('dark', isDarkMode.value);
+  document.documentElement.classList.toggle("dark", isDarkMode.value);
 };
 
 const chartData = ref([]);
@@ -122,7 +121,7 @@ const fetchData = async () => {
     // const chartResponse = await axios.get('http://localhost:3000/chartData');
     // chartData.value = chartResponse.data;
     // console.log('chartData:', chartData.value);
-    const response = await axios.get('http://localhost:3000/money');
+    const response = await axios.get("http://localhost:3000/money");
     const moneyData = response.data;
     const monthlyTotals = {};
     moneyData.forEach((entry) => {
@@ -155,7 +154,7 @@ const fetchData = async () => {
 
     console.log(categoryTotals);
 
-    const categoryRes = await axios.get('http://localhost:3000/category');
+    const categoryRes = await axios.get("http://localhost:3000/category");
     const categoryMap = categoryRes.data.reduce((map, cat) => {
       map[cat.id] = cat.name;
       return map;
@@ -166,14 +165,14 @@ const fetchData = async () => {
     );
     const recentTransactions = sorted.slice(0, 5).map((entry) => ({
       date: entry.date,
-      category: categoryMap[entry.categoryid] || '기타',
+      category: categoryMap[entry.categoryid] || "기타",
       description: entry.payment,
       amount: entry.typeid === 1 ? entry.amount : -entry.amount,
     }));
 
     transactions.value = recentTransactions;
   } catch (error) {
-    console.error('데이터 로딩 실패:', error);
+    console.error("데이터 로딩 실패:", error);
   } finally {
     loading.value = false;
   }
@@ -210,40 +209,38 @@ const balance = computed(() => totalIncome.value - totalExpense.value);
 
 const mypageClick = () => {
   //router.push('./mypage');
-  alert('mypage page');
+  alert("mypage page");
 };
 
 const inputClick = () => {
   //router.push('./inputValue');
-  alert('money input');
+  alert("money input");
 };
 
 const savingClick = () => {
   //router.push('./savings-card');
-  alert('저축률 페이지');
+  alert("저축률 페이지");
 };
 
 const monthlyClick = () => {
   //router.push('./monthlychart');
-  alert('월간 수입/지출 페이지');
+  alert("월간 수입/지출 페이지");
 };
 
 const categoryClick = () => {
   //router.push('./categorypage');
-  alert('카테고리 페이지 이동');
+  alert("카테고리 페이지 이동");
 };
 
 const transactionsClick = () => {
   //   router.push('/transaction'); 페이지 만들어서 라우팅 하면 끝
-  alert('최근 거래내역 페이지 이동');
+  alert("최근 거래내역 페이지 이동");
 };
 
 const monthAmount = () => {
   //router.push('./monthAmount');
-  alert('이번달 요약이동');
+  alert("이번달 요약이동");
 };
-
-
 </script>
 
 <style scoped>
@@ -416,7 +413,6 @@ const monthAmount = () => {
   display: flex;
   justify-content: center;
   align-items: center;
-
 }
 
 .chartLabel {
