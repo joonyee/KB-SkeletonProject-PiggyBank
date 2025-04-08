@@ -324,56 +324,32 @@ const monthAmount = () => {
   gap: 2rem;
   margin-bottom: 2rem;
   align-items: stretch;
+  width: 100%;
 }
 
 .monthly-chart,
-.transaction-history,
-.category-summary,
-.piggyAni {
-  flex: 1;
+.transaction-history {
+  flex: 7;
   background-color: white;
   padding: 1.5rem;
   border-radius: 1rem;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-}
-.transaction-section {
-  display: flex;
-  gap: 2rem;
-  margin-bottom: 2rem;
+  min-width: 0;
 }
 
-.transaction-history {
-  flex: 7;
-}
-
+.category-summary,
 .piggyAni {
   flex: 3;
-}
-
-.chart-section {
-  display: flex;
-  gap: 2rem;
-  margin-bottom: 2rem;
-}
-
-.monthly-chart {
-  flex: 7;
-}
-
-.category-summary {
-  flex: 3;
+  background-color: white;
+  padding: 1.5rem;
+  border-radius: 1rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  min-width: 0;
 }
 
 .chart-label {
   margin-top: 0.5rem;
   font-size: 0.8rem;
-}
-
-.transaction-history {
-  background-color: #fff;
-  border-radius: 12px;
-  padding: 20px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
 }
 
 .section-title {
