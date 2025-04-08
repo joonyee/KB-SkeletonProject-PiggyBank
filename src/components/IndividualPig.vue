@@ -90,6 +90,7 @@ defineProps({
 const baseSize = 200;
 
 // 크기 비율 계산 (저축률 기반)
+
 const sizeRatio = savingsRate / 100; // 크기 비율 (0~1 사이)
 const size = baseSize * (0.6 + sizeRatio * 0.4); // 결과 60% ~ 100% 크기
 
