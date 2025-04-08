@@ -1,24 +1,23 @@
 <template>
-  <div class="modal-container" v-if="isModalOpen">
-    <div class="modal-backdrop" @click="closeModal"></div>
+  <div class="modalContainer" v-if="isModalOpen">
+    <div class="modalBackdrop" @click="closeModal"></div>
     <div class="modal" :class="{ mobile: isMobile }">
-      <div class="modal-header">
+      <div class="modalHeader">
         <h2>거래 입력</h2>
-        <button class="close-button" @click="closeModal">&times;</button>
+        <button class="closeButton" @click="closeModal">&times;</button>
       </div>
 
       <!-- 수입지출 선택 -->
-      <div class="tab-container">
+      <div class="tabContainer">
         <button
-          class="tab-button"
+          class="tabButton"
           :class="{ active: activeTab === 'expense' }"
           @click="activeTab = 'expense'"
         >
           지출
         </button>
-
         <button
-          class="tab-button"
+          class="tabButton"
           :class="{ active: activeTab === 'income' }"
           @click="activeTab = 'income'"
         >
@@ -26,18 +25,18 @@
         </button>
       </div>
 
-      <!-- 모달 바디:하위 내용들 -->
-      <div class="modal-body">
-        <!-- 날짜 선택 -->
-        <div class="form-group">
+      <!-- 날짜 선택 -->
+      <div class="modalBody">
+        <div class="formGroup">
           <label>날짜</label>
-          <input type="date" v-model="selectedDate" class="form-input" />
+          <input type="date" v-model="selectedDate" class="formInput" />
         </div>
+
         <!-- 카테고리 선택 -->
-        <div class="form-group">
+        <div class="formGroup">
           <label>카테고리</label>
           <div
-            class="category-select"
+            class="categorySelect"
             :class="{
               error: showCategoryError,
               placeholder: !selectedCategory,
@@ -46,89 +45,90 @@
           >
             {{ selectedCategory || "선택해주세요" }}
           </div>
-          <div v-if="showCategoryError" class="error-message">
+          <div v-if="showCategoryError" class="errorMessage">
             카테고리를 선택해주세요
           </div>
         </div>
 
         <!-- 금액 입력 -->
-        <div class="form-group">
+        <div class="formGroup">
           <label>금액</label>
           <input
             type="number"
             v-model="amount"
             placeholder="0"
-            class="form-input"
+            class="formInput"
           />
         </div>
 
-        <!-- 설명 추가 -->
-        <div class="form-group">
+        <!-- 메모 작성 -->
+        <div class="formGroup">
           <label>설명</label>
           <input
             type="text"
             v-model="description"
             placeholder="내용을 입력해주세요"
-            class="form-input"
+            class="formInput"
           />
         </div>
 
-        <!-- 지불방법 -->
-        <div class="form-group">
-          <label>지불 방법</label>
-          <div class="payment-method-container">
-            <button
-              class="payment-method-button"
-              :class="{ active: paymentMethod === 'account' }"
-              @click="paymentMethod = 'account'"
-            >
-              카드결제
-            </button>
-            <button
-              class="payment-method-button"
-              :class="{ active: paymentMethod === 'neutral' }"
-              @click="paymentMethod = 'neutral'"
-            >
-              계좌거래
-            </button>
-            <button
-              class="payment-method-button"
-              :class="{ active: paymentMethod === 'negative' }"
-              @click="paymentMethod = 'negative'"
-            >
-              현금
-            </button>
+        <!-- 지불방법 선택 -->
+        <div v-if="activeTab === 'expense'">
+          <div class="formGroup">
+            <label>지불 방법</label>
+            <div class="paymentMethodContainer">
+              <button
+                class="paymentMethodButton"
+                :class="{ active: paymentMethod === 'account' }"
+                @click="paymentMethod = 'account'"
+              >
+                카드결제
+              </button>
+              <button
+                class="paymentMethodButton"
+                :class="{ active: paymentMethod === 'neutral' }"
+                @click="paymentMethod = 'neutral'"
+              >
+                계좌거래
+              </button>
+              <button
+                class="paymentMethodButton"
+                :class="{ active: paymentMethod === 'negative' }"
+                @click="paymentMethod = 'negative'"
+              >
+                현금
+              </button>
+            </div>
           </div>
-        </div>
 
-        <!-- 지출성향 선택 -->
-        <div class="form-group">
-          <label>지출 성향</label>
-          <div class="tendency-container">
-            <button
-              class="tendency-button"
-              :class="{ active: spendingTendency === 'planned' }"
-              @click="spendingTendency = 'planned'"
-            >
-              계획된 지출
-            </button>
-            <button
-              class="tendency-button"
-              :class="{ active: spendingTendency === 'impulsive' }"
-              @click="spendingTendency = 'impulsive'"
-            >
-              충동적 지출
-            </button>
+          <!-- 지출성향 선택 -->
+          <div class="formGroup">
+            <label>지출 성향</label>
+            <div class="tendencyContainer">
+              <button
+                class="tendencyButton"
+                :class="{ active: tendency === 'planned' }"
+                @click="tendency = 'planned'"
+              >
+                계획된 지출
+              </button>
+              <button
+                class="tendencyButton"
+                :class="{ active: tendency === 'impulsive' }"
+                @click="tendency = 'impulsive'"
+              >
+                충동적 지출
+              </button>
+            </div>
           </div>
         </div>
       </div>
 
-      <div class="modal-footer">
-        <button class="save-button" @click="saveTransaction">저장하기</button>
+      <div class="modalFooter">
+        <button class="saveButton" @click="saveTransaction">저장하기</button>
       </div>
     </div>
 
-    <!-- 카테고리 선택 서브모달 -->
     <CategoryModal
       v-if="isCategoryModalOpen"
       :initialTab="activeTab"
@@ -140,130 +140,135 @@
   </div>
 </template>
 
-<script>
-// global.css 파일 임포트
-import "../assets/styles/global.css";
+<script setup>
+import { ref, watch, onMounted, onBeforeUnmount } from "vue";
 import CategoryModal from "./CategoryModal.vue";
+import "../assets/styles/global.css";
 
-export default {
-  name: "FinanceModal",
-  components: {
-    CategoryModal,
+const props = defineProps({
+  isOpen: {
+    type: Boolean,
+    default: false,
   },
-  props: {
-    isOpen: {
-      type: Boolean,
-      default: false,
-    },
-  },
-  data() {
-    return {
-      isModalOpen: this.isOpen,
-      isCategoryModalOpen: false,
-      activeTab: "expense",
-      selectedDate: this.formatDate(new Date()),
-      selectedCategory: "",
-      amount: "",
-      description: "",
-      paymentMethod: "account",
-      spendingTendency: "planned",
-      showCategoryError: false,
-      isMobile: false,
-      categories: {
-        income: ["급여", "용돈", "부수입", "기타수입"],
-        expense: [
-          "식비",
-          "교통비",
-          "주거비",
-          "의류비",
-          "의료비",
-          "여가비",
-          "교육비",
-          "기타지출",
-        ],
-      },
-    };
-  },
-  watch: {
-    isOpen(newVal) {
-      this.isModalOpen = newVal;
-    },
-    activeTab() {
-      this.selectedCategory = "";
-    },
-  },
-  mounted() {
-    this.checkScreenSize();
-    window.addEventListener("resize", this.checkScreenSize);
-  },
-  beforeUnmount() {
-    window.removeEventListener("resize", this.checkScreenSize);
-  },
-  methods: {
-    checkScreenSize() {
-      this.isMobile = window.innerWidth < 768;
-    },
-    formatDate(date) {
-      const d = new Date(date);
-      const year = d.getFullYear();
-      const month = ("0" + (d.getMonth() + 1)).slice(-2);
-      const day = ("0" + d.getDate()).slice(-2);
-      return `${year}-${month}-${day}`;
-    },
-    openCategoryModal() {
-      this.isCategoryModalOpen = true;
-      this.showCategoryError = false;
-    },
-    closeCategoryModal() {
-      this.isCategoryModalOpen = false;
-    },
-    selectCategory(category) {
-      this.selectedCategory = category;
-    },
-    handleCategoryTabChange(tab) {
-      // 카테고리 모달에서 탭이 변경되면 메인 모달의 탭도 변경
-      this.activeTab = tab;
-    },
-    saveTransaction() {
-      if (!this.selectedCategory) {
-        this.showCategoryError = true;
-        return;
-      }
+});
 
-      const transaction = {
-        type: this.activeTab,
-        category: this.selectedCategory,
-        amount: this.amount,
-        description: this.description,
-        paymentMethod: this.paymentMethod,
-        spendingTendency: this.spendingTendency,
-        date: this.selectedDate,
-      };
+const emit = defineEmits(["save", "close"]);
 
-      this.$emit("save", transaction);
-      this.resetForm();
-      this.closeModal();
-    },
-    resetForm() {
-      this.selectedCategory = "";
-      this.amount = "";
-      this.description = "";
-      this.paymentMethod = "account";
-      this.spendingTendency = "planned";
-      this.selectedDate = this.formatDate(new Date());
-      this.showCategoryError = false;
-    },
-    closeModal() {
-      this.resetForm();
-      this.isModalOpen = false;
-      this.$emit("close");
-    },
-  },
+const isModalOpen = ref(props.isOpen);
+const isCategoryModalOpen = ref(false);
+const activeTab = ref("expense");
+const selectedDate = ref(formatDate(new Date()));
+const selectedCategory = ref("");
+const amount = ref("");
+const description = ref("");
+const paymentMethod = ref("account");
+const tendency = ref("planned");
+const showCategoryError = ref(false);
+const isMobile = ref(false);
+
+const categories = {
+  income: ["급여", "용돈", "부수입", "기타수입"],
+  expense: [
+    "식비",
+    "교통비",
+    "주거비",
+    "의류비",
+    "의료비",
+    "여가비",
+    "교육비",
+    "기타지출",
+  ],
 };
+
+watch(
+  () => props.isOpen,
+  (newVal) => {
+    isModalOpen.value = newVal;
+  }
+);
+
+watch(activeTab, () => {
+  selectedCategory.value = "";
+});
+
+function formatDate(date) {
+  const d = new Date(date);
+  const year = d.getFullYear();
+  const month = ("0" + (d.getMonth() + 1)).slice(-2);
+  const day = ("0" + d.getDate()).slice(-2);
+  return `${year}-${month}-${day}`;
+}
+
+function checkScreenSize() {
+  isMobile.value = window.innerWidth < 768;
+}
+
+function openCategoryModal() {
+  isCategoryModalOpen.value = true;
+  showCategoryError.value = false;
+}
+
+function closeCategoryModal() {
+  isCategoryModalOpen.value = false;
+}
+
+function selectCategory(category) {
+  selectedCategory.value = category;
+}
+
+function handleCategoryTabChange(tab) {
+  activeTab.value = tab;
+}
+
+function saveTransaction() {
+  if (!selectedCategory.value) {
+    showCategoryError.value = true;
+    return;
+  }
+
+  const transaction = {
+    type: activeTab.value,
+    category: selectedCategory.value,
+    amount: amount.value,
+    description: description.value,
+    paymentMethod: paymentMethod.value,
+    tendency: tendency.value,
+    date: selectedDate.value,
+  };
+
+  emit("save", transaction);
+  resetForm();
+  closeModal();
+}
+
+function resetForm() {
+  selectedCategory.value = "";
+  amount.value = "";
+  description.value = "";
+  paymentMethod.value = "account";
+  tendency.value = "planned";
+  selectedDate.value = formatDate(new Date());
+  showCategoryError.value = false;
+}
+
+function closeModal() {
+  resetForm();
+  isModalOpen.value = false;
+  emit("close");
+}
+
+onMounted(() => {
+  checkScreenSize();
+  window.addEventListener("resize", checkScreenSize);
+});
+
+onBeforeUnmount(() => {
+  window.removeEventListener("resize", checkScreenSize);
+});
 </script>
 
 <style scoped>
-.modal-container {
+.modalContainer {
   position: fixed;
   top: 0;
   left: 0;
@@ -275,7 +280,7 @@ export default {
   z-index: 1000;
 }
 
-.modal-backdrop {
+.modalBackdrop {
   position: absolute;
   top: 0;
   left: 0;
@@ -290,9 +295,9 @@ export default {
   border-radius: 12px;
   width: 500px;
   max-width: 90%;
-  max-height: none; /* 💥 제한 없애기 */
-  height: auto; /* 내용에 맞게 자동 조절 */
-  overflow: visible; /* 스크롤바 없애기 */
+  max-height: none;
+  height: auto;
+  overflow: visible;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
   z-index: 1001;
   font-family: var(--font-nanum-gothic);
@@ -307,20 +312,20 @@ export default {
   border-radius: 0;
 }
 
-.modal-header {
+.modalHeader {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 15px 20px;
 }
 
-.modal-header h2 {
+.modalHeader h2 {
   margin: 0;
   font: var(--neo-bold-16);
   color: var(--text-color);
 }
 
-.close-button {
+.closeButton {
   background: none;
   border: none;
   font-size: 24px;
@@ -328,13 +333,13 @@ export default {
   color: var(--text-secondary);
 }
 
-.tab-container {
+.tabContainer {
   display: flex;
-  gap: 8px; /* 버튼 사이 간격 */
+  gap: 8px;
   margin: 0px 20px;
 }
 
-.tab-button {
+.tabButton {
   flex: 1;
   padding: 12px;
   border: none;
@@ -346,39 +351,39 @@ export default {
   transition: background-color 0.2s, color 0.2s;
 }
 
-.tab-button.active {
+.tabButton.active {
   background-color: var(--primary-color);
   color: var(--text-color);
 }
 
-.tab-button:first-child {
+.tabButton:first-child {
   border-top-left-radius: 8px;
 }
 
-.tab-button:last-child {
+.tabButton:last-child {
   border-top-right-radius: 8px;
 }
 
-.modal-body {
+.modalBody {
   padding: 20px;
   display: flex;
   flex-direction: column;
   gap: 16px;
 }
 
-.form-group {
+.formGroup {
   display: flex;
   flex-direction: column;
   gap: 8px;
   width: 100%;
 }
 
-.form-group label {
+.formGroup label {
   font: var(--ng-reg-13);
   color: var(--text-secondary);
 }
 
-.form-input {
+.formInput {
   width: 100%;
   padding: 10px 12px;
   border: 1px solid #ddd;
@@ -388,11 +393,11 @@ export default {
   box-sizing: border-box;
 }
 
-.form-input::placeholder {
+.formInput::placeholder {
   color: var(--text-secondary);
 }
 
-.category-select {
+.categorySelect {
   width: 100%;
   padding: 10px 12px;
   border: 1px solid #ddd;
@@ -404,27 +409,27 @@ export default {
   box-sizing: border-box;
 }
 
-.category-select.placeholder {
-  color: var(--text-secondary); /* 카테고리 선택 전 */
+.categorySelect.placeholder {
+  color: var(--text-secondary);
 }
 
-.category-select.error {
+.categorySelect.error {
   border-color: var(--text-error);
 }
 
-.error-message {
+.errorMessage {
   color: var(--text-error);
   font: var(--ng-reg-12);
   margin-top: 4px;
 }
 
-.payment-method-container {
+.paymentMethodContainer {
   display: flex;
   gap: 8px;
   width: 100%;
 }
 
-.payment-method-button {
+.paymentMethodButton {
   flex: 1;
   padding: 10px;
   border: 1px solid #ddd;
@@ -436,19 +441,19 @@ export default {
   transition: all 0.2s;
 }
 
-.payment-method-button.active {
+.paymentMethodButton.active {
   background-color: var(--primary-color);
   color: var(--text-color);
   border-color: var(--primary-color);
 }
 
-.tendency-container {
+.tendencyContainer {
   display: flex;
   gap: 8px;
   width: 100%;
 }
 
-.tendency-button {
+.tendencyButton {
   flex: 1;
   padding: 10px;
   border: 1px solid #ddd;
@@ -460,20 +465,20 @@ export default {
   transition: background-color 0.2s, color 0.2s;
 }
 
-.tendency-button.active {
+.tendencyButton.active {
   background-color: var(--primary-color);
   color: var(--text-color);
   border-color: var(--primary-color);
 }
 
-.modal-footer {
+.modalFooter {
   padding: 0 20px 20px;
   background: var(--background-color);
   padding: 20px 20px;
   border-radius: 0 0 12px 12px;
 }
 
-.save-button {
+.saveButton {
   width: 100%;
   padding: 14px;
   background-color: var(--secondary-color);
@@ -485,37 +490,33 @@ export default {
   transition: background-color 0.2s;
 }
 
-.save-button:hover {
+.saveButton:hover {
   background-color: #ffa6d8;
 }
 
-/* 크롬, 사파리, 엣지(금액에서 스핀버튼 제거를 위함)*/
 input[type="number"]::-webkit-outer-spin-button,
 input[type="number"]::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
 
-/* 파이어폭스 */
 input[type="number"] {
   -moz-appearance: textfield;
 }
 
-/* 반응형: 지불방법 버튼 세로로 전환 */
 @media (max-width: 767px) {
-  .payment-method-container,
-  .tendency-method-container {
+  .paymentMethodContainer,
+  .tendencyMethodContainer {
     flex-direction: column;
   }
   .modal.mobile {
     height: 100%;
     max-height: 100%;
-    overflow-y: auto; /* 모바일에서만 세로 스크롤 허용 */
+    overflow-y: auto;
   }
 
-  .modal-footer {
+  .modalFooter {
     border-top: 1px solid #ddd;
-
     bottom: 0;
     position: sticky;
     box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);

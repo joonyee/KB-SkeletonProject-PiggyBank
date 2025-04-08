@@ -1,23 +1,23 @@
 <template>
-  <div class="category-modal">
-    <div class="modal-backdrop" @click="closeModal"></div>
-    <div class="category-modal-content" :class="{ mobile: isMobile }">
-      <div class="modal-header">
+  <div class="categoryModal">
+    <div class="modalBackdrop" @click="closeModal"></div>
+    <div class="categoryModalContent" :class="{ mobile: isMobile }">
+      <div class="modalHeader">
         <h2>카테고리 선택</h2>
-        <button class="close-button" @click="closeModal">&times;</button>
+        <button class="closeButton" @click="closeModal">&times;</button>
       </div>
 
-      <!-- 수입지출 선택(처음 선택을 자동 반영) -->
-      <div class="tab-container">
+      <!-- 수입지출 선택 반영-->
+      <div class="tabContainer">
         <button
-          class="tab-button"
+          class="tabButton"
           :class="{ active: activeTab === 'expense' }"
           @click="changeTab('expense')"
         >
           지출
         </button>
         <button
-          class="tab-button"
+          class="tabButton"
           :class="{ active: activeTab === 'income' }"
           @click="changeTab('income')"
         >
@@ -25,11 +25,11 @@
         </button>
       </div>
 
-      <div class="category-list">
+      <div class="categoryList">
         <button
           v-for="(category, index) in filteredCategories"
           :key="index"
-          class="category-item"
+          class="categoryItem"
           @click="selectCategory(category)"
         >
           {{ category }}
@@ -39,78 +39,80 @@
   </div>
 </template>
 
-<script>
+<script setup>
+import { ref, computed, watch, onMounted, onBeforeUnmount } from "vue";
 import "../assets/styles/global.css";
 
-export default {
-  name: "CategoryModal",
-  props: {
-    initialTab: {
-      type: String,
-      default: "income",
-      validator: (value) => ["income", "expense"].includes(value),
-    },
-    categories: {
-      type: Object,
-      default: () => ({
-        income: ["급여", "용돈", "부수입", "기타수입"],
-        expense: [
-          "식비",
-          "교통비",
-          "주거비",
-          "의류비",
-          "의료비",
-          "여가비",
-          "교육비",
-          "기타지출",
-        ],
-      }),
-    },
+const props = defineProps({
+  initialTab: {
+    type: String,
+    default: "income",
+    validator: (value) => ["income", "expense"].includes(value),
   },
-  data() {
-    return {
-      activeTab: this.initialTab,
-      isMobile: false,
-    };
+  categories: {
+    type: Object,
+    default: () => ({
+      income: ["급여", "용돈", "부수입", "기타수입"],
+      expense: [
+        "식비",
+        "교통비",
+        "주거비",
+        "의류비",
+        "의료비",
+        "여가비",
+        "교육비",
+        "기타지출",
+      ],
+    }),
   },
-  computed: {
-    filteredCategories() {
-      return this.categories[this.activeTab] || [];
-    },
-  },
-  watch: {
-    initialTab(newVal) {
-      this.activeTab = newVal;
-    },
-  },
-  mounted() {
-    this.checkScreenSize();
-    window.addEventListener("resize", this.checkScreenSize);
-  },
-  beforeUnmount() {
-    window.removeEventListener("resize", this.checkScreenSize);
-  },
-  methods: {
-    checkScreenSize() {
-      this.isMobile = window.innerWidth < 768;
-    },
-    changeTab(tab) {
-      this.activeTab = tab;
-      this.$emit("tab-change", tab);
-    },
-    selectCategory(category) {
-      this.$emit("select", category);
-      this.closeModal();
-    },
-    closeModal() {
-      this.$emit("close");
-    },
-  },
-};
+});
+
+const emit = defineEmits(["close", "select", "tab-change"]);
+
+const activeTab = ref(props.initialTab);
+const isMobile = ref(false);
+
+const filteredCategories = computed(
+  () => props.categories[activeTab.value] || []
+);
+
+watch(
+  () => props.initialTab,
+  (newVal) => {
+    activeTab.value = newVal;
+  }
+);
+
+function checkScreenSize() {
+  isMobile.value = window.innerWidth < 768;
+}
+
+function changeTab(tab) {
+  activeTab.value = tab;
+  emit("tab-change", tab);
+}
+
+function selectCategory(category) {
+  emit("select", category);
+  closeModal();
+}
+
+function closeModal() {
+  emit("close");
+}
+
+onMounted(() => {
+  checkScreenSize();
+  window.addEventListener("resize", checkScreenSize);
+});
+
+onBeforeUnmount(() => {
+  window.removeEventListener("resize", checkScreenSize);
+});
 </script>
 
 <style scoped>
-.category-modal {
+.categoryModal {
   position: fixed;
   top: 0;
   left: 0;
@@ -123,7 +125,7 @@ export default {
   background-color: rgba(0, 0, 0, 0.5);
 }
 
-.modal-backdrop {
+.modalBackdrop {
   position: absolute;
   top: 0;
   left: 0;
@@ -131,7 +133,7 @@ export default {
   height: 100%;
 }
 
-.category-modal-content {
+.categoryModalContent {
   position: relative;
   background-color: var(--background-color);
   border-radius: 12px;
@@ -143,7 +145,7 @@ export default {
   z-index: 1101;
 }
 
-.category-modal-content.mobile {
+.categoryModalContent.mobile {
   width: 100%;
   max-width: 100%;
   height: 100%;
@@ -151,7 +153,7 @@ export default {
   border-radius: 0;
 }
 
-.modal-header {
+.modalHeader {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -159,13 +161,13 @@ export default {
   border-bottom: 1px solid #eee;
 }
 
-.modal-header h2 {
+.modalHeader h2 {
   margin: 0;
   font: var(--neo-bold-16);
   color: var(--text-color);
 }
 
-.close-button {
+.closeButton {
   background: none;
   border: none;
   font-size: 24px;
@@ -173,13 +175,13 @@ export default {
   color: var(--text-secondary);
 }
 
-.tab-container {
+.tabContainer {
   padding: 16px 20px;
   gap: 12px;
   display: flex;
 }
 
-.tab-button {
+.tabButton {
   flex: 1;
   padding: 12px;
   border: none;
@@ -191,20 +193,20 @@ export default {
   transition: background-color 0.2s;
 }
 
-.tab-button.active {
+.tabButton.active {
   background-color: var(--primary-color);
   color: var(--text-color);
   font: var(--ng-bold-14);
 }
 
-.category-list {
+.categoryList {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 12px;
   padding: 20px;
 }
 
-.category-item {
+.categoryItem {
   padding: 12px;
   border: 1px solid #eee;
   border-radius: 6px;
@@ -215,7 +217,7 @@ export default {
   transition: all 0.2s;
 }
 
-.category-item:hover {
+.categoryItem:hover {
   background-color: var(--secondary-color);
 }
 </style>
