@@ -1,41 +1,76 @@
 {
-  "chartData": [
-    { "month": 1, "income": 110000, "expense": 40000 },
-    { "month": 2, "income": 120000, "expense": 45000 },
-    { "month": 3, "income": 130000, "expense": 42000 },
-    { "month": 4, "income": 125000, "expense": 48000 },
-    { "month": 5, "income": 125000, "expense": 48000 }
+  "type": [
+    { "id": 1, "name": "수입" },
+    { "id": 2, "name": "지출" }
   ],
-  "categorySpending": [
-    { "category": "식비", "amount": 320000, "percent": 32 },
-    { "category": "교통비", "amount": 150000, "percent": 15 },
-    { "category": "주거비", "amount": 250000, "percent": 25 },
-    { "category": "통신비", "amount": 130000, "percent": 13 }
+  "category": [
+    { "id": 1, "name": "급여" },
+    { "id": 2, "name": "용돈" },
+    { "id": 3, "name": "부수입" },
+    { "id": 4, "name": "기타" },
+    { "id": 5, "name": "식비" },
+    { "id": 6, "name": "교통비" },
+    { "id": 7, "name": "주거비" },
+    { "id": 8, "name": "의료비" },
+    { "id": 9, "name": "교육비" },
+    { "id": 10, "name": "의류비" },
+    { "id": 11, "name": "여가비" }
   ],
-  "transactions": [
+  "money": [
     {
-      "date": "2024-01-15",
-      "category": "식비",
-      "description": "점심식사",
-      "amount": -15000
+      "id": 1,
+      "userid": 1,
+      "typeid": 1,
+      "categoryid": 2,
+      "date": "2025-04-01",
+      "amount": 500000,
+      "tendency": "수입",
+      "payment": "용돈",
+      "memo": "아부지 용돈"
     },
     {
-      "date": "2024-01-14",
-      "category": "급여",
-      "description": "1월 급여",
-      "amount": 3000000
+      "id": 2,
+      "userid": 1,
+      "typeid": 2,
+      "categoryid": 9,
+      "date": "2025-04-01",
+      "amount": 200000,
+      "tendency": "계획적 소비",
+      "payment": "교육비",
+      "memo": "학원 등록비"
     },
     {
-      "date": "2024-01-13",
-      "category": "교통비",
-      "description": "택시",
-      "amount": -25000
+      "id": 2,
+      "userid": 1,
+      "typeid": 2,
+      "categoryid": 7,
+      "date": "2025-04-01",
+      "amount": 200000,
+      "tendency": "계획적 소비",
+      "payment": "교육비",
+      "memo": "학원 등록비"
     },
     {
-      "date": "2024-01-13",
-      "category": "교통비",
-      "description": "택시",
-      "amount": -25000
+      "id": 2,
+      "userid": 1,
+      "typeid": 2,
+      "categoryid": 4,
+      "date": "2025-04-01",
+      "amount": 200000,
+      "tendency": "계획적 소비",
+      "payment": "교육비",
+      "memo": "학원 등록비"
+    },
+    {
+      "id": 2,
+      "userid": 1,
+      "typeid": 2,
+      "categoryid": 9,
+      "date": "2025-05-01",
+      "amount": 200000,
+      "tendency": "계획적 소비",
+      "payment": "교육비",
+      "memo": "학원 등록비"
     }
   ]
 }
