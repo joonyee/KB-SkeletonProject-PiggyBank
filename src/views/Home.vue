@@ -119,23 +119,63 @@ const loading = ref(true); // 로딩 상태 추가
 
 const fetchData = async () => {
   try {
-    const chartResponse = await axios.get('http://localhost:3000/chartData');
-    chartData.value = chartResponse.data;
-    console.log('chartData:', chartData.value); // 데이터 형식 확인
+    // const chartResponse = await axios.get('http://localhost:3000/chartData');
+    // chartData.value = chartResponse.data;
+    // console.log('chartData:', chartData.value);
+    const response = await axios.get('http://localhost:3000/money');
+    const moneyData = response.data;
+    const monthlyTotals = {};
+    moneyData.forEach((entry) => {
+      const month = entry.date.slice(0, 7);
 
-    const categoryResponse = await axios.get(
-      'http://localhost:3000/categorySpending'
-    );
-    categorySpending.value = categoryResponse.data;
+      if (!monthlyTotals[month]) {
+        monthlyTotals[month] = { income: 0, expense: 0 };
+      }
 
-    const transactionResponse = await axios.get(
-      'http://localhost:3000/transactions'
+      if (entry.typeid === 1) {
+        monthlyTotals[month].income += entry.amount;
+      } else if (entry.typeid === 2) {
+        monthlyTotals[month].expense += entry.amount;
+      }
+    });
+    console.log(monthlyTotals);
+
+    const categoryTotals = {};
+    moneyData.forEach((entry) => {
+      if (entry.typeid === 2) {
+        const catId = entry.categoryid;
+
+        if (!categoryTotals[catId]) {
+          categoryTotals[catId] = 0;
+        }
+
+        categoryTotals[catId] += entry.amount;
+      }
+    });
+
+    console.log(categoryTotals);
+
+    const categoryRes = await axios.get('http://localhost:3000/category');
+    const categoryMap = categoryRes.data.reduce((map, cat) => {
+      map[cat.id] = cat.name;
+      return map;
+    }, {});
+
+    const sorted = moneyData.sort(
+      (a, b) => new Date(b.date) - new Date(a.date)
     );
-    transactions.value = transactionResponse.data;
+    const recentTransactions = sorted.slice(0, 5).map((entry) => ({
+      date: entry.date,
+      category: categoryMap[entry.categoryid] || '기타',
+      description: entry.payment,
+      amount: entry.typeid === 1 ? entry.amount : -entry.amount,
+    }));
+
+    transactions.value = recentTransactions;
   } catch (error) {
     console.error('데이터 로딩 실패:', error);
   } finally {
-    loading.value = false; // 로딩 상태 종료
+    loading.value = false;
   }
 };
 

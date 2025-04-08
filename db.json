@@ -35,7 +35,11 @@
       "categoryid": 9,
       "date": "2025-04-01",
       "amount": 200000,
+<<<<<<< HEAD
       "tendency": "계획된 지출",
+=======
+      "tendency": "계획적 소비",
+>>>>>>> 99ffa309946f87b0784fda72e4a785bac99ea42b
       "payment": "교육비",
       "memo": "학원 등록비"
     },
@@ -46,7 +50,11 @@
       "categoryid": 7,
       "date": "2025-04-01",
       "amount": 200000,
+<<<<<<< HEAD
       "tendency": "계획된 지출",
+=======
+      "tendency": "계획적 소비",
+>>>>>>> 99ffa309946f87b0784fda72e4a785bac99ea42b
       "payment": "교육비",
       "memo": "학원 등록비"
     },
@@ -57,7 +65,11 @@
       "categoryid": 4,
       "date": "2025-04-01",
       "amount": 200000,
+<<<<<<< HEAD
       "tendency": "계획된 지출",
+=======
+      "tendency": "계획적 소비",
+>>>>>>> 99ffa309946f87b0784fda72e4a785bac99ea42b
       "payment": "교육비",
       "memo": "학원 등록비"
     },
@@ -68,6 +80,7 @@
       "categoryid": 9,
       "date": "2025-05-01",
       "amount": 200000,
+<<<<<<< HEAD
       "tendency": "계획된 지출",
       "payment": "교육비",
       "memo": "학원 등록비"
@@ -93,6 +106,11 @@
       "tendency": "충동적 지출",
       "payment": "여가비",
       "memo": "인형 뽑기"
+=======
+      "tendency": "계획적 소비",
+      "payment": "교육비",
+      "memo": "학원 등록비"
+>>>>>>> 99ffa309946f87b0784fda72e4a785bac99ea42b
     }
   ]
 }
