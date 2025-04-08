@@ -27,6 +27,7 @@
         <div class="cardValue">₩{{ balance.toLocaleString() }}</div>
       </div>
       <!-- <div class="piggyAni"></div> -->
+<<<<<<< Updated upstream
       <div class="savingsCard">
         <div class="nowSavings">
           <div class="cardLabel" @click="savingClick">현재 저축률</div>
@@ -48,21 +49,7 @@
         <PieChart :chartData="chartData" />
       </div>
       <div class="piggyAni">
-        <!-- <h2 class="section-title" @click="nowMonthClick">📌 이번 달 요약</h2>
-        <div class="summary-cards">
-          <div class="summary-card income">
-            <p class="summary-label">수입</p>
-            <p class="summary-amount">₩{{ totalIncome.toLocaleString() }}</p>
-          </div>
-          <div class="summary-card expense">
-            <p class="summary-label">지출</p>
-            <p class="summary-amount">₩{{ totalExpense.toLocaleString() }}</p>
-          </div>
-          <div class="summary-card balance">
-            <p class="summary-label">잔액</p>
-            <p class="summary-amount">₩{{ balance.toLocaleString() }}</p>
-          </div>
-        </div> -->
+        <FinalPig/>
       </div>
     </div>
 
@@ -102,7 +89,15 @@ import axios from 'axios';
 import CategoryPieChart from '@/components/CategoryPieChart.vue';
 import PieChart from '@/components/PieChart.vue';
 import { RouterLink } from 'vue-router';
+import IndividualPig from "@/components/IndividualPig.vue";
+import PiggyFace from "@/components/Piggyface.vue";
+import PiggyfaceDefault from "@/components/PiggyfaceDefault.vue";
+import FinalPig from "@/components/FinalPig.vue";
+import {useMainStore} from "@/stores/store.js";
 
+
+const store = useMainStore();
+console.log(store.savingsRate);
 const dropdownOpen = ref(false);
 const toggleDropdown = () => {
   dropdownOpen.value = !dropdownOpen.value;
@@ -208,10 +203,10 @@ const totalExpense = computed(() =>
 
 const balance = computed(() => totalIncome.value - totalExpense.value);
 
-const savingsRate = computed(() => {
-  if (totalIncome.value === 0) return 0;
-  return Math.round((balance.value / totalIncome.value) * 100);
-});
+// const savingsRate = computed(() => {
+//   if (totalIncome.value === 0) return 0;
+//   return Math.round((balance.value / totalIncome.value) * 100);
+// });
 
 const mypageClick = () => {
   //router.push('./mypage');
@@ -247,6 +242,8 @@ const monthAmount = () => {
   //router.push('./monthAmount');
   alert('이번달 요약이동');
 };
+
+
 </script>
 
 <style scoped>
@@ -415,6 +412,11 @@ const monthAmount = () => {
   border-radius: 1rem;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
   min-width: 0;
+  /*piggyAni안에 돼지 컴포넌트를 가운데 정렬하기 위한 style*/
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
 }
 
 .chartLabel {

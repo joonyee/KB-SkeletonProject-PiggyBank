@@ -1,0 +1,185 @@
+<script setup>
+import { ref, defineProps, defineEmits, watch } from 'vue';
+
+const props = defineProps({ show: Boolean });
+const emit = defineEmits(['close', 'update']);
+
+const monthlyIncome = ref(0);
+const savingsRate = ref(20);
+const expectedSavings = ref(0);
+
+const closeModal = () => {
+  emit('close');
+};
+
+const confirmSettings = () => {
+  emit('update', {
+    monthlyIncome: monthlyIncome.value,
+    savingsRate: savingsRate.value,
+  });
+  closeModal();
+};
+
+watch([monthlyIncome, savingsRate], () => {
+  expectedSavings.value = Math.floor(
+    (monthlyIncome.value * savingsRate.value) / 100
+  );
+});
+</script>
+
+<template>
+  <div v-if="show" class="modal-backdrop" @click="closeModal">
+    <div class="modal-content" @click.stop>
+      <h3 class="modal-title">목표 저축률 설정</h3>
+
+      <!-- 월 수입 입력 -->
+      <div class="modal-input">
+        <label for="income">월 수입</label>
+        <input
+          type="number"
+          id="income"
+          placeholder="월 수입을 입력하세요"
+          v-model="monthlyIncome"
+        />
+      </div>
+
+      <!-- 슬라이더로 저축률 설정 -->
+      <div class="slider-container">
+        <label>목표 저축률 (%)</label>
+        <div class="slider-wrapper">
+          <input
+            type="range"
+            min="0"
+            max="100"
+            step="1"
+            v-model="savingsRate"
+            class="slider"
+          />
+          <div class="slider-label">
+            <span>{{ savingsRate }}%</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 예상 월 저축액 -->
+      <div class="expected-savings">
+        <label>예상 월 저축액</label>
+        <p class="savings-amount">₩{{ expectedSavings.toLocaleString() }}</p>
+      </div>
+
+      <!-- 모달 버튼 -->
+      <div class="modal-buttons">
+        <button class="confirm" @click="confirmSettings">확인</button>
+        <button class="cancel" @click="closeModal">취소</button>
+      </div>
+    </div>
+  </div>
+</template>
+
+<style scoped>
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.3);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background-color: var(--background-color);
+  padding: 30px 30px;
+  border-radius: 16px;
+  width: 350px;
+  text-align: center;
+}
+
+.modal-title {
+  font: var(--ng-bold-24);
+  margin-bottom: 30px;
+  color: var(--text-color);
+}
+
+.modal-input {
+  margin: 20px 0;
+}
+
+input[type='number'] {
+  width: 90%;
+  padding: 10px;
+  margin-top: 15px;
+  /* border: 1px solid var(--text-secondary); */
+  border-radius: 8px;
+  font: var(--ng-reg-16);
+}
+
+.slider-container {
+  margin: 20px 0;
+  text-align: center;
+}
+
+.slider-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+.slider {
+  -webkit-appearance: none;
+  width: 80%;
+  height: 7px;
+  background: var(--secondary-color);
+  outline: none;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 20px;
+  height: 20px;
+  background: var(--primary-color);
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.slider-label {
+  margin-left: 10px;
+  font: var(--ng-bold-20);
+  color: var(--text-color);
+}
+
+.expected-savings {
+  margin: 20px 0;
+  color: var(--text-color);
+}
+
+.savings-amount {
+  font: var(--ng-bold-28);
+  color: var(--hot-pink);
+}
+
+.modal-buttons {
+  margin-top: 20px;
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+}
+.confirm,
+.cancel {
+  background-color: var(--secondary-color);
+  padding: 8px 20px;
+  width: 80px;
+  border-radius: 8px;
+  color: var(--text-color);
+  font: var(--ng-reg-14);
+  border: none;
+  outline: none;
+  cursor: pointer;
+}
+</style>
