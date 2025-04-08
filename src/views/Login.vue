@@ -1,6 +1,6 @@
 <template>
   <div class="login-wrapper">
-    <Piggyface :eyeOffset="eyeOffset" />
+    <Piggyface :eyeOffset="eyeOffset" :isEyeClosed="isEyeClosed" />
     <div class="login-container">
 
       <div class="login-box">
@@ -10,7 +10,7 @@
           <input type="email" placeholder="example@email.com" v-model="email" @input="handleEmailInput"/>
 
           <label>비밀번호</label>
-          <input type="password" placeholder="비밀번호를 입력해주세요" v-model="password" />
+          <input type="password" placeholder="비밀번호를 입력해주세요" v-model="password" @input="handlePasswordInput"/>
 
           <button type="submit" class="login-btn">로그인</button>
         </form>
@@ -28,7 +28,7 @@
 import { ref} from 'vue'
 import Piggyface from "@/components/Piggyface.vue";
 
-
+const isEyeClosed = ref(false);
 const eyeOffset = ref({ x: 0, y: 0 })
 const email = ref('')
 const password = ref('')
@@ -54,6 +54,15 @@ const handleEmailInput = (e) => {
     y: offsetY
   }
 }
+
+// 비밀번호 입력 시 눈 감도록 처리
+const handlePasswordInput = (e) => {
+  password.value = e.target.value;
+
+  // 비밀번호 입력 중일 때 눈을 감도록 설정
+  isEyeClosed.value = password.value.length > 0;
+};
+
 </script>
 
 <style scoped>
