@@ -439,7 +439,24 @@ input[type='number'] {
 
 .edit-buttons {
   display: flex;
-  gap: 0.5rem;
+  gap: 1rem;
+  justify-content: center;
   margin-top: 1rem;
+}
+
+/* 공통 버튼 스타일 */
+.edit-buttons button {
+  background-color: #ffc7ef;
+  color: #1a1a1a;
+  border: none;
+  padding: 0.75rem 1.25rem;
+  font-size: 0.875rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.edit-buttons button:hover {
+  background-color: #ffb3e6;
 }
 </style>
