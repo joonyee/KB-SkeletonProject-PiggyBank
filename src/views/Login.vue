@@ -1,6 +1,6 @@
 <template>
   <div class="login-wrapper">
-    <Piggyface :eyeOffset="eyeOffset" />
+    <Piggyface :eyeOffset="eyeOffset" :isEyeClosed="isEyeClosed" />
     <div class="login-container">
 
       <div class="login-box">
@@ -10,7 +10,7 @@
           <input type="email" placeholder="example@email.com" v-model="email" @input="handleEmailInput"/>
 
           <label>비밀번호</label>
-          <input type="password" placeholder="비밀번호를 입력해주세요" v-model="password" />
+          <input type="password" placeholder="비밀번호를 입력해주세요" v-model="password" @input="handlePasswordInput"/>
 
           <button type="submit" class="login-btn">로그인</button>
         </form>
@@ -28,25 +28,25 @@
 import { ref} from 'vue'
 import Piggyface from "@/components/Piggyface.vue";
 
-
+const isEyeClosed = ref(false);
 const eyeOffset = ref({ x: 0, y: 0 })
 const email = ref('')
 const password = ref('')
 
 const handleLogin = () => {
   console.log('로그인 시도:', email.value, password.value)
-  // 여기에 이제 로그인 로직을 만들면 될 것 같아요.
+
 }
 //눈이 이메일을 입력하면 입력하는 이메일을 따라갑니다.
 const handleEmailInput = (e) => {
   email.value = e.target.value
 
   const length = email.value.length
-  const maxX = 6      // 눈이 이동하는 총 범위 (절대값)
-  const maxChars = 20 // 최대 기준 문자 수
+  const maxX = 11     // 눈이 이동하는 총 범위 (절대값)
+  const maxChars = 90 // 최대 기준 문자 수
 
   // 입력 길이에 따라 이동
-  const offsetX = -3 + Math.min(length, maxChars) / maxChars * maxX
+  const offsetX = -7 + Math.min(length, maxChars) / maxChars * maxX
   const offsetY = 3   // 살짝 아래로 고정
 
   eyeOffset.value = {
@@ -54,6 +54,15 @@ const handleEmailInput = (e) => {
     y: offsetY
   }
 }
+
+// 비밀번호 입력 시 눈 감도록 처리
+const handlePasswordInput = (e) => {
+  password.value = e.target.value;
+
+  // 비밀번호 입력 중일 때 눈을 감도록 설정
+  isEyeClosed.value = password.value.length > 0;
+};
+
 </script>
 
 <style scoped>
@@ -79,6 +88,7 @@ const handleEmailInput = (e) => {
   padding: 40px;
   width: 350px;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+
 }
 
 .title {
