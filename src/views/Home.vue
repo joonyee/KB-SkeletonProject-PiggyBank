@@ -7,14 +7,14 @@
         <button @click="toggleDarkMode" class="darkMode-button">
           {{ isDarkMode ? '☀️' : '🌙' }}
         </button>
-        <button class="mypage-button">마이페이지</button>
-        <button class="inputValue">새 거래추가</button>
+        <button class="mypage-button" @click="mypageClick">마이페이지</button>
+        <button class="inputValue" @click="inputClick">새 거래추가</button>
       </div>
     </header>
 
     <!-- Summary Cards -->
     <div class="summary-grid">
-      <div class="income-card">
+      <!-- <div class="income-card">
         <div class="card-label">이번 달 수입</div>
         <div class="card-value">₩{{ totalIncome.toLocaleString() }}</div>
       </div>
@@ -25,9 +25,10 @@
       <div class="balance-card">
         <div class="card-label">이번 달 잔액</div>
         <div class="card-value">₩{{ balance.toLocaleString() }}</div>
-      </div>
+      </div> -->
+      <div class="piggyAni"></div>
       <div class="savings-card">
-        <div class="card-label">저축률</div>
+        <div class="card-label" @click="savingClick">저축률</div>
         <div class="card-value">{{ savingsRate }}%</div>
       </div>
     </div>
@@ -35,39 +36,13 @@
     <!-- Monthly Chart & Category Spending -->
     <div class="chart-section">
       <div class="monthly-chart">
-        <h2 class="section-title">📈 월간 수입/지출 추이</h2>
+        <h2 class="section-title" @click="monthlyClick">
+          📈 월간 수입/지출 추이
+        </h2>
         <PieChart :chartData="chartData" />
-
-        <!-- <div class="chart-bars">
-            <div
-              v-for="(item, index) in chartData"
-              :key="index"
-              class="chart-bar"
-            >
-              <div class="bar-wrapper">
-                <div
-                  class="income-bar"
-                  :style="{ height: (item.income / maxChartValue) * 100 + '%' }"
-                ></div>
-                <div
-                  class="expense-bar"
-                  :style="{ height: (item.expense / maxChartValue) * 100 + '%' }"
-                ></div>
-              </div>
-              <div class="chart-label">{{ item.month }}월</div>
-            </div>
-          </div> -->
-        <!-- <div class="chart-legend">
-            <div class="legend-item">
-              <span class="legend-dot income-dot"></span> 수입
-            </div>
-            <div class="legend-item">
-              <span class="legend-dot expense-dot"></span> 지출
-            </div>
-          </div> -->
       </div>
       <div class="category-summary">
-        <h2 class="section-title">📊 카테고리별 지출</h2>
+        <h2 class="section-title" @click="categoryClick">📊 카테고리별 지출</h2>
         <CategoryPieChart :categorySpending="categorySpending" />
       </div>
     </div>
@@ -75,7 +50,9 @@
     <!-- Transaction Summary & History -->
     <div class="transaction-section">
       <div class="transaction-history">
-        <h2 class="section-title">🧾 최근 거래내역</h2>
+        <h2 class="section-title" @click="transactionsClick">
+          🧾 최근 거래내역
+        </h2>
         <ul>
           <li
             v-for="(tx, index) in transactions"
@@ -93,7 +70,7 @@
         </ul>
       </div>
       <div class="monthly-summary">
-        <h2 class="section-title">📌 이번 달 요약</h2>
+        <h2 class="section-title" @click="nowMonthClick">📌 이번 달 요약</h2>
         <div class="summary-cards">
           <div class="summary-card income">
             <p class="summary-label">수입</p>
@@ -113,87 +90,12 @@
   </div>
 </template>
 
-<!-- <script setup>
-import { ref, computed } from 'vue';
-import CategoryPieChart from '@/components/CategoryPieChart.vue';
-import PieChart from '@/components/PieChart.vue';
-
-const dropdownOpen = ref(false);
-const toggleDropdown = () => {
-  dropdownOpen.value = !dropdownOpen.value;
-};
-const logout = () => {
-  console.log('로그아웃 실행됨');
-};
-
-const isDarkMode = ref(false);
-const toggleDarkMode = () => {
-  isDarkMode.value = !isDarkMode.value;
-  document.documentElement.classList.toggle('dark', isDarkMode.value);
-};
-
-const chartData = [
-  { month: 9, income: 100, expense: 70 },
-  { month: 10, income: 120, expense: 90 },
-  { month: 11, income: 110, expense: 80 },
-  { month: 12, income: 115, expense: 85 },
-  { month: 1, income: 110, expense: 40 },
-];
-
-const maxChartValue = Math.max(
-  ...chartData.map((item) => Math.max(item.income, item.expense))
-);
-
-const categorySpending = [
-  { category: '식비', amount: 320000, percent: 32 },
-  { category: '교통비', amount: 150000, percent: 15 },
-  { category: '주거비', amount: 250000, percent: 25 },
-  { category: '통신비', amount: 130000, percent: 13 },
-];
-
-const transactions = [
-  {
-    date: '2024-01-15',
-    category: '식비',
-    description: '점심식사',
-    amount: -15000,
-  },
-  {
-    date: '2024-01-14',
-    category: '급여',
-    description: '1월 급여',
-    amount: 3000000,
-  },
-  {
-    date: '2024-01-13',
-    category: '교통비',
-    description: '택시',
-    amount: -25000,
-  },
-];
-
-const totalIncome = computed(() =>
-  transactions
-    .filter((tx) => tx.amount > 0)
-    .reduce((sum, tx) => sum + tx.amount, 0)
-);
-const totalExpense = computed(() =>
-  transactions
-    .filter((tx) => tx.amount < 0)
-    .reduce((sum, tx) => sum + Math.abs(tx.amount), 0)
-);
-const balance = computed(() => totalIncome.value - totalExpense.value);
-
-const savingsRate = computed(() => {
-  if (totalIncome.value === 0) return 0;
-  return Math.round((balance.value / totalIncome.value) * 100);
-});
-</script> -->
 <script setup>
 import { ref, computed, onMounted } from 'vue';
 import axios from 'axios';
 import CategoryPieChart from '@/components/CategoryPieChart.vue';
 import PieChart from '@/components/PieChart.vue';
+import { RouterLink } from 'vue-router';
 
 const dropdownOpen = ref(false);
 const toggleDropdown = () => {
@@ -264,6 +166,41 @@ const savingsRate = computed(() => {
   if (totalIncome.value === 0) return 0;
   return Math.round((balance.value / totalIncome.value) * 100);
 });
+
+const mypageClick = () => {
+  //router.push('./mypage');
+  alert('mypage page');
+};
+
+const inputClick = () => {
+  //router.push('./inputValue');
+  alert('money input');
+};
+
+const savingClick = () => {
+  //router.push('./savings-card');
+  alert('저축률 페이지');
+};
+
+const monthlyClick = () => {
+  //router.push('./monthlychart');
+  alert('월간 수입/지출 페이지');
+};
+
+const categoryClick = () => {
+  //router.push('./categorypage');
+  alert('카테고리 페이지 이동');
+};
+
+const transactionsClick = () => {
+  //   router.push('/transaction'); 페이지 만들어서 라우팅 하면 끝
+  alert('최근 거래내역 페이지 이동');
+};
+
+const nowMonthClick = () => {
+  //router.push('./nowMonthpage');
+  alert('이번달 요약 페이지 이동');
+};
 </script>
 
 <style scoped>
@@ -296,7 +233,7 @@ const savingsRate = computed(() => {
   background-color: white;
   border: black solid 1px;
   border-radius: 0.5rem;
-  padding: 8px 16px;
+  padding: 12px 24px;
   cursor: pointer;
 }
 
@@ -334,15 +271,25 @@ const savingsRate = computed(() => {
 }
 
 .summary-grid {
-  display: grid;
+  display: flex;
   grid-template-columns: repeat(4, 1fr);
   gap: 2rem;
   margin-bottom: 2rem;
 }
-.income-card,
+.piggyAni {
+  background-color: white;
+  padding: 1.5rem;
+  border-radius: 1rem;
+  width: 100%;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  flex: 7;
+}
+/* .income-card,
 .expense-card,
-.balance-card,
+.balance-card, */
 .savings-card {
+  flex: 3;
+  float: right;
   background-color: white;
   padding: 1.5rem;
   border-radius: 1rem;
@@ -395,44 +342,6 @@ const savingsRate = computed(() => {
 .category-summary {
   flex: 3;
 }
-
-/* .chart-bars {
-    display: flex;
-    justify-content: space-around; 
-    align-items: flex-end;
-    width: 100%;
-    height: 200px;
-    margin-top: 1rem;
-    padding: 0 1rem;
-  }
-  
-  .chart-bar {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 40px;
-    height: 100%;
-  }
-  
-  .bar-wrapper {
-    display: flex;
-    align-items: flex-end;
-    gap: 4px;
-    height: 100%;
-  }
-  .income-bar,
-  .expense-bar {
-    width: 12px;
-    border-radius: 4px;
-  }
-  
-  .income-bar {
-    background-color: #4ade80; 
-  }
-  
-  .expense-bar {
-    background-color: #f87171; 
-  } */
 
 .chart-label {
   margin-top: 0.5rem;
