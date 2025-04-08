@@ -27,6 +27,7 @@
         <div class="cardValue">₩{{ balance.toLocaleString() }}</div>
       </div>
       <!-- <div class="piggyAni"></div> -->
+<<<<<<< Updated upstream
       <div class="savingsCard">
         <div class="nowSavings">
           <div class="cardLabel" @click="savingClick">현재 저축률</div>
@@ -92,9 +93,11 @@ import IndividualPig from "@/components/IndividualPig.vue";
 import PiggyFace from "@/components/Piggyface.vue";
 import PiggyfaceDefault from "@/components/PiggyfaceDefault.vue";
 import FinalPig from "@/components/FinalPig.vue";
+import {useMainStore} from "@/stores/store.js";
 
 
-
+const store = useMainStore();
+console.log(store.savingsRate);
 const dropdownOpen = ref(false);
 const toggleDropdown = () => {
   dropdownOpen.value = !dropdownOpen.value;
@@ -160,10 +163,10 @@ const totalExpense = computed(() =>
 
 const balance = computed(() => totalIncome.value - totalExpense.value);
 
-const savingsRate = computed(() => {
-  if (totalIncome.value === 0) return 0;
-  return Math.round((balance.value / totalIncome.value) * 100);
-});
+// const savingsRate = computed(() => {
+//   if (totalIncome.value === 0) return 0;
+//   return Math.round((balance.value / totalIncome.value) * 100);
+// });
 
 const mypageClick = () => {
   //router.push('./mypage');
@@ -200,33 +203,7 @@ const monthAmount = () => {
   alert('이번달 요약이동');
 };
 
-/*저축률에 따라서 돼지의 생김새가 바뀌는 코드입니다.*/
-// const selectedPigComponent = computed(() => {
-//   if (savingsRate.value < 80) {
-//     return IndividualPig; // 저축률이 목표치보다 낮을때
-//   } else if(savingsRate.value <= 100) {
-//     return IndividualPig; // 저축률이 높을 때
-//   } else {
-//     console.log(savingsRate.value)
-//     return FinalPig;
-//   }
-// });
 
-/*돼지 눈이 마우스 방향을 따라가도록 정의한 이벤트*/
-// const handleMouseMove = (e) => {
-//   const centerX = window.innerWidth / 2;
-//   const centerY = window.innerHeight / 2;
-//   const dx = e.clientX - centerX;
-//   const dy = e.clientY - centerY;
-//   const angle = Math.atan2(dy, dx);
-//   const distance = 8;
-//   const eyeOffset = ref({ x: 0, y: 0 });
-//
-//   eyeOffset.value = {
-//     x: Math.cos(angle) * distance,
-//     y: Math.sin(angle) * distance,
-//   };
-// };
 </script>
 
 <style scoped>
