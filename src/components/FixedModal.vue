@@ -22,7 +22,7 @@
         </button>
       </div>
 
-      <!-- 금융 일정 추가 -->
+      <!-- 금융 일정 추가 탭 -->
       <div v-if="activeTab === 'add'" class="tab-content">
         <div class="form-group">
           <label for="date-picker">날짜</label>
@@ -43,7 +43,6 @@
             class="amount-input"
           />
         </div>
-
         <div class="form-group">
           <label>일정 이름</label>
           <input
@@ -59,46 +58,130 @@
             일정 하루 전날 알림을 받으실 수 있습니다.
           </label>
         </div>
-        <button class="submit-button" @click="addFixedExpense">
-          금융 일정 추가하기
-        </button>
+      </div>
+      <div v-if="activeTab === 'add'" class="submit-button">
+        <button @click="addFixedExpense">금융 일정 추가하기</button>
       </div>
 
-      <!-- 금융 일정 수정 -->
-      <div v-if="activeTab === 'edit'" class="tab-content">
-        <p>현재 추가된 목록</p>
-        <div class="schedule-item">
-          <p>넷플릭스 정기 구독</p>
-          <p>매달 10일 / 4,950원 / 지출</p>
-          <p>알림 설정됨</p>
-          <button class="edit-button">수정하기</button>
+      <!-- 금융 일정 수정 탭 -->
+      <div v-if="activeTab === 'edit'" class="tab-content edit-tab">
+        <div class="schedule-item" :key="currentIndex">
+          <p class="expense-description">{{ currentExpense.description }}</p>
+          <p class="expense-details">
+            매달 {{ currentExpense.day }}일 /
+            {{ formatNumber(currentExpense.amount) }}원 / 지출
+          </p>
+          <p class="expense-notify" v-if="currentExpense.notify">알림 설정됨</p>
+          <p class="expense-notify" v-else>알림 설정 안 됨</p>
         </div>
+
+        <div class="navigation-buttons">
+          <button @click="prevExpense" :disabled="currentIndex === 0">
+            이전
+          </button>
+          <button
+            @click="nextExpense"
+            :disabled="currentIndex === (expenses.value?.length || 0) - 1"
+          >
+            다음
+          </button>
+        </div>
+      </div>
+
+      <div v-if="activeTab === 'edit'" class="submit-button">
+        <button @click="enableEditMode">수정하기</button>
       </div>
 
       <button class="close-button" @click="emit('close')">닫기</button>
     </div>
   </div>
+
+  <!-- 수정하기 모달 (별도 오버레이) -->
+  <div v-if="editMode" class="edit-modal-overlay" @click.self="cancelEdit">
+    <div class="edit-modal-content">
+      <h2>수정하기</h2>
+      <div class="form-group">
+        <label>날짜</label>
+        <input type="number" v-model="editableExpense.day" />
+      </div>
+      <div class="form-group">
+        <label>금액</label>
+        <input type="number" v-model="editableExpense.amount" />
+      </div>
+      <div class="form-group">
+        <label>일정 이름</label>
+        <input type="text" v-model="editableExpense.description" />
+      </div>
+      <div class="form-group">
+        <label class="inline-label">
+          <input type="checkbox" v-model="editableExpense.notify" />
+          일정 하루 전날 알림
+        </label>
+      </div>
+      <div class="edit-buttons">
+        <button @click="updateFixedExpense">저장하기</button>
+        <button @click="cancelEdit">취소하기</button>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import axios from 'axios';
 
-// defineEmits를 통해 이벤트 발생 함수(emit)를 받아옴
 const emit = defineEmits(['close']);
 
-const activeTab = ref('add'); // 기본 탭은 '금융 일정 추가'
+const expenses = ref([]);
+const currentIndex = ref(0);
+const currentExpense = ref({});
+
+const activeTab = ref('add');
 const newExpense = ref({
-  day: null, // 일자
-  description: '', // 일정 이름
-  amount: null, // 금액
-  notify: false, // 알림 설정 여부
+  day: null,
+  description: '',
+  amount: null,
+  notify: false,
 });
 
-// 새로운 고정 지출 추가 함수
+// 수정하기 모달 관련 상태
+const editMode = ref(false);
+const editableExpense = ref({});
+
+// 데이터 가져오기
+const fetchData = async () => {
+  try {
+    const res = await axios.get('http://localhost:3000/fixedExpenses');
+    expenses.value = Array.isArray(res.data) ? res.data : [];
+    if (expenses.value.length > 0) {
+      currentExpense.value = expenses.value[currentIndex.value];
+    }
+  } catch (error) {
+    console.error('데이터 로딩 실패:', error);
+  }
+};
+
+const prevExpense = () => {
+  if (currentIndex.value > 0) {
+    currentIndex.value--;
+    currentExpense.value = expenses.value[currentIndex.value];
+  }
+};
+
+const nextExpense = () => {
+  if (currentIndex.value < (expenses.value?.length || 0) - 1) {
+    currentIndex.value++;
+    currentExpense.value = expenses.value[currentIndex.value];
+  }
+};
+
+const formatNumber = (num) => {
+  if (!num) return '';
+  return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+};
+
 const addFixedExpense = async () => {
   try {
-    // 입력값 검증
     if (
       !newExpense.value.day ||
       !newExpense.value.description ||
@@ -107,30 +190,69 @@ const addFixedExpense = async () => {
       alert('모든 필드를 입력해주세요.');
       return;
     }
-
-    // POST 요청으로 db.json에 데이터 추가
     await axios.post('http://localhost:3000/fixedExpenses', {
       day: newExpense.value.day,
       description: newExpense.value.description,
       amount: newExpense.value.amount,
+      notify: newExpense.value.notify,
     });
-
     alert('금융 일정이 성공적으로 추가되었습니다.');
-    // 입력 필드 초기화
     newExpense.value = {
       day: null,
       description: '',
       amount: null,
       notify: false,
     };
-
-    // 모달 닫기
     emit('close');
   } catch (error) {
     console.error('금융 일정 추가 중 오류 발생:', error);
     alert('금융 일정 추가에 실패했습니다.');
   }
 };
+
+const enableEditMode = () => {
+  editMode.value = true;
+  editableExpense.value = { ...currentExpense.value };
+};
+
+const cancelEdit = () => {
+  editMode.value = false;
+};
+
+const updateFixedExpense = async () => {
+  try {
+    if (
+      !editableExpense.value.day ||
+      !editableExpense.value.description ||
+      !editableExpense.value.amount
+    ) {
+      alert('모든 필드를 입력해주세요.');
+      return;
+    }
+    await axios.put(
+      `http://localhost:3000/fixedExpenses/${
+        editableExpense.value.id || currentIndex.value
+      }`,
+      {
+        day: editableExpense.value.day,
+        description: editableExpense.value.description,
+        amount: editableExpense.value.amount,
+        notify: editableExpense.value.notify,
+      }
+    );
+    currentExpense.value = { ...editableExpense.value };
+    expenses.value[currentIndex.value] = { ...editableExpense.value };
+    alert('금융 일정이 수정되었습니다.');
+    editMode.value = false;
+  } catch (error) {
+    console.error('금융 일정 수정 중 오류 발생:', error);
+    alert('금융 일정 수정에 실패했습니다.');
+  }
+};
+
+onMounted(() => {
+  fetchData();
+});
 </script>
 
 <style scoped>
@@ -146,109 +268,178 @@ const addFixedExpense = async () => {
   align-items: center;
   z-index: 1000;
 }
+
 .modal-content {
+  position: relative;
   background: #fff;
-  padding: 2rem;
+  padding: 1.5rem;
   border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
   max-width: 600px;
   width: 100%;
   text-align: left;
 }
+
+h2 {
+  font-size: 1.75rem;
+  margin-bottom: 0.5rem;
+  color: #111827;
+  text-align: center;
+}
+
+.description {
+  font-size: 1rem;
+  color: #6b7280;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.tabs {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.tabs button {
+  padding: 0.75rem 1.5rem;
+  border: 1px solid #e5e7eb;
+  background: #f9fafb;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1rem;
+  color: #374151;
+  transition: background 0.2s ease;
+}
+
+.tabs button.active {
+  background: #ffc7ef;
+  color: #1a1a1a;
+  border-color: #ffc7ef;
+}
+
+.tab-content {
+  margin-bottom: 2.5rem;
+}
+
+.form-group {
+  margin-bottom: 1rem;
+}
+
+.form-group label {
+  display: block;
+  font-size: 0.95rem;
+  color: #374151;
+  margin-bottom: 0.5rem;
+}
+
 input[type='text'],
 input[type='number'] {
   width: 95%;
   padding: 0.75rem;
   border: 1px solid #e5e7eb;
   border-radius: 8px;
-  font-size: 0.875rem;
+  font-size: 1rem;
   color: #374151;
   background-color: #f9fafb;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
-h2 {
-  font-size: 1.5rem;
-  margin-bottom: 0.5rem;
-  color: #111827;
-}
-.description {
-  font-size: 0.875rem;
-  color: #6b7280;
-  margin-bottom: 1.5rem;
-}
-.tabs {
-  display: flex;
-  gap: 1rem;
-  margin-bottom: 1.5rem;
-}
-.tabs button {
-  flex: 1;
-  padding: 0.5rem 1rem;
-  border: 1px solid #e5e7eb;
-  background: #f9fafb;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 0.875rem;
-  color: #374151;
-  transition: background 0.2s ease;
-}
-.tabs button.active {
-  background: #2563eb;
-  color: #fff;
-  border-color: #2563eb;
-}
-.form-group {
-  margin-bottom: 1rem;
-}
-.form-group label {
-  display: block;
-  font-size: 0.875rem;
-  color: #374151;
-  margin-bottom: 0.5rem;
-}
-.date-input,
-.amount-input,
-.description-input {
-  width: 100%;
-  padding: 0.5rem;
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
-  font-size: 0.875rem;
-}
+
 .inline-label {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  font-size: 0.875rem;
+  font-size: 0.95rem;
   color: #374151;
 }
-.submit-button {
-  width: 100%;
-  padding: 0.75rem;
-  background: #ffc7ef;
-  color: #1a1a1a;
-  border: none;
-  border-radius: 8px;
-  font-size: 0.875rem;
-  cursor: pointer;
-  transition: background 0.2s ease;
-}
-.submit-button:hover {
-  background: #ffb3e6;
-}
+
 .close-button {
-  margin-top: 1rem;
   width: 100%;
   padding: 0.75rem;
   background: #e5e7eb;
   color: #374151;
   border: none;
   border-radius: 8px;
-  font-size: 0.875rem;
+  font-size: 1rem;
   cursor: pointer;
   transition: background 0.2s ease;
 }
+
 .close-button:hover {
   background: #d1d5db;
+}
+
+.navigation-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 1rem;
+}
+
+.navigation-buttons button {
+  padding: 0.5rem 1rem;
+  border: 1px solid #e5e7eb;
+  background: #f9fafb;
+  border-radius: 6px;
+  font-size: 1rem;
+  color: #374151;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.navigation-buttons button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.submit-button {
+  margin-top: 2rem;
+  text-align: left;
+}
+
+.submit-button button {
+  width: 100%;
+  padding: 0.75rem;
+  background: #ffc7ef;
+  color: #1a1a1a;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  margin-bottom: 1rem;
+}
+
+.submit-button button:hover {
+  background: #ffb3e6;
+}
+
+/* 수정 모달 오버레이 */
+.edit-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1100;
+}
+
+.edit-modal-content {
+  background: #fff;
+  padding: 1.5rem;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 400px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  text-align: left;
+}
+
+.edit-buttons {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1rem;
 }
 </style>

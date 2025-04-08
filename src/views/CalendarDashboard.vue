@@ -14,15 +14,26 @@
         <h3>소비 패턴 분석</h3>
         <div class="analysis-content">
           <div>
-            <p>총 지출 횟수</p>
-            <h2 class="negative">3회</h2>
+            <p>충동적 소비</p>
+            <h2 class="negative">{{ impulsiveCount }}회</h2>
           </div>
           <div>
-            <p>지출이 없는 날</p>
-            <h2 class="positive">8회</h2>
+            <p>계획적 소비</p>
+            <h2 class="positive">{{ plannedCount }}회</h2>
           </div>
         </div>
-        <p class="summary">총 소비 수: 11회</p>
+        <!-- 분할 진행 바 시작 -->
+        <div class="segmented-progress-bar">
+          <div
+            class="segment segment-impulsive"
+            :style="{ width: (impulsiveCount / totalCount) * 100 + '%' }"
+          ></div>
+          <div
+            class="segment segment-planned"
+            :style="{ width: (plannedCount / totalCount) * 100 + '%' }"
+          ></div>
+        </div>
+        <p class="summary">총 지출 횟수 : {{ totalCount }}회</p>
       </div>
 
       <div class="analysis-card" @click="openModal">
@@ -34,12 +45,17 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 // import axios from 'axios';
 import Calendar from '@/components/Calendar.vue';
-import SummaryChart from '@/components/SummaryChart.vue';
+// import SummaryChart from '@/components/SummaryChart.vue';
 import FixedExpense from '@/components/FixedExpense.vue';
 import FixedModal from '@/components/FixedModal.vue'; // FixedModal 컴포넌트 임포트
+
+// 소비 패턴 데이터 (예시)
+const impulsiveCount = ref(3);
+const plannedCount = ref(8);
+const totalCount = computed(() => impulsiveCount.value + plannedCount.value);
 
 // const transactions = ref([]);
 const isModalOpen = ref(false);
@@ -136,5 +152,27 @@ const closeModal = () => {
   text-align: center;
   font-size: 0.875rem;
   color: #6b7280;
+}
+/* 분할 진행 바 스타일 */
+.segmented-progress-bar {
+  position: relative;
+  width: 100%;
+  height: 20px;
+  background-color: #e5e7eb;
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 0.5rem;
+}
+
+.segmented-progress-bar .segment {
+  height: 100%;
+}
+
+.segment.segment-impulsive {
+  background-color: #ef4444; /* 충동적 소비: 빨간색 */
+}
+
+.segment.segment-planned {
+  background-color: #10b981; /* 계획적 소비: 초록색 */
 }
 </style>
