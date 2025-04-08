@@ -1,166 +1,98 @@
 {
-  "chartData": [
-    { "month": 1, "income": 110000, "expense": 40000 },
-    { "month": 2, "income": 120000, "expense": 45000 },
-    { "month": 3, "income": 130000, "expense": 42000 },
-    { "month": 4, "income": 125000, "expense": 48000 },
-    { "month": 5, "income": 125000, "expense": 48000 }
+  "type": [
+    { "id": 1, "name": "수입" },
+    { "id": 2, "name": "지출" }
   ],
-  "categorySpending": [
-    { "category": "식비", "amount": 320000, "percent": 32 },
-    { "category": "교통비", "amount": 150000, "percent": 15 },
-    { "category": "주거비", "amount": 250000, "percent": 25 },
-    { "category": "통신비", "amount": 130000, "percent": 13 },
-    { "category": "취미", "amount": 80000, "percent": 8 },
-    { "category": "구독료", "amount": 30000, "percent": 3 }
+  "category": [
+    { "id": 1, "name": "급여" },
+    { "id": 2, "name": "용돈" },
+    { "id": 3, "name": "부수입" },
+    { "id": 4, "name": "기타" },
+    { "id": 5, "name": "식비" },
+    { "id": 6, "name": "교통비" },
+    { "id": 7, "name": "주거비" },
+    { "id": 8, "name": "의료비" },
+    { "id": 9, "name": "교육비" },
+    { "id": 10, "name": "의류비" },
+    { "id": 11, "name": "여가비" }
   ],
-  "monthlyStats": [
-    {
-      "month": 1,
-      "income": 3100000,
-      "expense": 820000,
-      "balance": 2280000,
-      "savingsRate": 73.5
-    },
-    {
-      "month": 2,
-      "income": 3200000,
-      "expense": 930000,
-      "balance": 2270000,
-      "savingsRate": 70.9
-    },
-    {
-      "month": 3,
-      "income": 3350000,
-      "expense": 850000,
-      "balance": 2500000,
-      "savingsRate": 74.6
-    },
-    {
-      "month": 4,
-      "income": 3500000,
-      "expense": 746756,
-      "balance": 2753244,
-      "savingsRate": 78.6
-    },
-    {
-      "month": 5,
-      "income": 2500000,
-      "expense": 450000,
-      "balance": 2050000,
-      "savingsRate": 82.0
-    }
-  ],
-  "weeklyStats": [
-    { "month": 4, "week": 1, "expense": 61262 },
-    { "month": 4, "week": 2, "expense": 137350 },
-    { "month": 4, "week": 3, "expense": 210644 },
-    { "month": 4, "week": 4, "expense": 102314 }
-  ],
-  "transactions": [
+  "money": [
     {
       "id": 1,
-      "date": "2024-01-25",
-      "type": "income",
-      "category": "월급",
-      "description": "1월 급여",
-      "amount": 2500000
+      "userid": 1,
+      "typeid": 1,
+      "categoryid": 2,
+      "date": "2025-04-01",
+      "amount": 500000,
+      "tendency": "수입",
+      "payment": "용돈",
+      "memo": "아부지 용돈"
     },
     {
       "id": 2,
-      "date": "2024-01-28",
-      "type": "income",
-      "category": "부수입",
-      "description": "쿠팡 플렉스 알바",
-      "amount": 150000
+      "userid": 1,
+      "typeid": 2,
+      "categoryid": 9,
+      "date": "2025-04-01",
+      "amount": 200000,
+      "tendency": "계획된 지출",
+      "payment": "교육비",
+      "memo": "학원 등록비"
     },
     {
-      "id": 3,
-      "date": "2024-02-03",
-      "type": "expense",
-      "category": "카페",
-      "description": "스타벅스 아메리카노",
-      "amount": 5500
+      "id": 2,
+      "userid": 1,
+      "typeid": 2,
+      "categoryid": 7,
+      "date": "2025-04-01",
+      "amount": 200000,
+      "tendency": "계획된 지출",
+      "payment": "교육비",
+      "memo": "학원 등록비"
     },
     {
-      "id": 4,
-      "date": "2024-02-14",
-      "type": "expense",
-      "category": "여행",
-      "description": "강릉 당일치기 기차비",
-      "amount": 25000
+      "id": 2,
+      "userid": 1,
+      "typeid": 2,
+      "categoryid": 4,
+      "date": "2025-04-01",
+      "amount": 200000,
+      "tendency": "계획된 지출",
+      "payment": "교육비",
+      "memo": "학원 등록비"
     },
     {
-      "id": 5,
-      "date": "2024-02-20",
-      "type": "income",
-      "category": "용돈",
-      "description": "부모님 명절 용돈",
-      "amount": 200000
+      "id": 2,
+      "userid": 1,
+      "typeid": 2,
+      "categoryid": 9,
+      "date": "2025-05-01",
+      "amount": 200000,
+      "tendency": "계획된 지출",
+      "payment": "교육비",
+      "memo": "학원 등록비"
     },
     {
-      "id": 6,
-      "date": "2024-02-25",
-      "type": "expense",
-      "category": "식비",
-      "description": "맛집 투어 (피자, 파스타)",
-      "amount": 48000
+      "id": 2,
+      "userid": 1,
+      "typeid": 2,
+      "categoryid": 7,
+      "date": "2025-05-01",
+      "amount": 200000,
+      "tendency": "충동적 지출",
+      "payment": "여가비",
+      "memo": "인형 뽑기"
     },
     {
-      "id": 7,
-      "date": "2024-03-01",
-      "type": "income",
-      "category": "중고 판매",
-      "description": "당근마켓 전자레인지 판매",
-      "amount": 40000
-    },
-    {
-      "id": 8,
-      "date": "2024-03-05",
-      "type": "expense",
-      "category": "구독료",
-      "description": "넷플릭스 월 구독",
-      "amount": 17000
-    },
-    {
-      "id": 9,
-      "date": "2024-03-11",
-      "type": "expense",
-      "category": "취미",
-      "description": "클라이밍 강습비",
-      "amount": 30000
-    },
-    {
-      "id": 10,
-      "date": "2024-03-15",
-      "type": "income",
-      "category": "부수입",
-      "description": "유튜브 조회수 수익",
-      "amount": 120000
-    },
-    {
-      "id": 11,
-      "date": "2024-01-15",
-      "type": "expense",
-      "category": "식비",
-      "description": "점심식사",
-      "amount": 15000
-    },
-    {
-      "id": 12,
-      "date": "2024-01-14",
-      "type": "income",
-      "category": "급여",
-      "description": "1월 급여",
-      "amount": 3000000
-    },
-    {
-      "id": 13,
-      "date": "2024-01-13",
-      "type": "expense",
-      "category": "교통비",
-      "description": "택시",
-      "amount": 25000
+      "id": 2,
+      "userid": 1,
+      "typeid": 2,
+      "categoryid": 4,
+      "date": "2025-05-01",
+      "amount": 200000,
+      "tendency": "충동적 지출",
+      "payment": "여가비",
+      "memo": "인형 뽑기"
     }
   ]
 }
