@@ -101,7 +101,7 @@ function updateCalendarData() {
 onMounted(async () => {
   try {
     const res = await axios.get('http://localhost:3000/transactions');
-    // res.data가 [{...}, {...}] 형식이라고 가정
+
     transactions.value = res.data;
     updateCalendarData();
   } catch (error) {
@@ -141,10 +141,10 @@ function formatNumber(num) {
 
 <style scoped>
 .calendar-wrapper {
-  max-width: 1000px;
+  max-width: 1200px;
   margin: 1rem auto;
   background: #fff;
-  padding: 1rem;
+  padding: 1.5rem;
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
@@ -186,22 +186,22 @@ function formatNumber(num) {
 
 .calendar-cell {
   position: relative;
-  height: 70px;
+  height: 100px;
   background: #f8fafc;
   border: 1px solid #e2e8f0;
   border-radius: 8px;
-  padding: 6px;
+  padding: 8px;
 }
 
 .cell-date {
   position: absolute;
-  top: 4px;
-  left: 4px;
+  top: 8px;
+  left: 8px;
   font-weight: 500;
 }
 
 .cell-details {
-  margin-top: 16px;
+  margin-top: 24px;
   text-align: center;
 }
 
