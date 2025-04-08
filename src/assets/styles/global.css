@@ -1,0 +1,110 @@
+@import url('https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700;800&family=Nanum+Square+Neo:wght@300;400;700;800&display=swap');
+
+:root {
+  --font-nanum-gothic: 'Nanum Gothic', sans-serif;
+  --font-nanum-square-neo: 'Nanum Square Neo', sans-serif;
+
+  /* Nanum Gothic 폰트 */
+  --ng-exbold-15: bold 15px var(--font-nanum-gothic);
+  --ng-exbold-14: bold 14px var(--font-nanum-gothic);
+  --ng-exbold-12: bold 12px var(--font-nanum-gothic);
+
+  --ng-bold-28: bold 28px var(--font-nanum-gothic);
+  --ng-bold-24: bold 24px var(--font-nanum-gothic);
+  --ng-bold-20: bold 20px var(--font-nanum-gothic);
+  --ng-bold-16: bold 16px var(--font-nanum-gothic);
+  --ng-bold-14: bold 14px var(--font-nanum-gothic);
+  --ng-bold-13: bold 13px var(--font-nanum-gothic);
+  --ng-bold-12: bold 12px var(--font-nanum-gothic);
+  --ng-bold-10: bold 10px var(--font-nanum-gothic);
+
+  --ng-reg-15: normal 15px var(--font-nanum-gothic);
+  --ng-reg-14: normal 14px var(--font-nanum-gothic);
+  --ng-reg-13: normal 13px var(--font-nanum-gothic);
+  --ng-reg-12: normal 12px var(--font-nanum-gothic);
+  --ng-reg-10: normal 10px var(--font-nanum-gothic);
+
+  --ng-light-11: 300 11px var(--font-nanum-gothic);
+
+  /* Nanum Square Neo 폰트 */
+  --neo-exbold-20: bold 20px var(--font-nanum-square-neo);
+  --neo-exbold-13: bold 13px var(--font-nanum-square-neo);
+  --neo-exbold-12: bold 12px var(--font-nanum-square-neo);
+  --neo-exbold-9: bold 9px var(--font-nanum-square-neo);
+
+  --neo-bold-18: bold 18px var(--font-nanum-square-neo);
+  --neo-bold-16: bold 16px var(--font-nanum-square-neo);
+  --neo-bold-15: bold 15px var(--font-nanum-square-neo);
+  --neo-bold-13: bold 13px var(--font-nanum-square-neo);
+  --neo-bold-12: bold 12px var(--font-nanum-square-neo);
+  --neo-bold-11: bold 11px var(--font-nanum-square-neo);
+  --neo-bold-10: bold 10px var(--font-nanum-square-neo);
+  --neo-bold-9: bold 9px var(--font-nanum-square-neo);
+
+  --neo-reg-13: normal 13px var(--font-nanum-square-neo);
+  --neo-reg-12: normal 12px var(--font-nanum-square-neo);
+  --neo-reg-11: normal 11px var(--font-nanum-square-neo);
+  --neo-reg-10: normal 10px var(--font-nanum-square-neo);
+  --neo-reg-9: normal 9px var(--font-nanum-square-neo);
+
+  --neo-light-10: 300 10px var(--font-nanum-square-neo);
+  --neo-light-9: 300 9px var(--font-nanum-square-neo);
+  --neo-light-8: 300 8px var(--font-nanum-square-neo);
+
+  /* 색상 */
+  --primary-color: #ffc7ef;
+  --secondary-color: #ffe8fc;
+  --background-color: white;
+
+  /* 텍스트 색상 */
+  --text-color: #333333;
+  --text-secondary: #969696;
+  --text-white: #ffffff;
+  --text-error: #e60000;
+  --text-income: #22c55e;
+  --text-expense: #ef4444;
+}
+
+body {
+  font-family: var(--font-nanum-gothic);
+  background-color: var(--background-color);
+  color: var(--text-color);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-nanum-square-neo);
+}
+.text-primary {
+  color: var(--text-color);
+}
+
+.text-error {
+  color: var(--text-error);
+}
+
+.text-secondary {
+  color: var(--text-secondary);
+}
+
+.text-white {
+  color: var(--text-white);
+}
+
+.text-income {
+  color: var(--text-income);
+}
+
+.text-expense {
+  color: var(--text-expense);
+}
+
+.filter-icon img {
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+}
