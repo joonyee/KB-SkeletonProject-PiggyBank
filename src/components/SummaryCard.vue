@@ -2,18 +2,9 @@
 import { computed } from 'vue';
 
 const props = defineProps({
-  title: {
-    type: String,
-    required: true,
-  },
-  amount: {
-    type: String,
-    required: true,
-  },
-  type: {
-    type: String,
-    default: '',
-  },
+  title: String,
+  amount: String,
+  type: String,
 });
 
 const cardClass = computed(() => {

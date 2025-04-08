@@ -27,7 +27,7 @@ const averageSpending = [65000, 25000, 45000, 80000, 600000];
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
+  min-height: 100vh;
   padding: 20px;
   background-color: var(--background-color);
 }
@@ -36,14 +36,15 @@ const averageSpending = [65000, 25000, 45000, 80000, 600000];
   padding: 30px;
   border-radius: 15px;
   width: 1200px;
-  height: 600px;
-  margin: auto; /* 수평 중앙 정렬  */
+  height: auto;
+  margin: auto;
   border: 2px solid var(--primary-color);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 .title {
   font: var(--ng-bold-28);
   color: var(--primary-color);
   text-align: center;
-  margin-bottom: 10px;
+  margin-bottom: 20px;
 }
 </style>
