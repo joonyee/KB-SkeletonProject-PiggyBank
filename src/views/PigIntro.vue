@@ -28,6 +28,9 @@ const handleMouseMove = (e) => {
       <router-link to="/signup" class="btn">회원가입</router-link>
       <router-link to="/ageExpenseAnalysis" class="btn">연령별분석</router-link>
       <router-link to="/expenseList" class="btn">수입/지출</router-link>
+      <router-link to="/monthlyAnalysis" class="btn"
+        >한달지출내역분석</router-link
+      >
     </div>
   </div>
 </template>

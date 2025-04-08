@@ -1,4 +1,5 @@
 <script setup>
+import { ref, computed } from 'vue';
 import { defineProps, defineEmits } from 'vue';
 
 const props = defineProps({
@@ -7,85 +8,109 @@ const props = defineProps({
 
 const emits = defineEmits(['close', 'apply']);
 
+const startDate = ref('');
+const endDate = ref('');
+const selectedType = ref('all');
+const selectedCategories = ref([]);
+
 const closeModal = () => {
   emits('close');
 };
 
 const applyFilter = () => {
-  emits('apply');
+  emits('apply', {
+    startDate: startDate.value,
+    endDate: endDate.value,
+    type: selectedType.value,
+    categories: selectedCategories.value,
+  });
+};
+
+const categories = {
+  income: ['급여', '용돈', '부수입', '기타'],
+  expense: [
+    '식비',
+    '교통비',
+    '주거비',
+    '의료비',
+    '교육비',
+    '의류비',
+    '여가비',
+    '기타',
+  ],
+};
+
+const toggleCategory = (category) => {
+  if (selectedCategories.value.includes(category)) {
+    selectedCategories.value = selectedCategories.value.filter(
+      (item) => item !== category
+    );
+  } else {
+    selectedCategories.value.push(category);
+  }
+};
+
+const isCategorySelected = (category) => {
+  return selectedCategories.value.includes(category);
 };
 </script>
-
 <template>
   <div v-if="isOpen" class="modal-backdrop">
     <div class="modal-content">
       <div class="modal-header">
-        <h3 class="title">필터</h3>
+        <h3 class="title">상세 필터</h3>
         <i class="fa-solid fa-xmark close-icon" @click="closeModal"></i>
       </div>
+
       <div class="modal-body">
         <!-- 날짜 필터 -->
         <div class="filter-section">
-          <label class="section-title">날짜</label>
+          <label>기간 선택</label>
           <div class="date-range">
-            <input type="date" placeholder="시작일" v-model="startDate" />
+            <input type="date" v-model="startDate" class="input-field" />
             <span>~</span>
-            <input type="date" placeholder="종료일" v-model="endDate" />
+            <input type="date" v-model="endDate" class="input-field" />
           </div>
         </div>
+
+        <div class="line-divider"></div>
 
         <!-- 구분 필터 -->
         <div class="filter-section">
-          <label class="section-title">구분</label>
-          <div class="filter-options">
-            <button @click="setType('all')" class="filter-btn">전체</button>
-            <button @click="setType('income')" class="filter-btn">수입</button>
-            <button @click="setType('expense')" class="filter-btn">지출</button>
-          </div>
+          <label>구분</label>
+          <select v-model="selectedType" class="select-box">
+            <option value="all">전체</option>
+            <option value="income">수입</option>
+            <option value="expense">지출</option>
+          </select>
         </div>
-
+        <!-- <div class="line-divider"></div> -->
         <!-- 카테고리 필터 -->
-        <div class="filter-section">
-          <label class="section-title">카테고리</label>
-          <div class="category-list">
-            <div>
-              <input type="checkbox" id="all" v-model="categoryAll" /> 전체
-            </div>
-
-            <!-- 수입 카테고리 -->
-            <label class="income-category-title">수입 카테고리</label>
-            <div class="income-category">
-              <input type="checkbox" id="salary" /> 급여
-              <input type="checkbox" id="allowance" /> 용돈
-              <input type="checkbox" id="side-income" /> 부수입
-              <input type="checkbox" id="other-income" /> 기타수입
-            </div>
-
-            <!-- 지출 카테고리 -->
-            <label class="expense-category-title">지출 카테고리</label>
-            <div class="expense-category">
-              <input type="checkbox" id="food" /> 식비
-              <input type="checkbox" id="transport" /> 교통비
-              <input type="checkbox" id="housing" /> 주거비
-              <input type="checkbox" id="medical" /> 의료비
-              <input type="checkbox" id="education" /> 교육비
-              <input type="checkbox" id="clothing" /> 의류비
-              <input type="checkbox" id="culture" /> 문화생활비
-              <input type="checkbox" id="other-expense" /> 기타지출
-            </div>
+        <div v-if="selectedType !== 'all'" class="filter-section">
+          <label>카테고리</label>
+          <div class="category-buttons">
+            <button
+              v-for="category in categories[selectedType]"
+              :key="category"
+              :class="[
+                'category-btn',
+                isCategorySelected(category) ? 'selected' : '',
+              ]"
+              @click="toggleCategory(category)"
+            >
+              {{ category }}
+            </button>
           </div>
         </div>
       </div>
 
-      <!-- 모달 푸터 -->
       <div class="modal-footer">
         <button class="cancel-btn" @click="closeModal">취소</button>
-        <button class="apply-btn" @click="applyFilter">적용</button>
+        <button class="apply-btn" @click="applyFilter">완료</button>
       </div>
     </div>
   </div>
 </template>
-
 <style scoped>
 .modal-backdrop {
   position: fixed;
@@ -93,88 +118,172 @@ const applyFilter = () => {
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.3);
+  background-color: rgba(0, 0, 0, 0.4);
   display: flex;
   justify-content: center;
   align-items: center;
+  z-index: 1000;
 }
 
 .modal-content {
   background-color: var(--background-color);
-  padding: 20px;
-  border-radius: 10px;
-  width: 350px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 30px 30px;
+  border-radius: 16px;
+  min-width: 350px;
+  max-width: 420px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
 .modal-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 15px;
+  margin-bottom: 12px;
+  border-bottom: 1px solid #e0e0e0;
+  padding-bottom: 8px;
 }
 
 .title {
   font: var(--ng-bold-20);
-}
-
-.section-title {
-  font: var(--ng-bold-16);
-  margin-bottom: 8px;
+  color: var(--text-color);
 }
 
 .close-icon {
   cursor: pointer;
+  font-size: 28px;
+  color: var(--text-secondary);
+}
+
+.close-icon:hover {
+  color: var(--primary-color);
+}
+
+.modal-body {
+  margin: 10px 0;
+}
+
+.filter-section {
+  margin-bottom: 18px;
+}
+
+.filter-section label {
+  font: var(--ng-reg-15);
+  color: var(--text-color);
+  margin-bottom: 8px;
+  display: block;
+}
+
+.input-field,
+.select-box {
+  width: 100%;
+  padding: 10px;
+  margin: 10px 0;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font: var(--ng-reg-15);
+  background-color: #f4f4f4;
+}
+
+.input-field:focus,
+.select-box:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  background-color: #fff;
+}
+
+.date-range {
+  display: flex;
+  gap: 10px;
+  align-items: center;
 }
 
 .modal-footer {
   display: flex;
-  justify-content: space-between;
-  margin-top: 20px;
+  justify-content: center;
+  gap: 20px;
+  margin: 20px 0;
+}
+
+button {
+  width: 100px;
+  height: 35px;
+  padding: 10px 20px;
+  font: var(--ng-reg-14);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
 .cancel-btn,
 .apply-btn {
-  padding: 8px 16px;
-  border: none;
-  border-radius: 8px;
-  font: var(--ng-bold-14);
-  cursor: pointer;
+  background-color: #f4f4f4;
+  color: var(--text-color);
+  border: 1px solid transparent;
+  /* transition: background-color 0.3s ease, color 0.3s ease; */
 }
 
-.cancel-btn {
+.cancel-btn:hover,
+.apply-btn:hover {
   background-color: var(--secondary-color);
   color: var(--text-color);
 }
 
-.apply-btn {
+.cancel-btn.selected,
+.apply-btn.selected {
   background-color: var(--primary-color);
   color: var(--text-white);
 }
 
-.filter-btn {
-  background-color: var(--primary-color);
-  color: var(--text-white);
-  border: none;
-  padding: 5px 10px;
-  margin: 5px;
-  border-radius: 6px;
+.line-divider {
+  border-top: 1px solid #e0e0e0;
+  margin: 12px 0;
+}
+
+.category-buttons {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.category-btn {
+  padding: 8px 14px;
+  margin: 5px 0;
+  background-color: #f4f4f4;
+  color: var(--text-color);
+
   cursor: pointer;
 }
 
-.income-category-title {
-  color: var(--text-income);
+.category-btn:hover {
+  background-color: var(--primary-color);
+  color: var(--text-white);
 }
 
-.expense-category-title {
-  color: var(--text-expense);
+.category-btn.selected {
+  background-color: var(--primary-color);
+  color: var(--text-white);
 }
 
-.date-range input {
-  width: 100px;
-  margin: 0 5px;
-  padding: 4px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
+.select-box {
+  font: var(--ng-reg-14);
+  background-color: #f4f4f4;
+}
+
+input[type='date']::-webkit-calendar-picker-indicator {
+  color: var(--primary-color);
+  cursor: pointer;
+}
+
+input[type='date'] {
+  color: var(--text-color);
+  background-color: #f4f4f4;
+}
+
+button:focus {
+  outline: none;
 }
 </style>
