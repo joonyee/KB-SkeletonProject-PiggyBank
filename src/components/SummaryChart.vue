@@ -1,199 +1,199 @@
 <template>
-  <div class="transaction-graph">
-    <h2>월별 수입/지출 및 지출률</h2>
-    <Bar
-      v-if="chartData && chartData.labels.length"
-      :data="chartData"
-      :options="chartOptions"
-    />
-    <p v-else>데이터를 불러오는 중...</p>
+  <div class="month-summary-container">
+    <!-- 상단 요약 영역 -->
+    <div class="summary-header">
+      <div class="summary-box income">
+        총 수입<br />{{ formatMoney(totalIncome) }}
+      </div>
+      <div class="summary-box expense">
+        총 지출<br />{{ formatMoney(totalExpense) }}
+      </div>
+      <div class="summary-box balance">
+        잔액<br />{{ formatMoney(balance) }}
+      </div>
+    </div>
+
+    <!-- 카테고리별 지출 진행 바 -->
+    <div class="category-bars">
+      <h3>카테고리별 지출 현황</h3>
+      <div
+        v-for="(catSum, catName) in negativeCategorySums"
+        :key="catName"
+        class="category-bar"
+      >
+        <div class="label">{{ catName }}</div>
+        <div class="bar-container">
+          <div class="bar" :style="{ width: getBarWidth(catSum) + '%' }"></div>
+        </div>
+        <div class="amount">{{ formatMoney(catSum) }}</div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup>
-import { ref, computed, watch } from 'vue';
-import { Bar } from 'vue-chartjs';
-import {
-  Chart as ChartJS,
-  Title,
-  Tooltip,
-  Legend,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  LineElement,
-  PointElement,
-} from 'chart.js';
+import { ref, computed, onMounted } from 'vue';
+import axios from 'axios';
 
-// Chart.js 모듈 등록
-ChartJS.register(
-  Title,
-  Tooltip,
-  Legend,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  LineElement,
-  PointElement
-);
-
-// 부모로부터 raw 거래 데이터와 날짜 범위를 prop으로 받음
+// 상위 컴포넌트에서 연도(year)와 월(month)을 props로 전달받음.
+// month는 1부터 12까지의 값
 const props = defineProps({
-  transactions: {
-    type: Array,
-    required: true,
-  },
-  rangeStart: {
-    type: Date,
-    required: true,
-  },
-  rangeEnd: {
-    type: Date,
-    required: true,
-  },
+  year: { type: Number, required: true },
+  month: { type: Number, required: true },
 });
 
-// 시작부터 종료까지 월별 라벨 배열 생성 (YYYY-MM 형식)
-function generateMonthLabels(start, end) {
-  const labels = [];
-  const d = new Date(start.getFullYear(), start.getMonth(), 1);
-  while (d <= end) {
-    // 예: "2024-07"
-    const monthStr = `${d.getFullYear()}-${('0' + (d.getMonth() + 1)).slice(
-      -2
-    )}`;
-    labels.push(monthStr);
-    d.setMonth(d.getMonth() + 1);
-  }
-  return labels;
-}
-const monthLabels = computed(() =>
-  generateMonthLabels(props.rangeStart, props.rangeEnd)
+const transactions = ref([]);
+
+// 전달받은 연도와 월에 해당하는 거래 내역 필터링
+const monthlyTransactions = computed(() => {
+  return transactions.value.filter((tx) => {
+    const [txYear, txMonth] = tx.date.split('-');
+    return Number(txYear) === props.year && Number(txMonth) === props.month;
+  });
+});
+
+// 총 수입: amount > 0
+const totalIncome = computed(() =>
+  monthlyTransactions.value
+    .filter((tx) => tx.amount > 0)
+    .reduce((sum, tx) => sum + tx.amount, 0)
 );
 
-// 월별 거래 집계 computed: 각 월의 수입, 지출(절대값) 누적을 계산
-const monthlyAggregates = computed(() => {
-  const aggregates = {};
-  monthLabels.value.forEach((label) => {
-    aggregates[label] = { income: 0, expense: 0 };
-  });
-  props.transactions.forEach((tx) => {
-    const txDate = new Date(tx.date);
-    // 지정 범위 내의 거래만 집계
-    if (txDate >= props.rangeStart && txDate <= props.rangeEnd) {
-      const key = `${txDate.getFullYear()}-${(
-        '0' +
-        (txDate.getMonth() + 1)
-      ).slice(-2)}`;
-      if (aggregates[key] !== undefined) {
-        if (tx.amount > 0) {
-          aggregates[key].income += tx.amount;
-        } else {
-          aggregates[key].expense += Math.abs(tx.amount);
-        }
-      }
+// 총 지출: amount < 0
+const totalExpense = computed(() =>
+  monthlyTransactions.value
+    .filter((tx) => tx.amount < 0)
+    .reduce((sum, tx) => sum + tx.amount, 0)
+);
+
+// 잔액: 수입 + 지출 (지출은 음수)
+const balance = computed(() => totalIncome.value + totalExpense.value);
+
+// 카테고리별 지출 합산 (음수 데이터만, 최종 표시 시 절대값으로 표시)
+const negativeCategorySums = computed(() => {
+  const result = {};
+  monthlyTransactions.value.forEach((tx) => {
+    if (tx.amount < 0) {
+      if (!result[tx.category]) result[tx.category] = 0;
+      result[tx.category] += tx.amount;
     }
   });
-  return aggregates;
+  return result;
 });
 
-// Chart.js에 사용할 차트 데이터 구성: 라벨, 수입, 지출, 그리고 지출률 계산
-const chartData = computed(() => {
-  if (!props.transactions || props.transactions.length === 0) return null;
-  const labels = monthLabels.value;
-  const incomeData = [];
-  const expenseData = [];
-  const expenseRateData = [];
-  labels.forEach((label) => {
-    const income = monthlyAggregates.value[label].income;
-    const expense = monthlyAggregates.value[label].expense;
-    incomeData.push(income);
-    expenseData.push(expense);
-    const rate = income > 0 ? Math.round((expense / income) * 100) : 0;
-    expenseRateData.push(rate);
-  });
-  return {
-    labels,
-    datasets: [
-      {
-        type: 'bar',
-        label: '수입',
-        data: incomeData,
-        backgroundColor: 'rgba(22, 163, 74, 0.6)',
-        borderColor: 'rgba(22, 163, 74, 1)',
-        borderWidth: 1,
-        yAxisID: 'y',
-      },
-      {
-        type: 'bar',
-        label: '지출',
-        data: expenseData,
-        backgroundColor: 'rgba(239, 68, 68, 0.6)',
-        borderColor: 'rgba(239, 68, 68, 1)',
-        borderWidth: 1,
-        yAxisID: 'y',
-      },
-      {
-        type: 'line',
-        label: '지출률 (%)',
-        data: expenseRateData,
-        borderColor: '#ffa500',
-        backgroundColor: '#ffa500',
-        tension: 0.2,
-        fill: false,
-        yAxisID: 'y1',
-        pointRadius: 4,
-      },
-    ],
-  };
+// 가장 큰 지출 금액(절댓값) 기준을 잡아 진행 바의 길이 비율 결정
+const maxAbsExpense = computed(() => {
+  const sums = Object.values(negativeCategorySums.value);
+  return sums.length === 0 ? 1 : Math.max(...sums.map((val) => Math.abs(val)));
 });
 
-// Chart.js 옵션 설정 (왼쪽 y축은 금액, 오른쪽 y축은 지출률)
-const chartOptions = {
-  responsive: true,
-  maintainAspectRatio: false,
-  plugins: {
-    legend: { position: 'top' },
-    title: { display: true, text: '월별 수입/지출 및 지출률' },
-  },
-  scales: {
-    y: {
-      type: 'linear',
-      position: 'left',
-      beginAtZero: true,
-      title: { display: true, text: '금액 (원)' },
-    },
-    y1: {
-      type: 'linear',
-      position: 'right',
-      beginAtZero: true,
-      min: 0,
-      max: 100,
-      title: { display: true, text: '지출률 (%)' },
-      grid: { drawOnChartArea: false },
-      ticks: { callback: (value) => value + '%' },
-    },
-  },
+// 각 카테고리 막대 너비 계산 함수
+const getBarWidth = (amount) => {
+  const ratio = Math.abs(amount) / maxAbsExpense.value;
+  return Math.round(ratio * 100);
 };
 
-// props.monthlyData(또는 여기서는 props.transactions)가 변경되면 자동 업데이트
-watch(
-  () => props.transactions,
-  () => {
-    // chartData는 computed이므로 자동 업데이트됨
-  },
-  { deep: true }
-);
+// 모든 금액은 절대값으로, 천단위 콤마 적용
+const formatMoney = (num) => {
+  if (!num) return '0';
+  return Math.abs(num).toLocaleString('ko-KR');
+};
+
+// 거래 데이터 로드
+onMounted(async () => {
+  try {
+    const res = await axios.get('http://localhost:3000/transactions');
+    transactions.value = res.data;
+  } catch (error) {
+    console.error('Failed to fetch transactions:', error);
+  }
+});
 </script>
 
 <style scoped>
-.transaction-graph {
-  max-width: 900px;
+.month-summary-container {
+  max-width: 1200px;
   margin: 2rem auto;
   padding: 1rem;
+  background: #fff;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
 }
-.transaction-graph h2 {
+
+/* 상단 요약 영역 */
+.summary-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 2rem;
   text-align: center;
+}
+
+.summary-box {
+  flex: 1;
+  margin: 0 0.5rem;
+  padding: 1rem;
+  border-radius: 8px;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+}
+
+/* 예시 색상 (녹색 / 빨간색 / 파랑) */
+.summary-box.income {
+  color: #10b981; /* 녹색 */
+}
+.summary-box.expense {
+  color: #ef4444; /* 빨간색 */
+}
+.summary-box.balance {
+  color: #3b82f6; /* 파랑 */
+}
+
+/* 카테고리 바 리스트 */
+.category-bars {
+  margin-top: 2rem;
+}
+.category-bars h3 {
   margin-bottom: 1rem;
+  font-size: 1.25rem;
+  color: #374151;
+}
+
+.category-bar {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+/* 카테고리 이름 */
+.category-bar .label {
+  width: 80px;
+  font-size: 0.875rem;
+  color: #374151;
+}
+
+/* 가로 막대 컨테이너 */
+.bar-container {
+  flex: 1;
+  height: 8px;
+  background: #f1f5f9;
+  border-radius: 4px;
+  margin: 0 1rem;
+  position: relative;
+}
+
+/* 실제 막대 */
+.bar-container .bar {
+  height: 100%;
+  background: #3b82f6; /* 파랑 막대 */
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+/* 금액 표시 */
+.category-bar .amount {
+  width: 80px;
+  text-align: right;
+  font-size: 0.875rem;
+  color: #374151;
 }
 </style>

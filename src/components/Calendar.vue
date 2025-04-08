@@ -23,12 +23,9 @@
       >
         <span class="cell-date">{{ day.date.getDate() }}</span>
         <div class="cell-details">
-          <!-- 수입/지출 표시 -->
-          <p v-if="day.income" class="income">
-            +{{ formatNumber(day.income) }}
-          </p>
+          <p v-if="day.income" class="income">{{ formatNumber(day.income) }}</p>
           <p v-if="day.expense" class="expense">
-            -{{ formatNumber(day.expense) }}
+            {{ formatNumber(day.expense) }}
           </p>
         </div>
       </div>
@@ -40,7 +37,6 @@
 import { ref, watch, onMounted } from 'vue';
 import axios from 'axios';
 
-// 달력(6주, 최대 42칸) 생성
 function getCalendarDays(year, month) {
   const firstDay = new Date(year, month, 1);
   const lastDay = new Date(year, month + 1, 0);
@@ -48,7 +44,6 @@ function getCalendarDays(year, month) {
   startDate.setDate(firstDay.getDate() - firstDay.getDay());
   const endDate = new Date(lastDay);
   endDate.setDate(lastDay.getDate() + (6 - lastDay.getDay()));
-
   const days = [];
   let current = new Date(startDate);
   while (current <= endDate) {
@@ -63,26 +58,25 @@ function getCalendarDays(year, month) {
   return days;
 }
 
-// 달력 상태
-const currentYear = ref(2025);
-const currentMonth = ref(3); // 예: 3이면 4월
+const props = defineProps({
+  year: Number,
+  month: Number,
+});
+const emit = defineEmits(['update:year', 'update:month']);
+
+const currentYear = ref(props.year);
+const currentMonth = ref(props.month);
 const calendarData = ref([]);
-
-// transactions: db.json에서 받아올 전체 거래 내역
 const transactions = ref([]);
-
 const dayNames = ['일', '월', '화', '수', '목', '금', '토'];
 
-// 달력 데이터 업데이트
 function updateCalendarData() {
   const days = getCalendarDays(currentYear.value, currentMonth.value);
   days.forEach((day) => {
     const formatted = day.date.toISOString().split('T')[0];
-    // 해당 날짜의 거래 필터링
     const dayTx = transactions.value.filter((tx) => tx.date === formatted);
-
-    let incomeSum = 0;
-    let expenseSum = 0;
+    let incomeSum = 0,
+      expenseSum = 0;
     dayTx.forEach((tx) => {
       if (tx.amount > 0) {
         incomeSum += tx.amount;
@@ -90,18 +84,15 @@ function updateCalendarData() {
         expenseSum += Math.abs(tx.amount);
       }
     });
-
     day.income = incomeSum || null;
     day.expense = expenseSum || null;
   });
   calendarData.value = days;
 }
 
-// db.json에서 /transactions 데이터 로드
 onMounted(async () => {
   try {
     const res = await axios.get('http://localhost:3000/transactions');
-
     transactions.value = res.data;
     updateCalendarData();
   } catch (error) {
@@ -109,10 +100,12 @@ onMounted(async () => {
   }
 });
 
-// currentYear, currentMonth가 바뀌면 달력 갱신
 watch([currentYear, currentMonth], updateCalendarData);
+watch([currentYear, currentMonth], ([newYear, newMonth]) => {
+  emit('update:year', newYear);
+  emit('update:month', newMonth);
+});
 
-// 이전 달
 function prevMonth() {
   if (currentMonth.value === 0) {
     currentMonth.value = 11;
@@ -122,7 +115,6 @@ function prevMonth() {
   }
 }
 
-// 다음 달
 function nextMonth() {
   if (currentMonth.value === 11) {
     currentMonth.value = 0;
@@ -132,7 +124,6 @@ function nextMonth() {
   }
 }
 
-// 숫자 천단위 콤마
 function formatNumber(num) {
   if (!num) return '';
   return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
@@ -201,8 +192,9 @@ function formatNumber(num) {
 }
 
 .cell-details {
-  margin-top: 24px;
-  text-align: center;
+  margin-top: 30px;
+  text-align: left;
+  font-size: 0.8rem;
 }
 
 .income {

@@ -1,14 +1,14 @@
 <template>
   <div class="calendar-dashboard">
-    <Calendar />
+    <!-- Calendar 컴포넌트는 연도와 월을 양방향 바인딩(v-model)을 통해 관리 -->
+    <Calendar v-model:year="currentYear" v-model:month="currentMonth" />
 
-    <!-- <div class="summary-section">
-      <SummaryChart
-        :transactions="transactions"
-        :rangeStart="rangeStart"
-        :rangeEnd="rangeEnd"
-      />
-    </div> -->
+    <!-- SummaryChart는 현재 연도와 월을 props로 받아 해당 달 분석 그래프를 그림 -->
+    <div class="summary-section">
+      <SummaryChart :year="currentYear" :month="currentMonth + 1" />
+    </div>
+
+    <!-- 추가 분석 영역: 소비 패턴 분석 카드, FixedExpense 버튼 등 -->
     <div class="analysis-section">
       <div class="analysis-card">
         <h3>소비 패턴 분석</h3>
@@ -22,7 +22,7 @@
             <h2 class="positive">{{ plannedCount }}회</h2>
           </div>
         </div>
-        <!-- 분할 진행 바 시작 -->
+        <!-- 분할 진행 바 -->
         <div class="segmented-progress-bar">
           <div
             class="segment segment-impulsive"
@@ -40,54 +40,36 @@
         <FixedExpense />
       </div>
     </div>
+
     <FixedModal v-if="isModalOpen" @close="closeModal" />
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue';
-// import axios from 'axios';
+import { ref, computed } from 'vue';
 import Calendar from '@/components/Calendar.vue';
-// import SummaryChart from '@/components/SummaryChart.vue';
+import SummaryChart from '@/components/SummaryChart.vue';
 import FixedExpense from '@/components/FixedExpense.vue';
-import FixedModal from '@/components/FixedModal.vue'; // FixedModal 컴포넌트 임포트
+import FixedModal from '@/components/FixedModal.vue';
+
+// Calendar에서 관리하는 연도, 월 (Calendar에서는 0-indexed로 관리하므로 SummaryChart에 전달할 때는 +1)
+const currentYear = ref(2025);
+const currentMonth = ref(3); // 3이면 달력에서는 4월
 
 // 소비 패턴 데이터 (예시)
 const impulsiveCount = ref(3);
 const plannedCount = ref(8);
 const totalCount = computed(() => impulsiveCount.value + plannedCount.value);
 
-// const transactions = ref([]);
+// 모달 제어
 const isModalOpen = ref(false);
-
-// 날짜 범위는 2024-07-01부터 2025-04-08까지로 고정
-const rangeStart = new Date('2024-07-01');
-const rangeEnd = new Date('2025-04-08');
-
 const openModal = () => {
   isModalOpen.value = true;
 };
-// 모달 닫기
 const closeModal = () => {
   isModalOpen.value = false;
 };
-
-// const fetchData = async () => {
-//   try {
-//     const res = await axios.get('http://localhost:3000/transactions');
-
-//     transactions.value = res.data;
-//     console.log('거래 데이터:', transactions.value);
-//   } catch (error) {
-//     console.error('데이터 로딩 실패:', error);
-//   }
-// };
-
-// onMounted(() => {
-//   fetchData();
-// });
 </script>
-
 <style scoped>
 .calendar-dashboard {
   padding: 2rem;
