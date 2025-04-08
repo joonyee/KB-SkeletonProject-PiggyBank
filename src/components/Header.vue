@@ -8,7 +8,7 @@
 </template>
 
 <script setup>
-// 별도 스크립트 필요 없음
+
 </script>
 
 <style scoped>

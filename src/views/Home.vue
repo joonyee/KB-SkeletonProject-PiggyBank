@@ -201,6 +201,15 @@ const nowMonthClick = () => {
   //router.push('./nowMonthpage');
   alert('이번달 요약 페이지 이동');
 };
+/*저축률에 따라서 돼지의 생김새가 바뀌는 코드입니다.*/
+// const selectedPigComponent = computed(() => {
+//   if (savingsRate < 80) {
+//     return ; // 저축률이 목표치보다 낮을때
+//   } else {
+//     return ; // 저축률이 높을 때
+//   }
+// });
+
 </script>
 
 <style scoped>
