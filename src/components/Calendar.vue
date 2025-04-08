@@ -3,8 +3,12 @@
     <header class="calendar-header">
       <h2>{{ currentYear }}년 {{ currentMonth + 1 }}월</h2>
       <div class="right-section">
-        <button class="arrow-button" @click="prevMonth">←</button>
-        <button class="arrow-button" @click="nextMonth">→</button>
+        <button class="arrow-button" @click="prevMonth">
+          <img src="/arrow2.png" alt="Previous Month" />
+        </button>
+        <button class="arrow-button" @click="nextMonth">
+          <img src="/arrow.png" alt="Next Month" />
+        </button>
       </div>
     </header>
 
@@ -159,7 +163,11 @@ function formatNumber(num) {
   cursor: pointer;
   padding: 0.25rem 0.5rem;
 }
-
+.arrow-button img {
+  width: 50px;
+  height: 50px;
+  object-fit: contain;
+}
 .daynames {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
