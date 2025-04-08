@@ -14,19 +14,19 @@
 
     <!-- Summary Cards -->
     <div class="summary-grid">
-      <!-- <div class="income-card">
-        <div class="card-label">이번 달 수입</div>
+      <div class="income-card">
+        <div class="card-label" @click="monthAmount">이번 달 수입</div>
         <div class="card-value">₩{{ totalIncome.toLocaleString() }}</div>
       </div>
       <div class="expense-card">
-        <div class="card-label">이번 달 지출</div>
+        <div class="card-label" @click="monthAmount">이번 달 지출</div>
         <div class="card-value">₩{{ totalExpense.toLocaleString() }}</div>
       </div>
       <div class="balance-card">
-        <div class="card-label">이번 달 잔액</div>
+        <div class="card-label" @click="monthAmount">이번 달 잔액</div>
         <div class="card-value">₩{{ balance.toLocaleString() }}</div>
-      </div> -->
-      <div class="piggyAni"></div>
+      </div>
+      <!-- <div class="piggyAni"></div> -->
       <div class="savings-card">
         <div class="card-label" @click="savingClick">저축률</div>
         <div class="card-value">{{ savingsRate }}%</div>
@@ -41,9 +41,22 @@
         </h2>
         <PieChart :chartData="chartData" />
       </div>
-      <div class="category-summary">
-        <h2 class="section-title" @click="categoryClick">📊 카테고리별 지출</h2>
-        <CategoryPieChart :categorySpending="categorySpending" />
+      <div class="piggyAni">
+        <!-- <h2 class="section-title" @click="nowMonthClick">📌 이번 달 요약</h2>
+        <div class="summary-cards">
+          <div class="summary-card income">
+            <p class="summary-label">수입</p>
+            <p class="summary-amount">₩{{ totalIncome.toLocaleString() }}</p>
+          </div>
+          <div class="summary-card expense">
+            <p class="summary-label">지출</p>
+            <p class="summary-amount">₩{{ totalExpense.toLocaleString() }}</p>
+          </div>
+          <div class="summary-card balance">
+            <p class="summary-label">잔액</p>
+            <p class="summary-amount">₩{{ balance.toLocaleString() }}</p>
+          </div>
+        </div> -->
       </div>
     </div>
 
@@ -69,22 +82,9 @@
           </li>
         </ul>
       </div>
-      <div class="monthly-summary">
-        <h2 class="section-title" @click="nowMonthClick">📌 이번 달 요약</h2>
-        <div class="summary-cards">
-          <div class="summary-card income">
-            <p class="summary-label">수입</p>
-            <p class="summary-amount">₩{{ totalIncome.toLocaleString() }}</p>
-          </div>
-          <div class="summary-card expense">
-            <p class="summary-label">지출</p>
-            <p class="summary-amount">₩{{ totalExpense.toLocaleString() }}</p>
-          </div>
-          <div class="summary-card balance">
-            <p class="summary-label">잔액</p>
-            <p class="summary-amount">₩{{ balance.toLocaleString() }}</p>
-          </div>
-        </div>
+      <div class="category-summary">
+        <h2 class="section-title" @click="categoryClick">📊 카테고리별 지출</h2>
+        <CategoryPieChart :categorySpending="categorySpending" />
       </div>
     </div>
   </div>
@@ -197,9 +197,9 @@ const transactionsClick = () => {
   alert('최근 거래내역 페이지 이동');
 };
 
-const nowMonthClick = () => {
-  //router.push('./nowMonthpage');
-  alert('이번달 요약 페이지 이동');
+const monthAmount = () => {
+  //router.push('./monthAmount');
+  alert('이번달 요약이동');
 };
 </script>
 
@@ -276,17 +276,17 @@ const nowMonthClick = () => {
   gap: 2rem;
   margin-bottom: 2rem;
 }
-.piggyAni {
+/* .piggyAni {
   background-color: white;
   padding: 1.5rem;
   border-radius: 1rem;
   width: 100%;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
   flex: 7;
-}
-/* .income-card,
+} */
+.income-card,
 .expense-card,
-.balance-card, */
+.balance-card,
 .savings-card {
   flex: 3;
   float: right;
@@ -296,6 +296,27 @@ const nowMonthClick = () => {
   width: 100%;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
 }
+.income-card > .card-value {
+  color: #10b981;
+  font-size: 20px;
+  font-weight: bold;
+}
+.expense-card > .card-value {
+  color: #ef4444;
+  font-size: 20px;
+  font-weight: bold;
+}
+.balance-card > .card-value {
+  color: #6366f1;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.savings-card > .card-value {
+  color: #f9a8d4;
+  font-size: 20px;
+  font-weight: bold;
+}
 
 .chart-section,
 .transaction-section {
@@ -303,56 +324,32 @@ const nowMonthClick = () => {
   gap: 2rem;
   margin-bottom: 2rem;
   align-items: stretch;
+  width: 100%;
 }
 
 .monthly-chart,
-.transaction-history,
-.category-summary,
-.monthly-summary {
-  flex: 1;
+.transaction-history {
+  flex: 7;
   background-color: white;
   padding: 1.5rem;
   border-radius: 1rem;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-}
-.transaction-section {
-  display: flex;
-  gap: 2rem;
-  margin-bottom: 2rem;
+  min-width: 0;
 }
 
-.transaction-history {
-  flex: 7;
-}
-
-.monthly-summary {
+.category-summary,
+.piggyAni {
   flex: 3;
-}
-
-.chart-section {
-  display: flex;
-  gap: 2rem;
-  margin-bottom: 2rem;
-}
-
-.monthly-chart {
-  flex: 7;
-}
-
-.category-summary {
-  flex: 3;
+  background-color: white;
+  padding: 1.5rem;
+  border-radius: 1rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  min-width: 0;
 }
 
 .chart-label {
   margin-top: 0.5rem;
   font-size: 0.8rem;
-}
-
-.transaction-history {
-  background-color: #fff;
-  border-radius: 12px;
-  padding: 20px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
 }
 
 .section-title {
