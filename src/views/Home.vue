@@ -1,42 +1,48 @@
 <template>
   <div class="dashboard">
     <!-- Header -->
-    <header class="dashboard-header">
-      <h1 class="dashboard-title">💡 Piggy Bank</h1>
+    <header class="dashboardHeader">
+      <h1 class="dashboardTitle">💡 Piggy Bank</h1>
       <div class="flex items-center gap-2 relative">
-        <button @click="toggleDarkMode" class="darkMode-button">
+        <button @click="toggleDarkMode" class="darkModeButton">
           {{ isDarkMode ? '☀️' : '🌙' }}
         </button>
-        <button class="mypage-button" @click="mypageClick">마이페이지</button>
+        <button class="mypageButton" @click="mypageClick">마이페이지</button>
         <button class="inputValue" @click="inputClick">새 거래추가</button>
       </div>
     </header>
 
     <!-- Summary Cards -->
-    <div class="summary-grid">
-      <div class="income-card">
-        <div class="card-label" @click="monthAmount">이번 달 수입</div>
-        <div class="card-value">₩{{ totalIncome.toLocaleString() }}</div>
+    <div class="summaryGrid">
+      <div class="incomeCard">
+        <div class="cardLabel" @click="monthAmount">이번 달 수입</div>
+        <div class="cardValue">₩{{ totalIncome.toLocaleString() }}</div>
       </div>
-      <div class="expense-card">
-        <div class="card-label" @click="monthAmount">이번 달 지출</div>
-        <div class="card-value">₩{{ totalExpense.toLocaleString() }}</div>
+      <div class="expenseCard">
+        <div class="cardLabel" @click="monthAmount">이번 달 지출</div>
+        <div class="cardValue">₩{{ totalExpense.toLocaleString() }}</div>
       </div>
-      <div class="balance-card">
-        <div class="card-label" @click="monthAmount">이번 달 잔액</div>
-        <div class="card-value">₩{{ balance.toLocaleString() }}</div>
+      <div class="balanceCard">
+        <div class="cardLabel" @click="monthAmount">이번 달 잔액</div>
+        <div class="cardValue">₩{{ balance.toLocaleString() }}</div>
       </div>
       <!-- <div class="piggyAni"></div> -->
-      <div class="savings-card">
-        <div class="card-label" @click="savingClick">저축률</div>
-        <div class="card-value">{{ savingsRate }}%</div>
+      <div class="savingsCard">
+        <div class="nowSavings">
+          <div class="cardLabel" @click="savingClick">현재 저축률</div>
+          <div class="cardValue">{{ savingsRate }}%</div>
+        </div>
+        <div class="goalSavings">
+          <div class="cardLabel" @click="savingClick">목표 저축률</div>
+          <div class="cardValue">{{ savingsRate }}%</div>
+        </div>
       </div>
     </div>
 
     <!-- Monthly Chart & Category Spending -->
-    <div class="chart-section">
-      <div class="monthly-chart">
-        <h2 class="section-title" @click="monthlyClick">
+    <div class="chartSection">
+      <div class="monthlyChart">
+        <h2 class="sectionTitle" @click="monthlyClick">
           📈 월간 수입/지출 추이
         </h2>
         <PieChart :chartData="chartData" />
@@ -48,29 +54,29 @@
     </div>
 
     <!-- Transaction Summary & History -->
-    <div class="transaction-section">
-      <div class="transaction-history">
-        <h2 class="section-title" @click="transactionsClick">
+    <div class="transactionSection">
+      <div class="transactionHistory">
+        <h2 class="sectionTitle" @click="transactionsClick">
           🧾 최근 거래내역
         </h2>
         <ul>
           <li
-            v-for="(tx, index) in transactions"
+            v-for="(tx, index) in transactions.slice(0, 3)"
             :key="index"
-            class="transaction-item"
+            class="transactionItem"
           >
-            <div class="transaction-date">{{ tx.date }} {{ tx.category }}</div>
-            <div class="transaction-content">
+            <div class="transactionDate">{{ tx.date }} {{ tx.category }}</div>
+            <div class="transactionContent">
               <div>{{ tx.description }}</div>
-              <div :class="tx.amount > 0 ? 'amount-income' : 'amount-expense'">
+              <div :class="tx.amount > 0 ? 'amountIncome' : 'amountExpense'">
                 ₩{{ Math.abs(tx.amount).toLocaleString() }}
               </div>
             </div>
           </li>
         </ul>
       </div>
-      <div class="category-summary">
-        <h2 class="section-title" @click="categoryClick">📊 카테고리별 지출</h2>
+      <div class="categorySummary">
+        <h2 class="sectionTitle" @click="categoryClick">📊 카테고리별 지출</h2>
         <CategoryPieChart :categorySpending="categorySpending" />
       </div>
     </div>
@@ -241,7 +247,7 @@ const monthAmount = () => {
 }
 
 /* 다크모드 버튼 */
-.darkMode-button {
+.darkModeButton {
   padding: 8px 12px;
   font-size: 1.2rem;
   border: 1px solid #ccc;
@@ -250,7 +256,7 @@ const monthAmount = () => {
 }
 
 /* 마이페이지 버튼 */
-.mypage-button {
+.mypageButton {
   background-color: white;
   border: black solid 1px;
   border-radius: 0.5rem;
@@ -272,8 +278,10 @@ const monthAmount = () => {
   background: linear-gradient(to bottom right, #1f2937, #111827);
   color: black;
 }
-
-.dashboard-header {
+.dark .dashboardHeader {
+  background-color: #ae7695;
+}
+.dashboardHeader {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -284,14 +292,14 @@ const monthAmount = () => {
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-.section-grid {
+.sectionGrid {
   display: grid;
   grid-template-columns: 2fr 1fr;
   gap: 2rem;
   margin-bottom: 2rem;
 }
 
-.summary-grid {
+.summaryGrid {
   display: flex;
   grid-template-columns: repeat(4, 1fr);
   gap: 2rem;
@@ -305,42 +313,57 @@ const monthAmount = () => {
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
   flex: 7;
 } */
-.income-card,
-.expense-card,
-.balance-card,
-.savings-card {
-  flex: 3;
-  float: right;
+.dark .incomeCard,
+.dark .expenseCard,
+.dark .balanceCard,
+.dark .savingsCard {
+  background-color: #cecece;
+}
+.incomeCard,
+.expenseCard,
+.balanceCard,
+.savingsCard {
+  /* flex: 3; */
+  /* float: right; */
   background-color: white;
   padding: 1.5rem;
   border-radius: 1rem;
   width: 100%;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
 }
-.income-card > .card-value {
+
+/* .savingsCard > .nowSavings,
+.goalSavings {
+  background-color: white;
+  padding: 1.5rem;
+  border-radius: 1rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+} */
+.incomeCard > .cardValue {
   color: #10b981;
   font-size: 20px;
   font-weight: bold;
 }
-.expense-card > .card-value {
+.expenseCard > .cardValue {
   color: #ef4444;
   font-size: 20px;
   font-weight: bold;
 }
-.balance-card > .card-value {
+.balanceCard > .cardValue {
   color: #6366f1;
   font-size: 20px;
   font-weight: bold;
 }
 
-.savings-card > .card-value {
+.savingsCard > .nowSavings > .cardValue,
+.goalSavings > .cardValue {
   color: #f9a8d4;
   font-size: 20px;
   font-weight: bold;
 }
 
-.chart-section,
-.transaction-section {
+.chartSection,
+.transactionSection {
   display: flex;
   gap: 2rem;
   margin-bottom: 2rem;
@@ -348,8 +371,15 @@ const monthAmount = () => {
   width: 100%;
 }
 
-.monthly-chart,
-.transaction-history {
+.dark .monthlyChart,
+.dark .transactionHistory,
+.dark .categorySummary,
+.dark .piggyAni {
+  background-color: #cecece;
+}
+
+.monthlyChart,
+.transactionHistory {
   flex: 7;
   background-color: white;
   padding: 1.5rem;
@@ -358,7 +388,7 @@ const monthAmount = () => {
   min-width: 0;
 }
 
-.category-summary,
+.categorySummary,
 .piggyAni {
   flex: 3;
   background-color: white;
@@ -373,18 +403,18 @@ const monthAmount = () => {
 
 }
 
-.chart-label {
+.chartLabel {
   margin-top: 0.5rem;
   font-size: 0.8rem;
 }
 
-.section-title {
+.sectionTitle {
   font-size: 18px;
   font-weight: bold;
   margin-bottom: 16px;
 }
 
-.transaction-item {
+.transactionItem {
   display: flex;
   flex-direction: column;
   background-color: #f9f9f9;
@@ -393,28 +423,28 @@ const monthAmount = () => {
   margin-bottom: 12px;
 }
 
-.transaction-date {
+.transactionDate {
   font-size: 14px;
   color: #888;
   margin-bottom: 4px;
 }
 
-.transaction-content {
+.transactionContent {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
-.amount-income {
+.amountIncome {
   color: #1abc9c;
   font-weight: bold;
 }
 
-.amount-expense {
+.amountExpense {
   color: #e74c3c;
   font-weight: bold;
 }
-.chart-legend {
+.chartLegend {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -424,13 +454,13 @@ const monthAmount = () => {
   color: #333;
 }
 
-.legend-item {
+.legendItem {
   display: flex;
   align-items: center;
   font-weight: bold;
 }
 
-.legend-dot {
+.legendDot {
   width: 10px;
   height: 10px;
   border-radius: 50%;
@@ -438,22 +468,24 @@ const monthAmount = () => {
   margin-right: 6px;
 }
 
-.income-dot {
+.incomeDot {
   background-color: #2ecc71;
 }
 
-.expense-dot {
+.expenseDot {
   background-color: #e74c3c;
 }
 
-.summary-cards {
+.summaryCards {
   display: flex;
   gap: 16px;
   justify-content: space-between;
   flex-wrap: wrap;
 }
-
-.summary-card {
+.dark .transactionItem {
+  background-color: #e8e8e8;
+}
+.summaryCard {
   flex: 1 1 30%;
   padding: 16px;
   border-radius: 12px;
@@ -462,26 +494,26 @@ const monthAmount = () => {
   text-align: center;
 }
 
-.summary-label {
+.summaryLabel {
   font-size: 16px;
   color: #6b7280;
   margin-bottom: 8px;
 }
 
-.summary-amount {
+.summaryAmount {
   font-size: 20px;
   font-weight: bold;
 }
 
-.income .summary-amount {
+.income .summaryAmount {
   color: #10b981;
 }
 
-.expense .summary-amount {
+.expense .summaryAmount {
   color: #ef4444;
 }
 
-.balance .summary-amount {
+.balance .summaryAmount {
   color: #6366f1;
 }
 </style>
