@@ -49,11 +49,7 @@
         <PieChart :chartData="chartData" />
       </div>
       <div class="piggyAni">
-
-        <FinalPig />
-
         <IndividualPig />
-
       </div>
     </div>
 
@@ -98,7 +94,7 @@ import IndividualPig from '@/components/IndividualPig.vue';
 import PiggyFace from '@/components/Piggyface.vue';
 import PiggyfaceDefault from '@/components/PiggyfaceDefault.vue';
 import FinalPig from '@/components/FinalPig.vue';
-import { useMainStore } from '@/stores/store.js';
+import { useDashboardStore } from '@/stores/store.js';
 
 
 //pinia사용을 위한 dashboard변수 정의
