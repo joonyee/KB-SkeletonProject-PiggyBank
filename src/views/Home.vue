@@ -27,7 +27,7 @@
         <div class="cardValue">₩{{ balance.toLocaleString() }}</div>
       </div>
       <!-- <div class="piggyAni"></div> -->
-<<<<<<< Updated upstream
+
       <div class="savingsCard">
         <div class="nowSavings">
           <div class="cardLabel" @click="savingClick">현재 저축률</div>
@@ -61,9 +61,9 @@
         </h2>
         <ul>
           <li
-            v-for="(tx, index) in transactions.slice(0, 3)"
-            :key="index"
-            class="transactionItem"
+              v-for="(tx, index) in transactions.slice(0, 3)"
+              :key="index"
+              class="transactionItem"
           >
             <div class="transactionDate">{{ tx.date }} {{ tx.category }}</div>
             <div class="transactionContent">
@@ -93,11 +93,12 @@ import IndividualPig from "@/components/IndividualPig.vue";
 import PiggyFace from "@/components/Piggyface.vue";
 import PiggyfaceDefault from "@/components/PiggyfaceDefault.vue";
 import FinalPig from "@/components/FinalPig.vue";
-import {useMainStore} from "@/stores/store.js";
+import {useDashboardStore} from "@/stores/store.js";
 
 
-const store = useMainStore();
-console.log(store.savingsRate);
+//pinia사용을 위한 dashboard변수 정의
+const dashboard = useDashboardStore();
+
 const dropdownOpen = ref(false);
 const toggleDropdown = () => {
   dropdownOpen.value = !dropdownOpen.value;
@@ -112,6 +113,7 @@ const toggleDarkMode = () => {
   document.documentElement.classList.toggle('dark', isDarkMode.value);
 };
 
+//여기서 부터 pinia로 옮겨서 다른 컴포넌트도 사용할 수 있게 바꿉니다.
 const chartData = ref([]);
 const categorySpending = ref([]);
 const transactions = ref([]);
@@ -119,9 +121,6 @@ const loading = ref(true); // 로딩 상태 추가
 
 const fetchData = async () => {
   try {
-    // const chartResponse = await axios.get('http://localhost:3000/chartData');
-    // chartData.value = chartResponse.data;
-    // console.log('chartData:', chartData.value);
     const response = await axios.get('http://localhost:3000/money');
     const moneyData = response.data;
     const monthlyTotals = {};
@@ -162,7 +161,7 @@ const fetchData = async () => {
     }, {});
 
     const sorted = moneyData.sort(
-      (a, b) => new Date(b.date) - new Date(a.date)
+        (a, b) => new Date(b.date) - new Date(a.date)
     );
     const recentTransactions = sorted.slice(0, 5).map((entry) => ({
       date: entry.date,
@@ -178,27 +177,27 @@ const fetchData = async () => {
     loading.value = false;
   }
 };
-
+//여기까지
 onMounted(() => {
-  fetchData();
+  dashboard.fetchData();
 });
 
 const maxChartValue = computed(() =>
-  Math.max(
-    ...chartData.value.map((item) => Math.max(item.income, item.expense))
-  )
+    Math.max(
+        ...chartData.value.map((item) => Math.max(item.income, item.expense))
+    )
 );
 
 const totalIncome = computed(() =>
-  transactions.value
-    .filter((tx) => tx.amount > 0)
-    .reduce((sum, tx) => sum + tx.amount, 0)
+    transactions.value
+        .filter((tx) => tx.amount > 0)
+        .reduce((sum, tx) => sum + tx.amount, 0)
 );
 
 const totalExpense = computed(() =>
-  transactions.value
-    .filter((tx) => tx.amount < 0)
-    .reduce((sum, tx) => sum + Math.abs(tx.amount), 0)
+    transactions.value
+        .filter((tx) => tx.amount < 0)
+        .reduce((sum, tx) => sum + Math.abs(tx.amount), 0)
 );
 
 const balance = computed(() => totalIncome.value - totalExpense.value);
