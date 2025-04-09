@@ -79,20 +79,19 @@
 </template>
 
 <script setup>
-defineProps({
-  savingsRate: {
-    type: Number,
-    required: true,
-  },
-});
+import {useDashboardStore} from "@/stores/store.js";
+
+const dashboard = useDashboardStore();
+const savingsRate = dashboard.savingsAmount;
 
 // 기본 크기 설정
 const baseSize = 200;
 
 // 크기 비율 계산 (저축률 기반)
 
-const sizeRatio = savingsRate / 100; // 크기 비율 (0~1 사이)
-const size = baseSize * (0.6 + sizeRatio * 0.4); // 결과 60% ~ 100% 크기
+const sizeRatio = savingsRate / 100 + 0.2; // 크기 비율 (0~1 사이) + 기본값 0.2
+const size = baseSize * (0.6 + sizeRatio * 0.4) ; // 결과 60% ~ 100% 크기
+console.log(size);
 
 // 얼굴 크기
 const faceRadius = 80 * sizeRatio; // 얼굴 반지름
