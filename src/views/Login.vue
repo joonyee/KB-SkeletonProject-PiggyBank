@@ -2,15 +2,24 @@
   <div class="login-wrapper">
     <Piggyface :eyeOffset="eyeOffset" :isEyeClosed="isEyeClosed" />
     <div class="login-container">
-
       <div class="login-box">
         <h2 class="title">로그인</h2>
         <form @submit.prevent="handleLogin">
           <label>아이디</label>
-          <input type="email" placeholder="example@email.com" v-model="email" @input="handleEmailInput"/>
+          <input
+            type="email"
+            placeholder="example@email.com"
+            v-model="email"
+            @input="handleEmailInput"
+          />
 
           <label>비밀번호</label>
-          <input type="password" placeholder="비밀번호를 입력해주세요" v-model="password" @input="handlePasswordInput"/>
+          <input
+            type="password"
+            placeholder="비밀번호를 입력해주세요"
+            v-model="password"
+            @input="handlePasswordInput"
+          />
 
           <button type="submit" class="login-btn">로그인</button>
         </form>
@@ -21,39 +30,64 @@
       </div>
     </div>
   </div>
-
 </template>
 
 <script setup>
-import { ref} from 'vue'
-import Piggyface from "@/components/Piggyface.vue";
+import { ref } from 'vue';
+import Piggyface from '@/components/Piggyface.vue';
+import { useRouter } from 'vue-router';
 
+const router = useRouter();
 const isEyeClosed = ref(false);
-const eyeOffset = ref({ x: 0, y: 0 })
-const email = ref('')
-const password = ref('')
+const eyeOffset = ref({ x: 0, y: 0 });
+const email = ref('');
+const password = ref('');
 
-const handleLogin = () => {
-  console.log('로그인 시도:', email.value, password.value)
+const handleLogin = async () => {
+  try {
+    const response = await fetch('http://localhost:3000/user');
+    const users = await response.json();
 
-}
+    const user = users.find((u) => u.userId === email.value);
+
+    if (!user) {
+      alert('존재하지 않는 회원입니다. 회원가입을 해주세요.');
+      return;
+    }
+
+    if (user.password !== password.value) {
+      alert('비밀번호가 일치하지 않습니다.');
+      return;
+    }
+
+    console.log('로그인 성공:', user);
+    alert(`${user.name}님 환영합니다!`);
+
+    localStorage.setItem('loggedInUserId', user.userId);
+    router.push('/home');
+  } catch (error) {
+    console.error('로그인 오류:', error);
+    alert('로그인 중 오류가 발생했습니다.');
+  }
+};
+
 //눈이 이메일을 입력하면 입력하는 이메일을 따라갑니다.
 const handleEmailInput = (e) => {
-  email.value = e.target.value
+  email.value = e.target.value;
 
-  const length = email.value.length
-  const maxX = 11     // 눈이 이동하는 총 범위 (절대값)
-  const maxChars = 90 // 최대 기준 문자 수
+  const length = email.value.length;
+  const maxX = 11; // 눈이 이동하는 총 범위 (절대값)
+  const maxChars = 90; // 최대 기준 문자 수
 
   // 입력 길이에 따라 이동
-  const offsetX = -7 + Math.min(length, maxChars) / maxChars * maxX
-  const offsetY = 3   // 살짝 아래로 고정
+  const offsetX = -7 + (Math.min(length, maxChars) / maxChars) * maxX;
+  const offsetY = 3; // 살짝 아래로 고정
 
   eyeOffset.value = {
     x: offsetX,
-    y: offsetY
-  }
-}
+    y: offsetY,
+  };
+};
 
 // 비밀번호 입력 시 눈 감도록 처리
 const handlePasswordInput = (e) => {
@@ -62,11 +96,9 @@ const handlePasswordInput = (e) => {
   // 비밀번호 입력 중일 때 눈을 감도록 설정
   isEyeClosed.value = password.value.length > 0;
 };
-
 </script>
 
 <style scoped>
-
 .login-wrapper {
   position: fixed;
   top: 50%;
@@ -88,7 +120,6 @@ const handlePasswordInput = (e) => {
   padding: 40px;
   width: 350px;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-
 }
 
 .title {

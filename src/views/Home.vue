@@ -27,7 +27,7 @@
         <div class="cardValue">₩{{ balance.toLocaleString() }}</div>
       </div>
       <!-- <div class="piggyAni"></div> -->
-      <<<<<<< Updated upstream
+
       <div class="savingsCard">
         <div class="nowSavings">
           <div class="cardLabel" @click="savingClick">현재 저축률</div>
@@ -49,7 +49,7 @@
         <PieChart :chartData="chartData" />
       </div>
       <div class="piggyAni">
-        <FinalPig />
+        <IndividualPig />
       </div>
     </div>
 
@@ -93,10 +93,11 @@ import IndividualPig from "@/components/IndividualPig.vue";
 import PiggyFace from "@/components/Piggyface.vue";
 import PiggyfaceDefault from "@/components/PiggyfaceDefault.vue";
 import FinalPig from "@/components/FinalPig.vue";
-import { useMainStore } from "@/stores/store.js";
+import { useDashboardStore } from "@/stores/store.js";
 
-const store = useMainStore();
-console.log(store.savingsRate);
+//pinia사용을 위한 dashboard변수 정의
+const dashboard = useDashboardStore();
+
 const dropdownOpen = ref(false);
 const toggleDropdown = () => {
   dropdownOpen.value = !dropdownOpen.value;
@@ -111,6 +112,7 @@ const toggleDarkMode = () => {
   document.documentElement.classList.toggle("dark", isDarkMode.value);
 };
 
+//여기서 부터 pinia로 옮겨서 다른 컴포넌트도 사용할 수 있게 바꿉니다.
 const chartData = ref([]);
 const categorySpending = ref([]);
 const transactions = ref([]);
@@ -118,9 +120,6 @@ const loading = ref(true); // 로딩 상태 추가
 
 const fetchData = async () => {
   try {
-    // const chartResponse = await axios.get('http://localhost:3000/chartData');
-    // chartData.value = chartResponse.data;
-    // console.log('chartData:', chartData.value);
     const response = await axios.get("http://localhost:3000/money");
     const moneyData = response.data;
     const monthlyTotals = {};
@@ -177,9 +176,9 @@ const fetchData = async () => {
     loading.value = false;
   }
 };
-
+//여기까지
 onMounted(() => {
-  fetchData();
+  dashboard.fetchData();
 });
 
 const maxChartValue = computed(() =>
@@ -188,24 +187,13 @@ const maxChartValue = computed(() =>
   )
 );
 
-const totalIncome = computed(() =>
-  transactions.value
-    .filter((tx) => tx.amount > 0)
-    .reduce((sum, tx) => sum + tx.amount, 0)
-);
+const totalIncome = dashboard.totalIncome;
 
-const totalExpense = computed(() =>
-  transactions.value
-    .filter((tx) => tx.amount < 0)
-    .reduce((sum, tx) => sum + Math.abs(tx.amount), 0)
-);
+const totalExpense = dashboard.totalExpense;
 
-const balance = computed(() => totalIncome.value - totalExpense.value);
+const balance = dashboard.balance;
 
-// const savingsRate = computed(() => {
-//   if (totalIncome.value === 0) return 0;
-//   return Math.round((balance.value / totalIncome.value) * 100);
-// });
+const savingsRate = dashboard.savingsRate;
 
 const mypageClick = () => {
   //router.push('./mypage');
