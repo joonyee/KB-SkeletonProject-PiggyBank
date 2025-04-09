@@ -25,7 +25,14 @@ const chartData = computed(() => {
     datasets: [
       {
         data: props.categorySpending.map((item) => item.amount),
-        backgroundColor: ['#f87171', '#60a5fa', '#34d399', '#facc15'],
+        backgroundColor: [
+          '#f87171',
+          '#60a5fa',
+          '#34d399',
+          '#facc15',
+          '#a78bfa',
+          '#f472b6',
+        ],
         borderColor: 'white',
         borderWidth: 2,
       },
@@ -42,9 +49,7 @@ const chartOptions = {
     },
     tooltip: {
       callbacks: {
-        label: (context) => {
-          return `₩${Number(context.raw).toLocaleString()}`;
-        },
+        label: (context) => `₩${Number(context.raw).toLocaleString()}`,
       },
     },
   },
@@ -54,7 +59,7 @@ const chartOptions = {
 <style scoped>
 .category-chart {
   width: 100%;
-  height: 300px; /* 원하는 크기로 조정 가능 */
+  height: 300px;
   padding: 1rem;
 }
 </style>
