@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import axios from 'axios';
 
 export const useDashboardStore = defineStore('dashboard', () => {
@@ -9,9 +9,9 @@ export const useDashboardStore = defineStore('dashboard', () => {
   const loading = ref(true);
 
   const fetchData = async () => {
-    loading.value = true;
     try {
       const response = await axios.get('http://localhost:3000/money');
+
       const moneyData = response.data;
       const monthlyTotals = {};
       moneyData.forEach((entry) => {
@@ -35,16 +35,46 @@ export const useDashboardStore = defineStore('dashboard', () => {
         })
       );
 
-      const categoryTotals = {};
-      moneyData.forEach((entry) => {
-        if (entry.typeid === 2 && entry.categoryid >= 5) {
-          const catId = entry.categoryid;
-          if (!categoryTotals[catId]) {
-            categoryTotals[catId] = 0;
-          }
-          categoryTotals[catId] += entry.amount;
-        }
+      console.log(chartData);
+      const sorted = moneyData.sort(
+        (a, b) => new Date(b.date) - new Date(a.date)
+      );
+
+      // 가장 최근 달 구하기 (예: '2025-04')
+      const latestMonth =
+        sorted.length > 0
+          ? new Date(sorted[0].date).toISOString().slice(0, 7)
+          : null;
+
+      // 최근 달 지출 내역만 필터링
+      const recentMonthData = moneyData.filter((entry) => {
+        const entryMonth = new Date(entry.date).toISOString().slice(0, 7);
+        return (
+          entry.typeid === 2 &&
+          entry.categoryid >= 5 &&
+          entryMonth === latestMonth
+        );
       });
+      const recentMonthInData = moneyData.filter((entry) => {
+        const entryMonth = new Date(entry.date).toISOString().slice(0, 7);
+        return (
+          entry.typeid === 1 &&
+          entry.categoryid <= 4 &&
+          entryMonth === latestMonth
+        );
+      });
+
+      // 카테고리별 합산
+      const categoryTotals = {};
+      recentMonthData.forEach((entry) => {
+        const catId = entry.categoryid;
+        if (!categoryTotals[catId]) {
+          categoryTotals[catId] = 0;
+        }
+        categoryTotals[catId] += entry.amount;
+      });
+
+      console.log(categoryTotals);
 
       const categoryRes = await axios.get('http://localhost:3000/category');
       const categoryMap = categoryRes.data.reduce((map, cat) => {
@@ -52,22 +82,24 @@ export const useDashboardStore = defineStore('dashboard', () => {
         return map;
       }, {});
 
-      categorySpending.value = Object.entries(categoryTotals).map(
-        ([catId, amount]) => ({
-          category: categoryMap[catId] || '기타',
-          amount,
+      // 트랜잭션 출력용 가공 (지출/수입 전부)
+      const recentTransactions = sorted
+        .filter((entry) => {
+          const entryMonth = new Date(entry.date).toISOString().slice(0, 7);
+          return entryMonth === latestMonth;
         })
-      );
+        .map((entry) => ({
+          date: entry.date,
+          category: categoryMap[entry.categoryid] || '기타',
+          description: entry.memo,
+          amount: entry.typeid === 1 ? entry.amount : -entry.amount,
+        }));
 
-      const sorted = moneyData.sort(
-        (a, b) => new Date(b.date) - new Date(a.date)
-      );
-      const recentTransactions = sorted.slice(0, 5).map((entry) => ({
-        date: entry.date,
-        category: categoryMap[entry.categoryid] || '기타',
-        description: entry.payment,
-        amount: entry.typeid === 1 ? entry.amount : -entry.amount,
-      }));
+      // const sorted = moneyData.sort(
+      //   (a, b) => new Date(b.date) - new Date(a.date)
+      // );
+
+      // 차트용 데이터 세팅
       transactions.value = recentTransactions;
       categorySpending.value = Object.entries(categoryTotals).map(
         ([id, amount]) => ({
