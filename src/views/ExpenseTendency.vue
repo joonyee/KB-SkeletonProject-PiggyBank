@@ -3,7 +3,7 @@
     <Header />
     <SummaryCards />
     <MonthlyPatternChart />
-    <router-link to="/" class="home-button">홈으로 이동</router-link>
+    <router-link to="/Home" class="home-button">홈으로 이동</router-link>
   </div>
 </template>
 
