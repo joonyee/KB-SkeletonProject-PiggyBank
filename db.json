@@ -3,6 +3,38 @@
     { "id": 1, "name": "수입" },
     { "id": 2, "name": "지출" }
   ],
+  "chartData": [
+    {
+      "month": 1,
+      "income": 110000,
+      "expense": 40000,
+      "id": "74fa"
+    },
+    {
+      "month": 2,
+      "income": 120000,
+      "expense": 45000,
+      "id": "5086"
+    },
+    {
+      "month": 3,
+      "income": 130000,
+      "expense": 42000,
+      "id": "9c38"
+    },
+    {
+      "month": 4,
+      "income": 125000,
+      "expense": 48000,
+      "id": "50eb"
+    },
+    {
+      "month": 5,
+      "income": 125000,
+      "expense": 48000,
+      "id": "fd50"
+    }
+  ],
   "category": [
     { "id": 1, "name": "급여" },
     { "id": 2, "name": "용돈" },
