@@ -49,7 +49,7 @@
         <PieChart :chartData="chartData" />
       </div>
       <div class="piggyAni">
-        <FinalPig/>
+        <IndividualPig/>
       </div>
     </div>
 
@@ -188,24 +188,13 @@ const maxChartValue = computed(() =>
     )
 );
 
-const totalIncome = computed(() =>
-    transactions.value
-        .filter((tx) => tx.amount > 0)
-        .reduce((sum, tx) => sum + tx.amount, 0)
-);
+const totalIncome = dashboard.totalIncome;
 
-const totalExpense = computed(() =>
-    transactions.value
-        .filter((tx) => tx.amount < 0)
-        .reduce((sum, tx) => sum + Math.abs(tx.amount), 0)
-);
+const totalExpense = dashboard.totalExpense;
 
-const balance = computed(() => totalIncome.value - totalExpense.value);
+const balance = dashboard.balance;
 
-// const savingsRate = computed(() => {
-//   if (totalIncome.value === 0) return 0;
-//   return Math.round((balance.value / totalIncome.value) * 100);
-// });
+const savingsRate = dashboard.savingsRate
 
 const mypageClick = () => {
   //router.push('./mypage');
