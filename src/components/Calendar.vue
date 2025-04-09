@@ -79,18 +79,19 @@ const currentYear = ref(props.year);
 const currentMonth = ref(props.month);
 const calendarData = ref([]);
 const transactions = ref([]);
+const fixedExpenses = ref([]);
+
 const dayNames = ['일', '월', '화', '수', '목', '금', '토'];
-//모달창
 const isModalOpen = ref(false);
-const selectedDate = ref(null); // 선택된 날짜 저장
+const selectedDate = ref(null);
 
 function openModal(day) {
-  selectedDate.value = day.date.toISOString().split('T')[0]; // 선택된 날짜 저장
-  isModalOpen.value = true; // 모달 열기
+  selectedDate.value = day.date;
+  isModalOpen.value = true;
 }
 
 function closeModal() {
-  isModalOpen.value = false; // 모달 닫기
+  isModalOpen.value = false;
 }
 
 function updateCalendarData() {
@@ -98,14 +99,20 @@ function updateCalendarData() {
   days.forEach((day) => {
     const formatted = day.date.toISOString().split('T')[0];
     const dayTx = transactions.value.filter((tx) => tx.date === formatted);
+    const fixedTx = fixedExpenses.value.filter(
+      (fx) => fx.day === day.date.getDate()
+    );
     let incomeSum = 0,
       expenseSum = 0;
     dayTx.forEach((tx) => {
-      if (tx.amount > 0) {
-        incomeSum += tx.amount;
-      } else {
-        expenseSum += Math.abs(tx.amount);
+      if (tx.typeid === 1) {
+        incomeSum += tx.amount; // 수입
+      } else if (tx.typeid === 2) {
+        expenseSum += tx.amount; // 지출
       }
+    });
+    fixedTx.forEach((tx) => {
+      expenseSum += tx.amount; // 수입
     });
     day.income = incomeSum || null;
     day.expense = expenseSum || null;
@@ -113,20 +120,28 @@ function updateCalendarData() {
   calendarData.value = days;
 }
 
+const isDataLoaded = ref(false);
+
 onMounted(async () => {
   try {
-    const res = await axios.get('http://localhost:3000/transactions');
-    transactions.value = res.data;
-    updateCalendarData();
+    const [moneyRes, fixedRes] = await Promise.all([
+      axios.get('http://localhost:3000/money'),
+      axios.get('http://localhost:3000/fixedExpenses'),
+    ]);
+    transactions.value = moneyRes.data;
+    fixedExpenses.value = fixedRes.data;
+    isDataLoaded.value = true;
+    updateCalendarData(); // 최초 1회 수동 호출
   } catch (error) {
-    console.error('Failed to fetch transactions:', error);
+    console.error('데이터 불러오기 실패:', error);
   }
 });
 
-watch([currentYear, currentMonth], updateCalendarData);
-watch([currentYear, currentMonth], ([newYear, newMonth]) => {
-  emit('update:year', newYear);
-  emit('update:month', newMonth);
+// watch 안에서 조건 걸기
+watch([currentYear, currentMonth], () => {
+  if (isDataLoaded.value) {
+    updateCalendarData();
+  }
 });
 
 function prevMonth() {
@@ -149,7 +164,7 @@ function nextMonth() {
 
 function formatNumber(num) {
   if (!num) return '';
-  return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  return num.toLocaleString('ko-KR');
 }
 </script>
 

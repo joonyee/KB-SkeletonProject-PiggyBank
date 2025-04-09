@@ -21,7 +21,7 @@
         :key="catName"
         class="category-bar"
       >
-        <div class="label">{{ catName }}</div>
+        <div class="label">{{ getCategoryName(catName) }}</div>
         <div class="bar-container">
           <div class="bar" :style="{ width: getBarWidth(catSum) + '%' }"></div>
         </div>
@@ -35,15 +35,13 @@
 import { ref, computed, onMounted } from 'vue';
 import axios from 'axios';
 
-// 상위 컴포넌트에서 연도(year)와 월(month)을 props로 전달받음.
-// month는 1부터 12까지의 값
 const props = defineProps({
   year: { type: Number, required: true },
   month: { type: Number, required: true },
 });
 
 const transactions = ref([]);
-
+const categoryData = ref([]);
 // 전달받은 연도와 월에 해당하는 거래 내역 필터링
 const monthlyTransactions = computed(() => {
   return transactions.value.filter((tx) => {
@@ -52,60 +50,71 @@ const monthlyTransactions = computed(() => {
   });
 });
 
-// 총 수입: amount > 0
+const getCategoryName = (catId) => {
+  const cat = categoryData.value.find((c) => c.id === Number(catId));
+  return cat ? cat.name : '기타';
+};
+
+// 총 수입: typeid === 1
 const totalIncome = computed(() =>
   monthlyTransactions.value
-    .filter((tx) => tx.amount > 0)
+    .filter((tx) => tx.typeid === 1) // 수입만 필터링
     .reduce((sum, tx) => sum + tx.amount, 0)
 );
 
-// 총 지출: amount < 0
+// 총 지출: typeid === 2
 const totalExpense = computed(() =>
   monthlyTransactions.value
-    .filter((tx) => tx.amount < 0)
+    .filter((tx) => tx.typeid === 2) // 지출만 필터링
     .reduce((sum, tx) => sum + tx.amount, 0)
 );
 
-// 잔액: 수입 + 지출 (지출은 음수)
-const balance = computed(() => totalIncome.value + totalExpense.value);
+// 잔액: 수입 - 지출
+const balance = computed(() => totalIncome.value - totalExpense.value);
 
-// 카테고리별 지출 합산 (음수 데이터만, 최종 표시 시 절대값으로 표시)
+// 카테고리별 지출 합산 (typeid === 2만 포함)
 const negativeCategorySums = computed(() => {
   const result = {};
   monthlyTransactions.value.forEach((tx) => {
-    if (tx.amount < 0) {
-      if (!result[tx.category]) result[tx.category] = 0;
-      result[tx.category] += tx.amount;
+    if (tx.typeid === 2) {
+      // 지출만 처리
+      if (!result[tx.categoryid]) result[tx.categoryid] = 0;
+      result[tx.categoryid] += tx.amount;
     }
   });
   return result;
 });
 
-// 가장 큰 지출 금액(절댓값) 기준을 잡아 진행 바의 길이 비율 결정
+// 가장 큰 지출 금액 기준으로 진행 바의 길이 비율 결정
 const maxAbsExpense = computed(() => {
   const sums = Object.values(negativeCategorySums.value);
-  return sums.length === 0 ? 1 : Math.max(...sums.map((val) => Math.abs(val)));
+  return sums.length === 0 ? 1 : Math.max(...sums);
 });
 
 // 각 카테고리 막대 너비 계산 함수
 const getBarWidth = (amount) => {
-  const ratio = Math.abs(amount) / maxAbsExpense.value;
+  const ratio = amount / maxAbsExpense.value;
   return Math.round(ratio * 100);
 };
 
-// 모든 금액은 절대값으로, 천단위 콤마 적용
+// 금액을 천 단위 콤마로 포맷
 const formatMoney = (num) => {
   if (!num) return '0';
-  return Math.abs(num).toLocaleString('ko-KR');
+  return num.toLocaleString('ko-KR');
 };
 
 // 거래 데이터 로드
 onMounted(async () => {
   try {
-    const res = await axios.get('http://localhost:3000/transactions');
-    transactions.value = res.data;
+    const [moneyRes, categoryRes] = await Promise.all([
+      axios.get('http://localhost:3000/money'),
+      axios.get('http://localhost:3000/category'),
+    ]);
+
+    transactions.value = moneyRes.data;
+    categoryData.value = categoryRes.data;
   } catch (error) {
-    console.error('Failed to fetch transactions:', error);
+    console.error('Failed to fetch transactions or categories:', error);
   }
 });
 </script>
