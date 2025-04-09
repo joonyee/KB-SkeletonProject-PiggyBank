@@ -2,35 +2,47 @@
   <div class="dashboard">
     <!-- Header -->
     <header class="dashboardHeader">
-      <h1 class="dashboardTitle">💡 Piggy Bank</h1>
+      <h1 class="dashboardTitle">
+        <img
+          src="/src/assets/icons/logo.png"
+          class="iconImage"
+          @click="goToHome"
+        />Piggy Bank
+      </h1>
       <div class="flex items-center gap-2 relative">
         <button @click="toggleDarkMode" class="darkModeButton">
           {{ isDarkMode ? '☀️' : '🌙' }}
         </button>
         <button class="mypageButton" @click="mypageClick">마이페이지</button>
-        <button class="inputValue" @click="inputClick">새 거래추가</button>
+        <button class="inputValue" @click="openModal">새 거래추가</button>
+
+        <TransactionModal
+          :isOpen="isModalOpen"
+          :date="selectedDate"
+          @close="closeModal"
+        />
+        <button class="logout" @click="logout">로그아웃</button>
       </div>
     </header>
 
     <!-- Summary Cards -->
     <div class="summaryGrid">
       <div class="incomeCard">
-        <div class="cardLabel" @click="goToMothlyAnalysis">이번 달 수입</div>
+        <div class="cardLabel" @click="goToMonthlyAnalysis">이번 달 수입</div>
         <div class="cardValue">₩{{ totalIncome.toLocaleString() }}</div>
       </div>
       <div class="expenseCard">
-        <div class="cardLabel" @click="goToMothlyAnalysis">이번 달 지출</div>
+        <div class="cardLabel" @click="goToMonthlyAnalysis">이번 달 지출</div>
         <div class="cardValue">₩{{ totalExpense.toLocaleString() }}</div>
       </div>
       <div class="balanceCard">
-        <div class="cardLabel" @click="goToMothlyAnalysis">이번 달 잔액</div>
+        <div class="cardLabel" @click="goToMonthlyAnalysis">이번 달 잔액</div>
         <div class="cardValue">₩{{ balance.toLocaleString() }}</div>
       </div>
       <!-- <div class="piggyAni"></div> -->
-
       <div class="savingsCard">
         <div class="nowSavings">
-          <div class="cardLabel" @click="goToMothlyAnalysis">현재 저축률</div>
+          <div class="cardLabel" @click="goToMonthlyAnalysis">현재 저축률</div>
           <div class="cardValue">{{ savingsRate }}%</div>
         </div>
         <div class="goalSavings">
@@ -42,12 +54,14 @@
 
     <!-- Monthly Chart & Category Spending -->
     <div class="chartSection">
-      <div class="monthlyChart" @click="" style="cursor: pointer">
-        <h2 class="sectionTitle">📈 월간 수입/지출 추이</h2>
+      <div class="monthlyChart">
+        <h2 class="sectionTitle" @click="monthlyClick">
+          📈 월간 수입/지출 추이
+        </h2>
         <PieChart :chartData="chartData" />
       </div>
       <div class="piggyAni">
-        <IndividualPig />
+        <!-- <IndividualPig /> -->
       </div>
     </div>
 
@@ -75,6 +89,7 @@
         <h2 class="sectionTitle" @click="goToAgeExpenseAnalysis">
           📊 카테고리별 지출
         </h2>
+        <<<<<<< HEAD ======= >>>>>>> 5c06886fcdcfb0a3236e3926dd27f07514a0638d
         <CategoryPieChart :categorySpending="categorySpending" />
       </div>
     </div>
@@ -86,24 +101,24 @@ import { ref, computed, onMounted } from 'vue';
 import axios from 'axios';
 import CategoryPieChart from '@/components/CategoryPieChart.vue';
 import PieChart from '@/components/PieChart.vue';
-import { RouterLink, useRouter } from 'vue-router';
+import { RouterLink } from 'vue-router';
 import IndividualPig from '@/components/IndividualPig.vue';
 import PiggyFace from '@/components/Piggyface.vue';
 import PiggyfaceDefault from '@/components/PiggyfaceDefault.vue';
 import FinalPig from '@/components/FinalPig.vue';
-
 import { useDashboardStore } from '@/stores/store.js';
+import { useRouter } from 'vue-router';
+import TransactionModal from '@/components/TransactionModal.vue';
+// import { PigIntro } from '@/views/PigIntro.vue';
 
-//pinia사용을 위한 dashboard변수 정의
-const dashboard = useDashboardStore();
 const router = useRouter();
+
+const store = useDashboardStore();
+console.log(store.savingsRate);
 
 const dropdownOpen = ref(false);
 const toggleDropdown = () => {
   dropdownOpen.value = !dropdownOpen.value;
-};
-const logout = () => {
-  console.log('로그아웃 실행됨');
 };
 
 const isDarkMode = ref(false);
@@ -120,39 +135,72 @@ const loading = ref(true); // 로딩 상태 추가
 
 const fetchData = async () => {
   try {
-    const response = await axios.get('http://localhost:3000/money');
+    const userId = localStorage.getItem('loggedInUserId');
+    if (!userId) {
+      throw new Error('로그인 정보가 없습니다.');
+    } else {
+      console.log('현재 로그인한 유저 ID:', userId);
+    }
 
-    const moneyData = response.data;
+    const response = await axios.get('http://localhost:3000/money');
+    const moneyData = response.data.filter((entry) => entry.userid == userId); // 👈 유저별 필터
+
     const monthlyTotals = {};
     moneyData.forEach((entry) => {
       const month = entry.date.slice(0, 7);
-
       if (!monthlyTotals[month]) {
         monthlyTotals[month] = { income: 0, expense: 0 };
       }
-
       if (entry.typeid === 1) {
         monthlyTotals[month].income += entry.amount;
       } else if (entry.typeid === 2) {
         monthlyTotals[month].expense += entry.amount;
       }
     });
-    console.log(monthlyTotals);
 
-    const categoryTotals = {};
-    moneyData.forEach((entry) => {
-      if (entry.typeid === 2) {
-        const catId = entry.categoryid;
+    chartData.value = Object.entries(monthlyTotals).map(
+      ([month, { income, expense }]) => ({
+        month,
+        income,
+        expense,
+      })
+    );
 
-        if (!categoryTotals[catId]) {
-          categoryTotals[catId] = 0;
-        }
+    const sorted = moneyData.sort(
+      (a, b) => new Date(b.date) - new Date(a.date)
+    );
 
-        categoryTotals[catId] += entry.amount;
-      }
+    const latestMonth =
+      sorted.length > 0
+        ? new Date(sorted[0].date).toISOString().slice(0, 7)
+        : null;
+
+    const recentMonthData = moneyData.filter((entry) => {
+      const entryMonth = new Date(entry.date).toISOString().slice(0, 7);
+      return (
+        entry.typeid === 2 &&
+        entry.categoryid >= 5 &&
+        entryMonth === latestMonth
+      );
     });
 
-    console.log(categoryTotals);
+    const recentMonthInData = moneyData.filter((entry) => {
+      const entryMonth = new Date(entry.date).toISOString().slice(0, 7);
+      return (
+        entry.typeid === 1 &&
+        entry.categoryid <= 4 &&
+        entryMonth === latestMonth
+      );
+    });
+
+    const categoryTotals = {};
+    recentMonthData.forEach((entry) => {
+      const catId = entry.categoryid;
+      if (!categoryTotals[catId]) {
+        categoryTotals[catId] = 0;
+      }
+      categoryTotals[catId] += entry.amount;
+    });
 
     const categoryRes = await axios.get('http://localhost:3000/category');
     const categoryMap = categoryRes.data.reduce((map, cat) => {
@@ -160,26 +208,35 @@ const fetchData = async () => {
       return map;
     }, {});
 
-    const sorted = moneyData.sort(
-      (a, b) => new Date(b.date) - new Date(a.date)
-    );
-    const recentTransactions = sorted.map((entry) => ({
-      date: entry.date,
-      category: categoryMap[entry.categoryid] || '기타',
-      description: entry.payment,
-      amount: entry.typeid === 1 ? entry.amount : -entry.amount,
-    }));
+    const recentTransactions = sorted
+      .filter((entry) => {
+        const entryMonth = new Date(entry.date).toISOString().slice(0, 7);
+        return entryMonth === latestMonth;
+      })
+      .map((entry) => ({
+        date: entry.date,
+        category: categoryMap[entry.categoryid] || '기타',
+        description: entry.memo,
+        amount: entry.typeid === 1 ? entry.amount : -entry.amount,
+      }));
 
     transactions.value = recentTransactions;
+    categorySpending.value = Object.entries(categoryTotals).map(
+      ([id, amount]) => ({
+        category: categoryMap[id] || '기타',
+        amount,
+      })
+    );
   } catch (error) {
     console.error('데이터 로딩 실패:', error);
   } finally {
     loading.value = false;
   }
 };
+
 //여기까지
 onMounted(() => {
-  dashboard.fetchData();
+  fetchData();
 });
 
 const maxChartValue = computed(() =>
@@ -188,17 +245,34 @@ const maxChartValue = computed(() =>
   )
 );
 
-const totalIncome = dashboard.totalIncome;
+const totalIncome = computed(() =>
+  transactions.value
+    .filter((tx) => tx.amount > 0)
+    .reduce((sum, tx) => sum + tx.amount, 0)
+);
 
-const totalExpense = dashboard.totalExpense;
+const totalExpense = computed(() =>
+  transactions.value
+    .filter((tx) => tx.amount < 0)
+    .reduce((sum, tx) => sum + Math.abs(tx.amount), 0)
+);
 
-const balance = dashboard.balance;
+const balance = computed(() => totalIncome.value - totalExpense.value);
 
-const savingsRate = dashboard.savingsRate;
-
+const savingsRate = computed(() => {
+  if (totalIncome.value === 0) return 0;
+  return Math.round((balance.value / totalIncome.value) * 100);
+});
 const mypageClick = () => {
-  //router.push('./mypage');
+  router.push('./myPage');
   alert('mypage page');
+};
+const logout = () => {
+  alert('안녕히가세요!');
+
+  localStorage.removeItem('loggedInUserId');
+
+  router.push('/');
 };
 
 const inputClick = () => {
@@ -206,13 +280,25 @@ const inputClick = () => {
   alert('money input');
 };
 
+const isModalOpen = ref(false);
+const openModal = () => {
+  isModalOpen.value = true;
+};
+const closeModal = () => {
+  isModalOpen.value = false;
+};
+
 const savingClick = () => {
   //router.push('./savings-card');
   alert('저축률 페이지');
 };
+const goToHome = () => {
+  router.push('./home');
+};
 
-const goToCalendar = () => {
-  router.push({ name: 'Calendar' });
+const monthlyClick = () => {
+  router.push('./calendar');
+  alert('월간 수입/지출 페이지');
 };
 
 const categoryClick = () => {
@@ -233,21 +319,27 @@ const monthAmount = () => {
 const goToExpenseList = () => {
   router.push('/expenseList');
 };
-
 const goToAgeExpenseAnalysis = () => {
   router.push('/ageExpenseAnalysis');
 };
-
-const goToMothlyAnalysis = () => {
+const goToMonthlyAnalysis = () => {
   router.push('/monthlyAnalysis');
 };
 </script>
 
 <style scoped>
+.iconImage {
+  width: 60px;
+  height: 60px;
+  /* object-fit: contain; */
+}
+.dashboardTitle {
+  gap: 10px;
+}
 .dashboard {
   padding: 2rem;
   margin: 0;
-  background: linear-gradient(to bottom right, #ffe4e6, #ffffff);
+  background: linear-gradient(to bottom, #fff9fe, #ffffff);
   font-family: sans-serif;
   box-sizing: border-box;
   color: black;
@@ -270,35 +362,52 @@ const goToMothlyAnalysis = () => {
 
 /* 마이페이지 버튼 */
 .mypageButton {
-  background-color: white;
-  border: black solid 1px;
+  background-color: rgb(254, 235, 253);
+  border: 1px solid rgb(251, 209, 251);
   border-radius: 0.5rem;
   padding: 12px 24px;
   cursor: pointer;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  font-weight: 600;
+  color: #333;
+}
+.logout {
+  background-color: rgb(254, 235, 253);
+  border: 1px solid rgb(251, 209, 251);
+  border-radius: 0.5rem;
+  padding: 12px 24px;
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  font-weight: 600;
+  color: #333;
 }
 
 /* 새 거래추가 버튼 */
 .inputValue {
-  background-color: white;
-  border: black solid 1px;
+  background-color: rgb(254, 235, 253);
+  border: 1px solid rgb(251, 209, 251);
   border-radius: 0.5rem;
   padding: 12px 24px;
   cursor: pointer;
-  flex-grow: 1;
-  background-color: white;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  font-weight: 600;
+  color: #333;
 }
 .dark .dashboard {
-  background: linear-gradient(to bottom right, #1f2937, #111827);
-  color: black;
+  background: linear-gradient(to bottom, #121212, #121212);
+  color: #1a1a2e;
 }
 .dark .dashboardHeader {
-  background-color: #ae7695;
+  background-color: #fbcee8;
 }
 .dashboardHeader {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: #f9a8d4;
+  background-color: #fbcee8;
   padding: 1rem;
   border-radius: 1rem;
   margin-bottom: 1.5rem;
@@ -330,7 +439,8 @@ const goToMothlyAnalysis = () => {
 .dark .expenseCard,
 .dark .balanceCard,
 .dark .savingsCard {
-  background-color: #cecece;
+  background-color: #2e2e4d;
+  /* opacity: 0.8; */
 }
 .incomeCard,
 .expenseCard,
@@ -388,7 +498,8 @@ const goToMothlyAnalysis = () => {
 .dark .transactionHistory,
 .dark .categorySummary,
 .dark .piggyAni {
-  background-color: #cecece;
+  background-color: #2e2e4d;
+  opacity: 0.8;
 }
 
 .monthlyChart,
