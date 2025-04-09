@@ -16,7 +16,7 @@
             placeholder="8자 이상 입력해주세요"
             v-model="password"
           />
-          <span @click="togglePassword" class="toggle">{{ showPassword? "숨기기":"보기" }}</span>
+          <span @click="togglePassword" class="toggle">보기</span>
         </div>
 
         <label class="label-text">비밀번호 확인</label>
@@ -26,7 +26,7 @@
             placeholder="비밀번호를 한 번 더 입력해주세요"
             v-model="confirmPassword"
           />
-          <span @click="toggleConfirm" class="toggle">{{ showConfirm? "숨기기":"보기" }}</span>
+          <span @click="toggleConfirm" class="toggle">보기</span>
         </div>
 
         <p
@@ -113,7 +113,6 @@ const handleSignUp = async () => {
   }
 
   try {
-    // 1. 연령대 ID 매핑
     const ageResponse = await axios.get('http://localhost:3000/ageArea');
     const ageEntry = ageResponse.data.find((age) => age.age === ageGroup.value);
     const ageId = ageEntry ? ageEntry.id : null;
@@ -123,7 +122,6 @@ const handleSignUp = async () => {
       return;
     }
 
-    // 2. 회원 정보 저장
     const newUser = {
       userId: email.value,
       password: password.value,
@@ -135,7 +133,7 @@ const handleSignUp = async () => {
     await axios.post('http://localhost:3000/user', newUser);
 
     alert('회원가입 성공!');
-    router.push('/login'); // 로그인 페이지로 이동
+    router.push('/login');
   } catch (error) {
     console.error('회원가입 실패:', error);
     alert('회원가입 중 오류가 발생했습니다.');
