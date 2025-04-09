@@ -4,68 +4,80 @@ import axios from 'axios';
 import ChartCard from '../components/ChartCard.vue';
 import SavingsModal from '../components/SavingsModal.vue';
 
-// 현재 날짜, 연도 가져오기
 const month = new Date().getMonth() + 1;
 const year = new Date().getFullYear();
 
-const income = ref(0); // 월 수입
-const expense = ref(0); // 월 지출
-const balance = ref(0); // 월 잔액
-const savingsRate = ref(0); // 저축률
-const previousExpense = ref(806156); // 지난달 지출
-const budget = ref(700000); // 예산 금액
-const weeklyExpenses = ref([0, 61262, 137350, 210644]); // 주간 지출
-const weeklyAverage = ref(0); // 주간 평균 지출
-const savingsModalVisible = ref(false); // 저축률 모달 상태
-const goalRate = ref(80); // 목표 저축률
+const income = ref(0);
+const expense = ref(0);
+const balance = ref(0);
+const savingsRate = ref(0);
+const previousExpense = ref(0);
+const budget = ref(700000);
 
-// 저축률 모달 열고 닫기
+const savingsModalVisible = ref(false);
+const goalRate = ref(80);
+
 const toggleSavingsModal = () => {
   savingsModalVisible.value = !savingsModalVisible.value;
 };
 
-// 저축 설정 업데이트
 const updateSavingsSettings = ({ monthlyIncome, savingsRate: newRate }) => {
   income.value = monthlyIncome;
   savingsRate.value = newRate;
 };
 
-// 월간 데이터 가져오기
 const fetchMonthlyData = async () => {
   try {
-    const response = await axios.get('http://localhost:3000/transactions');
-    const data = response.data;
+    const currentUser = JSON.parse(localStorage.getItem('currentUser'));
 
-    // 수입, 지출
+    if (!currentUser || !currentUser.id) {
+      console.error('로그인한 사용자 정보가 없습니다.');
+      return;
+    }
+
+    const res = await axios.get('http://localhost:3000/money');
+    const data = res.data;
+
+    const userData = data.filter((item) => item.userid === currentUser.id);
+
+    const now = new Date();
+    const currentMonth = now.toISOString().slice(0, 7);
+    const previousMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1)
+      .toISOString()
+      .slice(0, 7);
+
+    const currentMonthData = userData.filter(
+      (item) => item.date.slice(0, 7) === currentMonth
+    );
+    const prevMonthData = userData.filter(
+      (item) => item.date.slice(0, 7) === previousMonth
+    );
+
     let totalIncome = 0;
     let totalExpense = 0;
+    let prevExpense = 0;
 
-    data.forEach((item) => {
-      if (item.type === 'income') {
-        totalIncome += item.amount;
-      } else if (item.type === 'expense') {
-        totalExpense += item.amount;
-      }
+    currentMonthData.forEach((item) => {
+      if (item.typeid === 1) totalIncome += item.amount;
+      else if (item.typeid === 2) totalExpense += item.amount;
     });
 
-    // 상태 변수 업데이트
+    prevMonthData.forEach((item) => {
+      if (item.typeid === 2) prevExpense += item.amount;
+    });
+
     income.value = totalIncome;
     expense.value = totalExpense;
     balance.value = totalIncome - totalExpense;
-    savingsRate.value = ((balance.value / totalIncome) * 100).toFixed(1);
-
-    // 주간 평균 계산
-    const totalWeekly = weeklyExpenses.value.reduce((acc, val) => acc + val, 0);
-    weeklyAverage.value = Math.floor(totalWeekly / weeklyExpenses.value.length);
-  } catch (error) {
-    console.error('데이터 불러오기 실패:', error);
+    previousExpense.value = prevExpense;
+    savingsRate.value =
+      totalIncome > 0 ? ((balance.value / totalIncome) * 100).toFixed(1) : 0;
+  } catch (err) {
+    console.error('데이터 불러오기 실패:', err);
   }
 };
 
-// 데이터 가져오기
-onMounted(() => {
-  fetchMonthlyData();
-});
+onMounted(fetchMonthlyData);
 </script>
 
 <template>
@@ -182,7 +194,7 @@ onMounted(() => {
     </div>
 
     <!-- 주간별 분석 -->
-    <div class="part-card weekly-chart">
+    <!-- <div class="part-card weekly-chart">
       <h2>주간별 분석</h2>
       <ChartCard
         chartType="line"
@@ -202,7 +214,7 @@ onMounted(() => {
       <p class="weekly-average">
         주간 평균: {{ weeklyAverage.toLocaleString() }}원
       </p>
-    </div>
+    </div> -->
   </div>
 </template>
 
@@ -223,6 +235,7 @@ onMounted(() => {
   gap: 10px;
   justify-content: space-around;
   margin-bottom: 10px;
+  /* flex-wrap: wrap; */
 }
 
 .summary-card {
@@ -365,64 +378,5 @@ onMounted(() => {
 .chart-container {
   height: 250px;
   width: 100%;
-}
-
-.weekly-chart {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  padding: 25px;
-  background-color: var(--background-color);
-  border-radius: 12px;
-  margin-top: 20px;
-}
-
-.weekly-title {
-  font: var(--ng-bold-24);
-  margin-bottom: 15px;
-  color: var(--weekly-text-color);
-}
-
-.weekly-bar-container {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 5px;
-  margin: 5px 0;
-}
-
-.weekly-bar-label {
-  font: var(--ng-reg-18);
-  color: var(--weekly-text-color);
-  min-width: 100px;
-}
-
-.weekly-bar {
-  position: relative;
-  height: 25px;
-  background-color: var(--secondary-color);
-  border-radius: 10px;
-  flex: 1;
-  overflow: hidden;
-}
-
-.weekly-bar-fill {
-  height: 100%;
-  border-radius: 10px;
-  background-color: var(--primary-color);
-  /* transition: width 0.4s ease; */
-}
-
-.weekly-bar-value {
-  margin-left: 10px;
-  font: var(--ng-reg-1);
-  color: var(--weekly-number-color);
-}
-
-.weekly-average {
-  margin-top: 15px;
-  text-align: right;
-  font: var(--ng-bold-20);
-  color: var(--weekly-average-color);
 }
 </style>

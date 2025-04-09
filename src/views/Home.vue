@@ -15,26 +15,26 @@
     <!-- Summary Cards -->
     <div class="summaryGrid">
       <div class="incomeCard">
-        <div class="cardLabel" @click="monthAmount">이번 달 수입</div>
+        <div class="cardLabel" @click="goToMothlyAnalysis">이번 달 수입</div>
         <div class="cardValue">₩{{ totalIncome.toLocaleString() }}</div>
       </div>
       <div class="expenseCard">
-        <div class="cardLabel" @click="monthAmount">이번 달 지출</div>
+        <div class="cardLabel" @click="goToMothlyAnalysis">이번 달 지출</div>
         <div class="cardValue">₩{{ totalExpense.toLocaleString() }}</div>
       </div>
       <div class="balanceCard">
-        <div class="cardLabel" @click="monthAmount">이번 달 잔액</div>
+        <div class="cardLabel" @click="goToMothlyAnalysis">이번 달 잔액</div>
         <div class="cardValue">₩{{ balance.toLocaleString() }}</div>
       </div>
       <!-- <div class="piggyAni"></div> -->
 
       <div class="savingsCard">
         <div class="nowSavings">
-          <div class="cardLabel" @click="savingClick">현재 저축률</div>
+          <div class="cardLabel" @click="goToMothlyAnalysis">현재 저축률</div>
           <div class="cardValue">{{ savingsRate }}%</div>
         </div>
         <div class="goalSavings">
-          <div class="cardLabel" @click="savingClick">목표 저축률</div>
+          <div class="cardLabel" @click="goToMonthlyAnalysis">목표 저축률</div>
           <div class="cardValue">{{ savingsRate }}%</div>
         </div>
       </div>
@@ -42,7 +42,7 @@
 
     <!-- Monthly Chart & Category Spending -->
     <div class="chartSection">
-      <div class="monthlyChart" @click="goToCalendar" style="cursor: pointer">
+      <div class="monthlyChart" @click="" style="cursor: pointer">
         <h2 class="sectionTitle">📈 월간 수입/지출 추이</h2>
         <PieChart :chartData="chartData" />
       </div>
@@ -54,9 +54,7 @@
     <!-- Transaction Summary & History -->
     <div class="transactionSection">
       <div class="transactionHistory">
-        <h2 class="sectionTitle" @click="transactionsClick">
-          🧾 최근 거래내역
-        </h2>
+        <h2 class="sectionTitle" @click="goToExpenseList">🧾 최근 거래내역</h2>
         <ul>
           <li
             v-for="(tx, index) in transactions.slice(0, 3)"
@@ -74,7 +72,9 @@
         </ul>
       </div>
       <div class="categorySummary">
-        <h2 class="sectionTitle" @click="categoryClick">📊 카테고리별 지출</h2>
+        <h2 class="sectionTitle" @click="goToAgeExpenseAnalysis">
+          📊 카테고리별 지출
+        </h2>
         <CategoryPieChart :categorySpending="categorySpending" />
       </div>
     </div>
@@ -228,6 +228,18 @@ const transactionsClick = () => {
 const monthAmount = () => {
   //router.push('./monthAmount');
   alert('이번달 요약이동');
+};
+
+const goToExpenseList = () => {
+  router.push('/expenseList');
+};
+
+const goToAgeExpenseAnalysis = () => {
+  router.push('/ageExpenseAnalysis');
+};
+
+const goToMothlyAnalysis = () => {
+  router.push('/monthlyAnalysis');
 };
 </script>
 

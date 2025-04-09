@@ -77,6 +77,6 @@ const allCategories = props.categories;
 
 .modal-actions {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
 }
 </style>
