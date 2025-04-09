@@ -92,14 +92,14 @@ const toggleAlarm = () => {
       <button
         type="button"
         :class="{ selected: form.gender === '남성' }"
-        @click="gender = '남성'"
+        @click="form.gender = '남성'"
       >
         남성
       </button>
       <button
         type="button"
         :class="{ selected: form.gender === '여성' }"
-        @click="gender = '여성'"
+        @click="form.gender = '여성'"
       >
         여성
       </button>
@@ -145,7 +145,7 @@ const toggleAlarm = () => {
     <label class="label-wrapper">이메일</label>
     <input v-model="form.email" type="text" class="input-wrapper" /> -->
 
-    <div class="alarm-box">
+    <!-- <div class="alarm-box">
       <div class="alarm-text-wrapper">
         <label class="alarm-label">알림 설정🔔</label>
         <label class="sub-alarm-label">푸시 알림을 설정합니다</label>
@@ -157,7 +157,7 @@ const toggleAlarm = () => {
       >
         {{ form.alarm ? 'ON' : 'OFF' }}
       </button>
-    </div>
+    </div> -->
 
     <div class="button-box">
       <button class="init-button" @click="initInfo" :disabled="!isFormChanged">
@@ -301,7 +301,7 @@ select {
 /* 수정, 초기화 버튼 */
 .modify-button,
 .init-button {
-  width: 45.5%;
+  width: 49%;
   height: 40px;
   margin-top: 20px;
   font-weight: bold;

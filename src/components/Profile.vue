@@ -3,6 +3,7 @@ import { ref } from 'vue';
 
 const fileInput = ref(null);
 const previewImage = ref(null);
+const userInfo = JSON.parse(localStorage.getItem('loggedInUserInfo'));
 
 // 프로필 사진 변경
 const triggerFileInput = () => {
@@ -29,15 +30,11 @@ const handleFileChange = (event) => {
       <input type="file" ref="fileInput" @change="handleFileChange" hidden />
     </div>
 
-    <div class="userName">User</div>
+    <div class="userName">{{ userInfo.name }}</div>
 
     <div class="info-item">
-      <span class="label">닉네임</span>
-      <span class="value">nickname</span>
-    </div>
-    <div class="info-item">
-      <span class="label">ID</span>
-      <span class="value">userid123</span>
+      <!-- <span class="label">ID</span> -->
+      <span class="value">{{ userInfo.userId }}</span>
     </div>
   </div>
 </template>
@@ -106,7 +103,7 @@ const handleFileChange = (event) => {
 
 .info-item {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   margin: 12px 0;
 }
 
