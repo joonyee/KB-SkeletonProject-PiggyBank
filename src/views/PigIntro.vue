@@ -35,6 +35,9 @@ const handleMouseMove = (e) => {
       <router-link to="/monthlyAnalysis" class="btn"
         >한달지출내역분석</router-link
       >
+      <router-link to="/transactionDetail" class="btn"
+        >한달지출내역분석</router-link
+      >
     </div>
   </div>
 
