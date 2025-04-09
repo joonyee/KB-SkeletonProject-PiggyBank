@@ -8,32 +8,38 @@
           {{ isDarkMode ? '☀️' : '🌙' }}
         </button>
         <button class="mypageButton" @click="mypageClick">마이페이지</button>
-        <button class="inputValue" @click="inputClick">새 거래추가</button>
+        <button class="inputValue" @click="openModal">새 거래추가</button>
+        
+        <TransactionModal
+          :isOpen="isModalOpen"
+          :date="selectedDate"
+          @close="closeModal"
+        />
       </div>
     </header>
 
     <!-- Summary Cards -->
     <div class="summaryGrid">
       <div class="incomeCard">
-        <div class="cardLabel" @click="monthAmount">이번 달 수입</div>
+        <div class="cardLabel" @click="goToMonthlyAnalysis">이번 달 수입</div>
         <div class="cardValue">₩{{ totalIncome.toLocaleString() }}</div>
       </div>
       <div class="expenseCard">
-        <div class="cardLabel" @click="monthAmount">이번 달 지출</div>
+        <div class="cardLabel" @click="goToMonthlyAnalysis">이번 달 지출</div>
         <div class="cardValue">₩{{ totalExpense.toLocaleString() }}</div>
       </div>
       <div class="balanceCard">
-        <div class="cardLabel" @click="monthAmount">이번 달 잔액</div>
+        <div class="cardLabel" @click="goToMonthlyAnalysis">이번 달 잔액</div>
         <div class="cardValue">₩{{ balance.toLocaleString() }}</div>
       </div>
       <!-- <div class="piggyAni"></div> -->
       <div class="savingsCard">
         <div class="nowSavings">
-          <div class="cardLabel" @click="savingClick">현재 저축률</div>
+          <div class="cardLabel" @click="goToMonthlyAnalysis">현재 저축률</div>
           <div class="cardValue">{{ savingsRate }}%</div>
         </div>
         <div class="goalSavings">
-          <div class="cardLabel" @click="savingClick">목표 저축률</div>
+          <div class="cardLabel" @click="goToMonthlyAnalysis">목표 저축률</div>
           <div class="cardValue">{{ savingsRate }}%</div>
         </div>
       </div>
@@ -48,16 +54,14 @@
         <PieChart :chartData="chartData" />
       </div>
       <div class="piggyAni">
-        <IndividualPig />
+        <!-- <IndividualPig /> -->
       </div>
     </div>
 
     <!-- Transaction Summary & History -->
     <div class="transactionSection">
       <div class="transactionHistory">
-        <h2 class="sectionTitle" @click="transactionsClick">
-          🧾 최근 거래내역
-        </h2>
+        <h2 class="sectionTitle" @click="goToExpenseList">🧾 최근 거래내역</h2>
         <ul>
           <li
             v-for="(tx, index) in transactions.slice(0, 3)"
@@ -75,7 +79,9 @@
         </ul>
       </div>
       <div class="categorySummary">
-        <h2 class="sectionTitle" @click="categoryClick">📊 카테고리별 지출</h2>
+        <h2 class="sectionTitle" @click="goToAgeExpenseAnalysis">
+          📊 카테고리별 지출
+        </h2>
 
         <CategoryPieChart :categorySpending="categorySpending" />
       </div>
@@ -94,6 +100,10 @@ import PiggyFace from '@/components/Piggyface.vue';
 import PiggyfaceDefault from '@/components/PiggyfaceDefault.vue';
 import FinalPig from '@/components/FinalPig.vue';
 import { useDashboardStore } from '@/stores/store.js';
+import { useRouter } from 'vue-router';
+import TransactionModal from '@/components/TransactionModal.vue';
+
+const router = useRouter();
 
 const store = useDashboardStore();
 console.log(store.savingsRate);
@@ -252,9 +262,8 @@ const savingsRate = computed(() => {
   if (totalIncome.value === 0) return 0;
   return Math.round((balance.value / totalIncome.value) * 100);
 });
-
 const mypageClick = () => {
-  //router.push('./mypage');
+  router.push('./myPage');
   alert('mypage page');
 };
 
@@ -263,13 +272,21 @@ const inputClick = () => {
   alert('money input');
 };
 
+const isModalOpen = ref(false);
+const openModal = () => {
+  isModalOpen.value = true;
+};
+const closeModal = () => {
+  isModalOpen.value = false;
+};
+
 const savingClick = () => {
   //router.push('./savings-card');
   alert('저축률 페이지');
 };
 
 const monthlyClick = () => {
-  //router.push('./monthlychart');
+  router.push('./calendar');
   alert('월간 수입/지출 페이지');
 };
 
@@ -287,13 +304,23 @@ const monthAmount = () => {
   //router.push('./monthAmount');
   alert('이번달 요약이동');
 };
+
+const goToExpenseList = () => {
+  router.push('/expenseList');
+};
+const goToAgeExpenseAnalysis = () => {
+  router.push('/ageExpenseAnalysis');
+};
+const goToMonthlyAnalysis = () => {
+  router.push('/monthlyAnalysis');
+};
 </script>
 
 <style scoped>
 .dashboard {
   padding: 2rem;
   margin: 0;
-  background: linear-gradient(to bottom right, #ffe4e6, #ffffff);
+  background: linear-gradient(to bottom, #fff9fe, #ffffff);
   font-family: sans-serif;
   box-sizing: border-box;
   color: black;
@@ -316,35 +343,41 @@ const monthAmount = () => {
 
 /* 마이페이지 버튼 */
 .mypageButton {
-  background-color: white;
-  border: black solid 1px;
+  background-color: rgb(254, 235, 253);
+  border: 1px solid rgb(251, 209, 251);
   border-radius: 0.5rem;
   padding: 12px 24px;
   cursor: pointer;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  font-weight: 600;
+  color: #333;
 }
 
 /* 새 거래추가 버튼 */
 .inputValue {
-  background-color: white;
-  border: black solid 1px;
+  background-color: rgb(254, 235, 253);
+  border: 1px solid rgb(251, 209, 251);
   border-radius: 0.5rem;
   padding: 12px 24px;
   cursor: pointer;
-  flex-grow: 1;
-  background-color: white;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  font-weight: 600;
+  color: #333;
 }
 .dark .dashboard {
-  background: linear-gradient(to bottom right, #1f2937, #111827);
-  color: black;
+  background: linear-gradient(to bottom, #121212, #121212);
+  color: #1a1a2e;
 }
 .dark .dashboardHeader {
-  background-color: #ae7695;
+  background-color: #fbcee8;
 }
 .dashboardHeader {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: #f9a8d4;
+  background-color: #fbcee8;
   padding: 1rem;
   border-radius: 1rem;
   margin-bottom: 1.5rem;
@@ -376,7 +409,8 @@ const monthAmount = () => {
 .dark .expenseCard,
 .dark .balanceCard,
 .dark .savingsCard {
-  background-color: #cecece;
+  background-color: #2e2e4d;
+  /* opacity: 0.8; */
 }
 .incomeCard,
 .expenseCard,
@@ -434,7 +468,8 @@ const monthAmount = () => {
 .dark .transactionHistory,
 .dark .categorySummary,
 .dark .piggyAni {
-  background-color: #cecece;
+  background-color: #2e2e4d;
+  opacity: 0.8;
 }
 
 .monthlyChart,
