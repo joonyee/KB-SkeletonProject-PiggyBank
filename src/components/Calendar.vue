@@ -23,6 +23,7 @@
         v-for="(day, index) in calendarData"
         :key="index"
         class="calendar-cell"
+        @click="openModal(day)"
         :class="{ 'non-current': !day.isCurrentMonth }"
       >
         <span class="cell-date">{{ day.date.getDate() }}</span>
@@ -34,11 +35,17 @@
         </div>
       </div>
     </div>
+    <TransactionModal
+      :isOpen="isModalOpen"
+      :date="selectedDate"
+      @close="closeModal"
+    />
   </div>
 </template>
 
 <script setup>
 import { ref, watch, onMounted } from 'vue';
+import TransactionModal from './TransactionModal.vue';
 import axios from 'axios';
 
 function getCalendarDays(year, month) {
@@ -73,6 +80,18 @@ const currentMonth = ref(props.month);
 const calendarData = ref([]);
 const transactions = ref([]);
 const dayNames = ['일', '월', '화', '수', '목', '금', '토'];
+//모달창
+const isModalOpen = ref(false);
+const selectedDate = ref(null); // 선택된 날짜 저장
+
+function openModal(day) {
+  selectedDate.value = day.date.toISOString().split('T')[0]; // 선택된 날짜 저장
+  isModalOpen.value = true; // 모달 열기
+}
+
+function closeModal() {
+  isModalOpen.value = false; // 모달 닫기
+}
 
 function updateCalendarData() {
   const days = getCalendarDays(currentYear.value, currentMonth.value);
@@ -190,6 +209,7 @@ function formatNumber(num) {
   border: 1px solid #e2e8f0;
   border-radius: 8px;
   padding: 8px;
+  cursor: pointer; /* 클릭 가능한 상태로 설정 */
 }
 
 .cell-date {
@@ -200,9 +220,11 @@ function formatNumber(num) {
 }
 
 .cell-details {
-  margin-top: 30px;
-  text-align: left;
-  font-size: 0.8rem;
+  margin-top: 1rem;
+  display: flex;
+  flex-direction: column;
+
+  font-size: 0.85rem;
 }
 
 .income {
@@ -215,5 +237,6 @@ function formatNumber(num) {
 
 .non-current {
   opacity: 0.5;
+  pointer-events: none; /* 비활성화된 날짜는 클릭 불가 */
 }
 </style>
