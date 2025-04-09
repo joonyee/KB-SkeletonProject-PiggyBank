@@ -35,6 +35,9 @@ const handleMouseMove = (e) => {
       <router-link to="/monthlyAnalysis" class="btn"
         >한달지출내역분석</router-link
       >
+      <router-link to="/transactionDetail" class="btn"
+        >한달지출내역분석</router-link
+      >
     </div>
   </div>
 
@@ -45,9 +48,9 @@ const handleMouseMove = (e) => {
 <style scoped>
 .title {
   color: #d6336c;
-  font-size: 36px;
+  font-size: 80px;
   font-weight: bold;
-  margin-bottom: 20px;
+  margin-bottom: 93px;
   font-family: 'Nanum Gothic', sans-serif;
   text-align: center;
 }
@@ -94,7 +97,7 @@ const handleMouseMove = (e) => {
 
 /* 버튼 스타일 */
 .buttons {
-  margin-top: 20px;
+  margin-top: 100px;
   display: flex;
   gap: 15px;
 }

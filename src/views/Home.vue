@@ -5,7 +5,7 @@
       <h1 class="dashboardTitle">💡 Piggy Bank</h1>
       <div class="flex items-center gap-2 relative">
         <button @click="toggleDarkMode" class="darkModeButton">
-          {{ isDarkMode ? '☀️' : '🌙' }}
+          {{ isDarkMode ? "☀️" : "🌙" }}
         </button>
         <button class="mypageButton" @click="mypageClick">마이페이지</button>
         <button class="inputValue" @click="inputClick">새 거래추가</button>
@@ -49,7 +49,14 @@
         <PieChart :chartData="chartData" />
       </div>
       <div class="piggyAni">
+
         <FinalPig />
+
+
+        <FinalPig />
+
+        <IndividualPig />
+
       </div>
     </div>
 
@@ -84,6 +91,7 @@
 </template>
 
 <script setup>
+
 import { ref, computed, onMounted } from 'vue';
 import axios from 'axios';
 import CategoryPieChart from '@/components/CategoryPieChart.vue';
@@ -97,21 +105,25 @@ import { useDashboardStore } from '@/stores/store.js';
 import { useRouter } from 'vue-router';
 
 const router = useRouter();
+import { useMainStore } from '@/stores/store.js';
+
+
 //pinia사용을 위한 dashboard변수 정의
 const dashboard = useDashboardStore();
+
 
 const dropdownOpen = ref(false);
 const toggleDropdown = () => {
   dropdownOpen.value = !dropdownOpen.value;
 };
 const logout = () => {
-  console.log('로그아웃 실행됨');
+  console.log("로그아웃 실행됨");
 };
 
 const isDarkMode = ref(false);
 const toggleDarkMode = () => {
   isDarkMode.value = !isDarkMode.value;
-  document.documentElement.classList.toggle('dark', isDarkMode.value);
+  document.documentElement.classList.toggle("dark", isDarkMode.value);
 };
 
 //여기서 부터 pinia로 옮겨서 다른 컴포넌트도 사용할 수 있게 바꿉니다.
@@ -122,7 +134,9 @@ const loading = ref(true); // 로딩 상태 추가
 
 const fetchData = async () => {
   try {
+
     const response = await axios.get('http://localhost:3000/money');
+
     const moneyData = response.data;
     const monthlyTotals = {};
     moneyData.forEach((entry) => {
@@ -155,7 +169,7 @@ const fetchData = async () => {
 
     console.log(categoryTotals);
 
-    const categoryRes = await axios.get('http://localhost:3000/category');
+    const categoryRes = await axios.get("http://localhost:3000/category");
     const categoryMap = categoryRes.data.reduce((map, cat) => {
       map[cat.id] = cat.name;
       return map;
@@ -164,16 +178,16 @@ const fetchData = async () => {
     const sorted = moneyData.sort(
       (a, b) => new Date(b.date) - new Date(a.date)
     );
-    const recentTransactions = sorted.slice(0, 5).map((entry) => ({
+    const recentTransactions = sorted.map((entry) => ({
       date: entry.date,
-      category: categoryMap[entry.categoryid] || '기타',
+      category: categoryMap[entry.categoryid] || "기타",
       description: entry.payment,
       amount: entry.typeid === 1 ? entry.amount : -entry.amount,
     }));
 
     transactions.value = recentTransactions;
   } catch (error) {
-    console.error('데이터 로딩 실패:', error);
+    console.error("데이터 로딩 실패:", error);
   } finally {
     loading.value = false;
   }
@@ -200,47 +214,48 @@ const totalExpense = computed(() =>
     .filter((tx) => tx.amount < 0)
     .reduce((sum, tx) => sum + Math.abs(tx.amount), 0)
 );
+const totalIncome = dashboard.totalIncome;
 
-const balance = computed(() => totalIncome.value - totalExpense.value);
+const totalExpense = dashboard.totalExpense;
 
-// const savingsRate = computed(() => {
-//   if (totalIncome.value === 0) return 0;
-//   return Math.round((balance.value / totalIncome.value) * 100);
-// });
+const balance = dashboard.balance;
+
+const savingsRate = dashboard.savingsRate;
 
 const mypageClick = () => {
+
   router.push('./myPage');
   alert('mypage page');
 };
 
 const inputClick = () => {
   //router.push('./inputValue');
-  alert('money input');
+  alert("money input");
 };
 
 const savingClick = () => {
   //router.push('./savings-card');
-  alert('저축률 페이지');
+  alert("저축률 페이지");
 };
 
 const monthlyClick = () => {
   //router.push('./monthlychart');
-  alert('월간 수입/지출 페이지');
+  alert("월간 수입/지출 페이지");
 };
 
 const categoryClick = () => {
   //router.push('./categorypage');
-  alert('카테고리 페이지 이동');
+  alert("카테고리 페이지 이동");
 };
 
 const transactionsClick = () => {
   //   router.push('/transaction'); 페이지 만들어서 라우팅 하면 끝
-  alert('최근 거래내역 페이지 이동');
+  alert("최근 거래내역 페이지 이동");
 };
 
 const monthAmount = () => {
   //router.push('./monthAmount');
-  alert('이번달 요약이동');
+  alert("이번달 요약이동");
 };
 </script>
 

@@ -6,8 +6,8 @@ import AgeExpenseAnalysis from '@/views/AgeExpenseAnalysis.vue';
 import ExpenseList from '@/views/ExpenseList.vue';
 import Home from '@/views/Home.vue';
 import MonthlyAnalysis from '@/views/MonthlyAnalysis.vue';
-import TransactionDetail from '@/views/TransactionDetail.vue';
 import MyPage from '@/views/MyPage.vue';
+
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -25,8 +25,9 @@ const router = createRouter({
       name: 'AgeExpenseAnalysis',
       component: AgeExpenseAnalysis,
     },
+
     { path: '/home', component: Home },
-    { path: '/expenseList', name: 'ExpenseList', component: ExpenseList },
+
 
     {
       path: '/monthlyAnalysis',
@@ -34,10 +35,9 @@ const router = createRouter({
       component: MonthlyAnalysis,
     },
     {
-      path: '/transaction/:id',
-      name: 'TransactionDetail',
-      component: TransactionDetail,
-      props: true,
+      path: '/expenseList',
+      name: 'ExpenseList',
+      component: ExpenseList,
     },
     {
       path: '/myPage',
@@ -45,6 +45,7 @@ const router = createRouter({
       component: MyPage,
       props: true,
     },
+
   ],
 });
 
