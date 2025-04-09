@@ -5,7 +5,7 @@ import SignUp from '@/views/SignUp.vue';
 import AgeExpenseAnalysis from '@/views/AgeExpenseAnalysis.vue';
 import ExpenseList from '@/views/ExpenseList.vue';
 import MonthlyAnalysis from './views/MonthlyAnalysis.vue';
-import TransactionDetail from './views/TransactionDetail.vue';
+// import TransactionDetail from './views/TransactionDetail.vue';
 
 const routes = [
   { path: '/', component: PigIntro },
@@ -14,7 +14,13 @@ const routes = [
   { path: '/ageExpenseAnalysis', component: AgeExpenseAnalysis },
   { path: '/expenseList', component: ExpenseList },
   { path: '/monthlyAnalysis', component: MonthlyAnalysis },
-  { path: '/transactionDetail', component: TransactionDetail },
+  // {
+  //   path: '/transaction/:id',
+  //   name: 'TransactionDetail',
+  //   component: TransactionDetail,
+  //   props: true,
+  // },
+  // { path: '/transactionDetail', component: TransactionDetail },
 ];
 
 const router = createRouter({
