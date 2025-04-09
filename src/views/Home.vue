@@ -49,7 +49,11 @@
         <PieChart :chartData="chartData" />
       </div>
       <div class="piggyAni">
+
+        <FinalPig />
+
         <IndividualPig />
+
       </div>
     </div>
 
@@ -84,19 +88,22 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from "vue";
-import axios from "axios";
-import CategoryPieChart from "@/components/CategoryPieChart.vue";
-import PieChart from "@/components/PieChart.vue";
-import { RouterLink } from "vue-router";
-import IndividualPig from "@/components/IndividualPig.vue";
-import PiggyFace from "@/components/Piggyface.vue";
-import PiggyfaceDefault from "@/components/PiggyfaceDefault.vue";
-import FinalPig from "@/components/FinalPig.vue";
-import { useDashboardStore } from "@/stores/store.js";
+
+import { ref, computed, onMounted } from 'vue';
+import axios from 'axios';
+import CategoryPieChart from '@/components/CategoryPieChart.vue';
+import PieChart from '@/components/PieChart.vue';
+import { RouterLink } from 'vue-router';
+import IndividualPig from '@/components/IndividualPig.vue';
+import PiggyFace from '@/components/Piggyface.vue';
+import PiggyfaceDefault from '@/components/PiggyfaceDefault.vue';
+import FinalPig from '@/components/FinalPig.vue';
+import { useMainStore } from '@/stores/store.js';
+
 
 //pinia사용을 위한 dashboard변수 정의
 const dashboard = useDashboardStore();
+
 
 const dropdownOpen = ref(false);
 const toggleDropdown = () => {
@@ -120,7 +127,9 @@ const loading = ref(true); // 로딩 상태 추가
 
 const fetchData = async () => {
   try {
-    const response = await axios.get("http://localhost:3000/money");
+
+    const response = await axios.get('http://localhost:3000/money');
+
     const moneyData = response.data;
     const monthlyTotals = {};
     moneyData.forEach((entry) => {
@@ -162,7 +171,7 @@ const fetchData = async () => {
     const sorted = moneyData.sort(
       (a, b) => new Date(b.date) - new Date(a.date)
     );
-    const recentTransactions = sorted.slice(0, 5).map((entry) => ({
+    const recentTransactions = sorted.map((entry) => ({
       date: entry.date,
       category: categoryMap[entry.categoryid] || "기타",
       description: entry.payment,
