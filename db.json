@@ -1,24 +1,111 @@
 {
+  "user": [
+    {
+      "id": "6f39",
+      "userId": "aa@naver.com",
+      "password": "aaaaaaaa",
+      "name": "aa",
+      "age": "2",
+      "gender": "남성"
+    },
+    {
+      "id": "fb5c",
+      "userId": "aaa@naver.com",
+      "password": "aaaaaaaa",
+      "name": "aaa",
+      "age": "4",
+      "gender": "여성"
+    },
+    {
+      "id": "aa31",
+      "userId": "asd@naver.com",
+      "password": "aaaaaaaa",
+      "name": "asd",
+      "age": "3",
+      "gender": "여성"
+    }
+  ],
+  "ageArea": [
+    {
+      "id": "1",
+      "age": "10대"
+    },
+    {
+      "id": "2",
+      "age": "20대"
+    },
+    {
+      "id": "3",
+      "age": "30대"
+    },
+    {
+      "id": "4",
+      "age": "40대"
+    },
+    {
+      "id": "5",
+      "age": "50대 이상"
+    }
+  ],
   "type": [
-    { "id": 1, "name": "수입" },
-    { "id": 2, "name": "지출" }
+    {
+      "id": "1",
+      "name": "수입"
+    },
+    {
+      "id": "2",
+      "name": "지출"
+    }
   ],
   "category": [
-    { "id": 1, "name": "급여" },
-    { "id": 2, "name": "용돈" },
-    { "id": 3, "name": "부수입" },
-    { "id": 4, "name": "기타" },
-    { "id": 5, "name": "식비" },
-    { "id": 6, "name": "교통비" },
-    { "id": 7, "name": "주거비" },
-    { "id": 8, "name": "의료비" },
-    { "id": 9, "name": "교육비" },
-    { "id": 10, "name": "의류비" },
-    { "id": 11, "name": "여가비" }
+    {
+      "id": "1",
+      "name": "급여"
+    },
+    {
+      "id": "2",
+      "name": "용돈"
+    },
+    {
+      "id": "3",
+      "name": "부수입"
+    },
+    {
+      "id": "4",
+      "name": "기타"
+    },
+    {
+      "id": "5",
+      "name": "식비"
+    },
+    {
+      "id": "6",
+      "name": "교통비"
+    },
+    {
+      "id": "7",
+      "name": "주거비"
+    },
+    {
+      "id": "8",
+      "name": "의료비"
+    },
+    {
+      "id": "9",
+      "name": "교육비"
+    },
+    {
+      "id": "10",
+      "name": "의류비"
+    },
+    {
+      "id": "11",
+      "name": "여가비"
+    }
   ],
   "money": [
     {
-      "id": 1,
+      "id": "1",
       "userid": 1,
       "typeid": 1,
       "categoryid": 2,
@@ -29,7 +116,7 @@
       "memo": "아부지 용돈"
     },
     {
-      "id": 2,
+      "id": "2",
       "userid": 1,
       "typeid": 2,
       "categoryid": 9,
@@ -40,7 +127,7 @@
       "memo": "학원 등록비"
     },
     {
-      "id": 2,
+      "id": "2",
       "userid": 1,
       "typeid": 2,
       "categoryid": 7,
@@ -51,7 +138,7 @@
       "memo": "학원 등록비"
     },
     {
-      "id": 2,
+      "id": "2",
       "userid": 1,
       "typeid": 2,
       "categoryid": 4,
@@ -62,7 +149,7 @@
       "memo": "학원 등록비"
     },
     {
-      "id": 2,
+      "id": "2",
       "userid": 1,
       "typeid": 2,
       "categoryid": 9,
