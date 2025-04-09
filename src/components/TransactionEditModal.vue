@@ -43,7 +43,7 @@ const saveTransaction = () => {
 const setPaymentMethod = (method) => {
   editedTransaction.value.paymentMethod = method;
 };
-
+ㅎ;
 const setConsumption = (type) => {
   editedTransaction.value.consumptionType = type;
 };
