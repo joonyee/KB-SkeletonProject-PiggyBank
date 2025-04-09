@@ -6,6 +6,7 @@ import AgeExpenseAnalysis from '@/views/AgeExpenseAnalysis.vue';
 import ExpenseList from '@/views/ExpenseList.vue';
 import MonthlyAnalysis from './views/MonthlyAnalysis.vue';
 import TransactionDetail from './views/TransactionDetail.vue';
+import Home from '@/views/Home.vue';
 
 const routes = [
   { path: '/', component: PigIntro },
@@ -15,6 +16,7 @@ const routes = [
   { path: '/expenseList', component: ExpenseList },
   { path: '/monthlyAnalysis', component: MonthlyAnalysis },
   { path: '/transactionDetail', component: TransactionDetail },
+  { path: '/home', component: Home },
 ];
 
 const router = createRouter({
