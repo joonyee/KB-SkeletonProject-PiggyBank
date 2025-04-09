@@ -16,7 +16,7 @@
             placeholder="8자 이상 입력해주세요"
             v-model="password"
           />
-          <span @click="togglePassword" class="toggle">보기</span>
+          <span @click="togglePassword" class="toggle">{{ showPassword? "숨기기":"보기" }}</span>
         </div>
 
         <label class="label-text">비밀번호 확인</label>
@@ -26,7 +26,7 @@
             placeholder="비밀번호를 한 번 더 입력해주세요"
             v-model="confirmPassword"
           />
-          <span @click="toggleConfirm" class="toggle">보기</span>
+          <span @click="toggleConfirm" class="toggle">{{ showConfirm? "숨기기":"보기" }}</span>
         </div>
 
         <p
