@@ -5,6 +5,16 @@ import ProfileInput from '@/components/ProfileInput.vue';
 </script>
 
 <template>
+  <header class="dashboardHeader">
+    <h1 class="dashboardTitle">💡 Piggy Bank</h1>
+    <div class="flex items-center gap-2 relative">
+      <button @click="toggleDarkMode" class="darkModeButton">
+        {{ isDarkMode ? '☀️' : '🌙' }}
+      </button>
+      <button class="mypageButton" @click="mypageClick">마이페이지</button>
+      <button class="inputValue" @click="inputClick">새 거래추가</button>
+    </div>
+  </header>
   <div class="background">
     <div class="container">
       <h2 class="page-title">마이페이지</h2>
@@ -64,5 +74,22 @@ import ProfileInput from '@/components/ProfileInput.vue';
   .right-box {
     width: 100%; /* 전체 너비로 확장 */
   }
+}
+.dark .dashboard {
+  background: linear-gradient(to bottom right, #1f2937, #111827);
+  color: black;
+}
+.dark .dashboardHeader {
+  background-color: #ae7695;
+}
+.dashboardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #f9a8d4;
+  padding: 1rem;
+  border-radius: 1rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 </style>
