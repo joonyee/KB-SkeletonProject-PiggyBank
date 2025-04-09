@@ -1,7 +1,7 @@
 {
   "user": [
     {
-      "id": "6f39",
+      "id": "1111",
       "userId": "aa@naver.com",
       "password": "aaaaaaaa",
       "name": "aa",
@@ -49,6 +49,14 @@
       "gender": "여성",
       "userImg": "",
       "goalSavings": 10
+    },
+    {
+      "id": "acaf",
+      "userId": "ww@naver.com",
+      "password": "wwwwwwww",
+      "name": "ww",
+      "age": 3,
+      "gender": "남성"
     }
   ],
   "ageArea": [
@@ -152,7 +160,12 @@
     }
   ],
   "fixedExpenses": [
-    { "id": 1, "day": 7, "description": "보험료(롯데)", "amount": 45450 },
+    {
+      "id": 1,
+      "day": 7,
+      "description": "보험료(롯데)",
+      "amount": 45450
+    },
     {
       "id": 2,
       "day": 10,
@@ -181,7 +194,7 @@
   "money": [
     {
       "id": 1,
-      "userid": 1,
+      "userid": "1111",
       "typeid": 1,
       "categoryid": 2,
       "date": "2025-06-01",
@@ -192,7 +205,7 @@
     },
     {
       "id": 2,
-      "userid": 1,
+      "userid": "1111",
       "typeid": 2,
       "categoryid": 9,
       "date": "2025-06-01",
@@ -203,7 +216,7 @@
     },
     {
       "id": 3,
-      "userid": 1,
+      "userid": "1111",
       "typeid": 2,
       "categoryid": 7,
       "date": "2025-04-01",
@@ -214,7 +227,7 @@
     },
     {
       "id": 4,
-      "userid": 1,
+      "userid": "1111",
       "typeid": 2,
       "categoryid": 4,
       "date": "2025-04-01",
@@ -225,7 +238,7 @@
     },
     {
       "id": 5,
-      "userid": 1,
+      "userid": "1111",
       "typeid": 2,
       "categoryid": 9,
       "date": "2025-05-01",
@@ -236,7 +249,7 @@
     },
     {
       "id": 6,
-      "userid": 1,
+      "userid": "1111",
       "typeid": 2,
       "categoryid": 7,
       "date": "2025-06-01",
@@ -247,7 +260,7 @@
     },
     {
       "id": 7,
-      "userid": 1,
+      "userid": "1111",
       "typeid": 2,
       "categoryid": 4,
       "date": "2025-05-01",
@@ -258,7 +271,7 @@
     },
     {
       "id": 8,
-      "userid": 1,
+      "userid": "1111",
       "typeid": 2,
       "categoryid": 1,
       "date": "2025-01-10",
@@ -269,7 +282,7 @@
     },
     {
       "id": 9,
-      "userid": 1,
+      "userid": "1111",
       "typeid": 2,
       "categoryid": 2,
       "date": "2025-01-15",
@@ -280,7 +293,7 @@
     },
     {
       "id": 10,
-      "userid": 1,
+      "userid": "1111",
       "typeid": 2,
       "categoryid": 3,
       "date": "2025-01-20",
@@ -291,9 +304,20 @@
     },
     {
       "id": 11,
-      "userid": 1,
+      "userid": "1111",
       "typeid": 2,
       "categoryid": 4,
+      "date": "2025-02-03",
+      "amount": 250000,
+      "tendency": 1,
+      "payment": 1,
+      "memo": "2월 생활비"
+    },
+    {
+      "id": 12,
+      "userid": "fb5c",
+      "typeid": 2,
+      "categoryid": 6,
       "date": "2025-02-03",
       "amount": 250000,
       "tendency": 1,
@@ -310,6 +334,9 @@
       "id": "2",
       "feel": "충동적 소비"
     },
-    { "id": 3, "feel": "수입" }
+    {
+      "id": 3,
+      "feel": "수입"
+    }
   ]
 }
