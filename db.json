@@ -115,7 +115,7 @@
   ],
   "money": [
     {
-      "id": "1",
+      "id": 1,
       "userid": 1,
       "typeid": 1,
       "categoryid": 2,
@@ -126,60 +126,169 @@
       "memo": "아부지 용돈"
     },
     {
-      "id": "2",
+      "id": 2,
       "userid": 1,
       "typeid": 2,
       "categoryid": 9,
       "date": "2025-04-01",
       "amount": 200000,
-      "tendency": "계획적 소비",
+      "tendency": "계획된 지출",
       "payment": "교육비",
       "memo": "학원 등록비"
     },
     {
-      "id": "2",
+      "id": 3,
       "userid": 1,
       "typeid": 2,
       "categoryid": 7,
       "date": "2025-04-01",
       "amount": 200000,
-      "tendency": "계획적 소비",
+      "tendency": "계획된 지출",
       "payment": "교육비",
       "memo": "학원 등록비"
     },
     {
-      "id": "2",
+      "id": 4,
       "userid": 1,
       "typeid": 2,
       "categoryid": 4,
       "date": "2025-04-01",
       "amount": 200000,
-      "tendency": "계획적 소비",
+      "tendency": "계획된 지출",
       "payment": "교육비",
       "memo": "학원 등록비"
     },
     {
-      "id": "2",
+      "id": 5,
       "userid": 1,
       "typeid": 2,
       "categoryid": 9,
       "date": "2025-05-01",
       "amount": 200000,
-      "tendency": "계획적 소비",
+      "tendency": "계획된 지출",
       "payment": "교육비",
       "memo": "학원 등록비"
     },
     {
-      "id": "2",
+      "id": 6,
+      "userid": 1,
+      "typeid": 2,
+      "categoryid": 7,
+      "date": "2025-05-01",
+      "amount": 200000,
+      "tendency": "충동적 지출",
+      "payment": "여가비",
+      "memo": "인형 뽑기"
+    },
+    {
+      "id": 7,
+      "userid": 1,
+      "typeid": 2,
+      "categoryid": 4,
+      "date": "2025-05-01",
+      "amount": 200000,
+      "tendency": "충동적 지출",
+      "payment": "여가비",
+      "memo": "인형 뽑기"
+    },
+    {
+      "id": 8,
+      "userid": 1,
+      "typeid": 2,
+      "categoryid": 1,
+      "date": "2025-01-10",
+      "amount": 200000,
+      "tendency": "계획된 지출",
+      "payment": "카드",
+      "memo": "1월 첫째주 정기 지출"
+    },
+    {
+      "id": 9,
+      "userid": 1,
+      "typeid": 2,
+      "categoryid": 2,
+      "date": "2025-01-15",
+      "amount": 300000,
+      "tendency": "계획된 지출",
+      "payment": "계좌이체",
+      "memo": "1월 중순 교육비"
+    },
+    {
+      "id": 10,
+      "userid": 1,
+      "typeid": 2,
+      "categoryid": 3,
+      "date": "2025-01-20",
+      "amount": 150000,
+      "tendency": "충동적 지출",
+      "payment": "현금",
+      "memo": "갑작스런 외식"
+    },
+    {
+      "id": 11,
+      "userid": 1,
+      "typeid": 2,
+      "categoryid": 4,
+      "date": "2025-02-03",
+      "amount": 250000,
+      "tendency": "계획된 지출",
+      "payment": "카드",
+      "memo": "2월 생활비"
+    },
+    {
+      "id": 12,
+      "userid": 1,
+      "typeid": 2,
+      "categoryid": 5,
+      "date": "2025-02-12",
+      "amount": 120000,
+      "tendency": "충동적 지출",
+      "payment": "현금",
+      "memo": "2월 쇼핑"
+    },
+    {
+      "id": 13,
       "userid": 1,
       "typeid": 2,
       "categoryid": 6,
-      "date": "2025-05-03",
-      "amount": 200000,
-      "tendency": "계획적 소비",
-      "payment": "교통비",
-      "memo": "교통"
+      "date": "2025-03-01",
+      "amount": 280000,
+      "tendency": "계획된 지출",
+      "payment": "계좌이체",
+      "memo": "3월 학원비"
+    },
+    {
+      "id": 14,
+      "userid": 1,
+      "typeid": 2,
+      "categoryid": 7,
+      "date": "2025-03-05",
+      "amount": 140000,
+      "tendency": "충동적 지출",
+      "payment": "카드",
+      "memo": "카페+쇼핑"
+    },
+    {
+      "id": 15,
+      "userid": 1,
+      "typeid": 2,
+      "categoryid": 9,
+      "date": "2025-04-01",
+      "amount": 220000,
+      "tendency": "계획된 지출",
+      "payment": "카드",
+      "memo": "4월 등록비"
+    },
+    {
+      "id": 16,
+      "userid": 1,
+      "typeid": 2,
+      "categoryid": 10,
+      "date": "2025-04-02",
+      "amount": 100000,
+      "tendency": "충동적 지출",
+      "payment": "현금",
+      "memo": "편의점+간식"
     }
   ]
 }
-
