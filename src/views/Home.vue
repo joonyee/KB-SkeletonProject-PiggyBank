@@ -41,10 +41,8 @@
 
     <!-- Monthly Chart & Category Spending -->
     <div class="chartSection">
-      <div class="monthlyChart">
-        <h2 class="sectionTitle" @click="monthlyClick">
-          📈 월간 수입/지출 추이
-        </h2>
+      <div class="monthlyChart" @click="goToCalendar" style="cursor: pointer">
+        <h2 class="sectionTitle">📈 월간 수입/지출 추이</h2>
         <PieChart :chartData="chartData" />
       </div>
       <div class="piggyAni">
@@ -88,12 +86,11 @@ import { ref, computed, onMounted } from 'vue';
 import axios from 'axios';
 import CategoryPieChart from '@/components/CategoryPieChart.vue';
 import PieChart from '@/components/PieChart.vue';
-import { RouterLink } from 'vue-router';
+import { RouterLink, useRouter } from 'vue-router';
 import IndividualPig from '@/components/IndividualPig.vue';
 import PiggyFace from '@/components/Piggyface.vue';
 import PiggyfaceDefault from '@/components/PiggyfaceDefault.vue';
 import FinalPig from '@/components/FinalPig.vue';
-import { useDashboardStore } from '@/stores/store.js';
 
 const store = useDashboardStore();
 console.log(store.savingsRate);
@@ -192,6 +189,7 @@ const fetchData = async () => {
       return map;
     }, {});
 
+
     // 트랜잭션 출력용 가공 (지출/수입 전부)
     const recentTransactions = sorted
       .filter((entry) => {
@@ -210,6 +208,8 @@ const fetchData = async () => {
     // );
 
     // 차트용 데이터 세팅
+
+
     transactions.value = recentTransactions;
     categorySpending.value = Object.entries(categoryTotals).map(
       ([id, amount]) => ({
@@ -271,6 +271,7 @@ const savingClick = () => {
 const monthlyClick = () => {
   //router.push('./monthlychart');
   alert('월간 수입/지출 페이지');
+
 };
 
 const categoryClick = () => {
