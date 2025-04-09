@@ -1,47 +1,54 @@
 <script setup>
+import { ref, onMounted } from 'vue';
+import axios from 'axios';
 import SummaryCard from '../components/SummaryCard.vue';
 import TransactionTable from '../components/TransactionTable.vue';
 
-const balance = '800,000원';
-const income = '1,800,000원';
-const expense = '1,000,000원';
+const balance = ref('');
+const income = ref('');
+const expense = ref('');
+const transactions = ref([]);
 
-const transactions = [
-  {
-    date: '2024-01-25',
-    type: 'income',
-    category: '급여',
-    description: '1월 급여',
-    amount: 1500000,
-  },
-  {
-    date: '2024-01-20',
-    type: 'income',
-    category: '부수입',
-    description: '프리랜서 수입',
-    amount: 300000,
-  },
-  {
-    date: '2024-01-15',
-    type: 'expense',
-    category: '주거비',
-    description: '월세',
-    amount: 800000,
-  },
-  {
-    date: '2024-01-22',
-    type: 'expense',
-    category: '식비',
-    description: '식료품',
-    amount: 200000,
-  },
-];
+// DB에서 데이터 가져오기
+const fetchTransactions = async () => {
+  try {
+    const response = await axios.get('http://localhost:3000/transactions');
+    transactions.value = response.data;
+    calculateSummary();
+    console.log('데이터 불러오기 성공');
+  } catch (error) {
+    console.error('데이터 불러오기 실패:', error);
+  }
+};
+
+// 잔액, 수입, 지출 계산
+const calculateSummary = () => {
+  let totalIncome = 0;
+  let totalExpense = 0;
+
+  transactions.value.forEach((item) => {
+    if (item.type === 'income') {
+      totalIncome += item.amount;
+    } else if (item.type === 'expense') {
+      totalExpense += item.amount;
+    }
+  });
+
+  income.value = `${totalIncome.toLocaleString()}원`;
+  expense.value = `${totalExpense.toLocaleString()}원`;
+  balance.value = `${(totalIncome - totalExpense).toLocaleString()}원`;
+};
+
+// 페이지 로드 시 데이터 가져오기
+onMounted(() => {
+  fetchTransactions();
+});
 </script>
 
 <template>
   <div class="expense-main-container">
     <div class="expense-list">
-      <h2 class="title">사용자님의 가계부</h2>
+      <h2 class="title">은지미님의 가계부</h2>
       <div class="summary">
         <SummaryCard title="잔액" :amount="balance" />
         <SummaryCard title="이번달 수입" :amount="income" type="income" />
@@ -53,7 +60,6 @@ const transactions = [
 </template>
 
 <style scoped>
-/* 메인 컨테이너 스타일 */
 .expense-main-container {
   display: flex;
   justify-content: center;
@@ -68,13 +74,12 @@ const transactions = [
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  /* min-height: 100vh; */
   padding: 30px;
   background-color: var(--background-color);
   border-radius: 15px;
-  /* box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); */
-  max-width: 1200px;
+  max-width: 1300px;
   width: 100%;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .title {
