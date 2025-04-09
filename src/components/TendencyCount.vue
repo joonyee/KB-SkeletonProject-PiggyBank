@@ -71,11 +71,13 @@ const impulsePercent = computed(() =>
   flex-wrap: wrap;
   gap: 1rem;
   justify-content: center;
-  margin-bottom: 2rem;
+  margin: 2rem auto 2rem auto; /* 가운데 정렬 및 상하 여백 */
 }
 
 .tendencyCard {
   flex: 1;
+  max-width: 630px; /* 카드 최대 폭 제한 */
+  min-width: 280px; /* 너무 좁아지는 것도 방지 */
   background: #fff;
   padding: 1rem;
   border-radius: 12px;
@@ -147,6 +149,7 @@ const impulsePercent = computed(() =>
 
   .tendencyCard {
     width: 100%;
+    max-width: none; /* 모바일에서는 최대폭 제한 해제 */
   }
 }
 </style>

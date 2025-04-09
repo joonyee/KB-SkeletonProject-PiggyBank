@@ -21,7 +21,8 @@ import MonthlyPatternChart from "@/components/MonthlyTendencyChart.vue";
   background: #ffc7ef;
   border-radius: 10px;
   font-weight: bold;
-  margin-top: 2rem;
+  margin: 2rem auto 1rem auto;
+  max-width: 1300px;
   text-decoration: none;
   color: black;
 }

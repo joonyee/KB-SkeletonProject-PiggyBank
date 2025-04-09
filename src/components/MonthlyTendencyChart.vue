@@ -14,28 +14,42 @@ import Chart from "chart.js/auto";
 
 const chartRef = ref(null);
 
-// 임시 데이터 (막대그래프 ui 테스트용)
-const money = [
-  { amount: 200000, tendency: "계획된 지출", date: "2025-01-10" },
-  { amount: 300000, tendency: "계획된 지출", date: "2025-01-15" },
-  { amount: 150000, tendency: "충동적 지출", date: "2025-01-20" },
-  { amount: 250000, tendency: "계획된 지출", date: "2025-02-03" },
-  { amount: 120000, tendency: "충동적 지출", date: "2025-02-12" },
-  { amount: 280000, tendency: "계획된 지출", date: "2025-03-01" },
-  { amount: 140000, tendency: "충동적 지출", date: "2025-03-05" },
-  { amount: 220000, tendency: "계획된 지출", date: "2025-04-01" },
-  { amount: 100000, tendency: "충동적 지출", date: "2025-04-02" },
-];
+onMounted(async () => {
+  const res = await fetch("http://localhost:3000/money");
+  const data = await res.json();
 
-onMounted(() => {
+  // 수입 또는 null인 항목 제외
+  const filtered = data.filter(
+    (item) => item.tendency !== null && item.tendency !== "수입"
+  );
+
+  // 최근 4개월 목록 생성
+  const now = new Date();
+  const currentYear = now.getFullYear();
+  const currentMonth = now.getMonth();
+
+  const recentMonths = Array.from({ length: 4 }, (_, i) => {
+    const date = new Date(currentYear, currentMonth - i, 1);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    return `${year}-${month}`; // e.g., "2025-04"
+  });
+
+  // 최근 4개월 데이터만 필터
+  const recentFiltered = filtered.filter((item) =>
+    recentMonths.includes(item.date.slice(0, 7))
+  );
+
+  // 계획/충동 분리
+  const planned = recentFiltered.filter((item) =>
+    item.tendency.includes("계획")
+  );
+  const impulse = recentFiltered.filter((item) =>
+    item.tendency.includes("충동")
+  );
+
+  // 월별 합산
   const grouped = {};
-
-  const filtered = money;
-
-  const planned = filtered.filter((item) => item.tendency.includes("계획"));
-  const impulse = filtered.filter((item) => item.tendency.includes("충동"));
-
-  // 월별로 합산
   [...planned, ...impulse].forEach((item) => {
     const month = parseInt(item.date.split("-")[1], 10) + "월";
     if (!grouped[month]) grouped[month] = { 계획: 0, 충동: 0 };
@@ -43,10 +57,12 @@ onMounted(() => {
     else grouped[month].충동 += item.amount;
   });
 
+  // 정렬된 월, 데이터 생성
   const labels = Object.keys(grouped).sort((a, b) => parseInt(a) - parseInt(b));
   const 계획Data = labels.map((month) => grouped[month].계획);
   const 충동Data = labels.map((month) => grouped[month].충동);
 
+  // Chart.js 렌더링
   new Chart(chartRef.value, {
     type: "bar",
     data: {
@@ -59,6 +75,7 @@ onMounted(() => {
           borderRadius: 4,
           borderSkipped: false,
           stack: "지출",
+          maxBarThickness: 80,
         },
         {
           label: "계획 지출",
@@ -67,6 +84,7 @@ onMounted(() => {
           borderRadius: 4,
           borderSkipped: false,
           stack: "지출",
+          maxBarThickness: 80,
         },
       ],
     },
@@ -91,8 +109,8 @@ onMounted(() => {
           stacked: true,
           grid: { display: false },
           ticks: { font: { size: 13 } },
-          categoryPercentage: 0.2, // 카테고리 너비 비율
-          barPercentage: 0.7, // 막대 비율
+          categoryPercentage: 0.5,
+          barPercentage: 0.7,
         },
         y: {
           stacked: true,
@@ -116,8 +134,10 @@ onMounted(() => {
   padding: 1rem;
   border-radius: 10px;
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
-  margin-bottom: 2rem;
+  max-width: 1300px;
+  margin: 0 auto 2rem auto; /* 가운데 정렬 및 하단 여백 */
 }
+
 .chart-header {
   display: flex;
   justify-content: space-between;
