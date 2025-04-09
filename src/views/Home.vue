@@ -27,7 +27,7 @@
         <div class="cardValue">₩{{ balance.toLocaleString() }}</div>
       </div>
       <!-- <div class="piggyAni"></div> -->
-<<<<<<< Updated upstream
+      <<<<<<< Updated upstream
       <div class="savingsCard">
         <div class="nowSavings">
           <div class="cardLabel" @click="savingClick">현재 저축률</div>
@@ -49,7 +49,7 @@
         <PieChart :chartData="chartData" />
       </div>
       <div class="piggyAni">
-        <FinalPig/>
+        <FinalPig />
       </div>
     </div>
 
@@ -89,12 +89,11 @@ import axios from 'axios';
 import CategoryPieChart from '@/components/CategoryPieChart.vue';
 import PieChart from '@/components/PieChart.vue';
 import { RouterLink } from 'vue-router';
-import IndividualPig from "@/components/IndividualPig.vue";
-import PiggyFace from "@/components/Piggyface.vue";
-import PiggyfaceDefault from "@/components/PiggyfaceDefault.vue";
-import FinalPig from "@/components/FinalPig.vue";
-import {useMainStore} from "@/stores/store.js";
-
+import IndividualPig from '@/components/IndividualPig.vue';
+import PiggyFace from '@/components/Piggyface.vue';
+import PiggyfaceDefault from '@/components/PiggyfaceDefault.vue';
+import FinalPig from '@/components/FinalPig.vue';
+import { useMainStore } from '@/stores/store.js';
 
 const store = useMainStore();
 console.log(store.savingsRate);
@@ -119,9 +118,6 @@ const loading = ref(true); // 로딩 상태 추가
 
 const fetchData = async () => {
   try {
-    // const chartResponse = await axios.get('http://localhost:3000/chartData');
-    // chartData.value = chartResponse.data;
-    // console.log('chartData:', chartData.value);
     const response = await axios.get('http://localhost:3000/money');
     const moneyData = response.data;
     const monthlyTotals = {};
@@ -164,7 +160,7 @@ const fetchData = async () => {
     const sorted = moneyData.sort(
       (a, b) => new Date(b.date) - new Date(a.date)
     );
-    const recentTransactions = sorted.slice(0, 5).map((entry) => ({
+    const recentTransactions = sorted.map((entry) => ({
       date: entry.date,
       category: categoryMap[entry.categoryid] || '기타',
       description: entry.payment,
@@ -242,8 +238,6 @@ const monthAmount = () => {
   //router.push('./monthAmount');
   alert('이번달 요약이동');
 };
-
-
 </script>
 
 <style scoped>
@@ -416,7 +410,6 @@ const monthAmount = () => {
   display: flex;
   justify-content: center;
   align-items: center;
-
 }
 
 .chartLabel {
