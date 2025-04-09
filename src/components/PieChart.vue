@@ -1,6 +1,6 @@
 <template>
   <div class="chart-container">
-    <Bar v-if="chartData" :data="chartData" :options="options" />
+    <Bar v-if="chartData" :data="chartData" :options="chartOptions" />
   </div>
 </template>
 
@@ -33,32 +33,9 @@ const props = defineProps({
   },
 });
 
-// 상태 관리용 ref 선언
-const labels = ref([]);
-const income = ref([]);
-const expense = ref([]);
-const chartData = ref({
-  labels: [],
-  datasets: [
-    {
-      label: '수입',
-      backgroundColor: '#4ade80',
-      borderColor: '#4ade80',
-      borderWidth: 1,
-      data: [],
-    },
-    {
-      label: '지출',
-      backgroundColor: '#f87171',
-      borderColor: '#f87171',
-      borderWidth: 1,
-      data: [],
-    },
-  ],
-});
+const chartData = ref(null);
 
-// 옵션 설정
-const options = {
+const chartOptions = {
   responsive: true,
   plugins: {
     legend: {
@@ -66,7 +43,7 @@ const options = {
     },
     tooltip: {
       callbacks: {
-        label: function (context) {
+        label: (context) => {
           return `${
             context.dataset.label
           }: ₩${context.parsed.y.toLocaleString()}`;
@@ -78,56 +55,54 @@ const options = {
     y: {
       beginAtZero: true,
       ticks: {
-        callback: function (value) {
-          return '₩' + value.toLocaleString();
-        },
+        callback: (value) => '₩' + value.toLocaleString(),
       },
     },
   },
 };
 
-// props.chartData가 변할 때마다 차트 데이터를 업데이트
+// 🔁 차트 데이터 가공 함수
 const updateChartData = () => {
   if (props.chartData && props.chartData.length > 0) {
-    labels.value = props.chartData.map((item) => item.month);
-    income.value = props.chartData.map((item) => item.income);
-    expense.value = props.chartData.map((item) => item.expense);
+    const labels = props.chartData.map((item) => item.month);
+    const incomeData = props.chartData.map((item) => item.income);
+    const expenseData = props.chartData.map((item) => item.expense);
 
     chartData.value = {
-      labels: labels.value,
+      labels,
       datasets: [
         {
           label: '수입',
           backgroundColor: '#4ade80',
           borderColor: '#4ade80',
           borderWidth: 1,
-          data: income.value,
+          data: incomeData,
         },
         {
           label: '지출',
           backgroundColor: '#f87171',
           borderColor: '#f87171',
           borderWidth: 1,
-          data: expense.value,
+          data: expenseData,
         },
       ],
     };
   }
 };
 
-// 초기 데이터 처리
+// 🚀 컴포넌트 마운트 시 데이터 초기화
 onMounted(() => {
   updateChartData();
 });
 
-// chartData 변경 시 업데이트
+// 👀 props가 바뀔 때마다 차트 데이터 재계산
 watch(() => props.chartData, updateChartData);
 </script>
 
 <style scoped>
 .chart-container {
   position: relative;
-  height: 400px; /* 그래프 높이 설정 */
-  width: 100%; /* 그래프 너비 설정 */
+  height: 400px;
+  width: 100%;
 }
 </style>
