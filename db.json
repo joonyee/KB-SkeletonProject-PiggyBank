@@ -23,6 +23,14 @@
       "name": "asd",
       "age": "3",
       "gender": "여성"
+    },
+    {
+      "id": "a487",
+      "userId": "asdf@naver.com",
+      "password": "aaaaaaaa",
+      "name": "aaaaa",
+      "age": "4",
+      "gender": "남성"
     }
   ],
   "ageArea": [
@@ -108,10 +116,22 @@
     }
   ],
   "payment": [
-    { "id": 1, "name": "카드" },
-    { "id": 2, "name": "현금" },
-    { "id": 3, "name": "계좌이체" },
-    { "id": 4, "name": "수입" }
+    {
+      "id": 1,
+      "name": "카드"
+    },
+    {
+      "id": 2,
+      "name": "현금"
+    },
+    {
+      "id": 3,
+      "name": "계좌이체"
+    },
+    {
+      "id": 4,
+      "name": "수입"
+    }
   ],
   "money": [
     {
@@ -154,7 +174,7 @@
       "categoryid": 4,
       "date": "2025-04-01",
       "amount": 200000,
-      "tendency": "계획적 소비",
+      "tendencyid": "계획적 소비",
       "payment": "교육비",
       "memo": "학원 등록비"
     },
@@ -165,7 +185,7 @@
       "categoryid": 9,
       "date": "2025-05-01",
       "amount": 200000,
-      "tendency": "계획적 소비",
+      "tendencyid": 1,
       "payment": "교육비",
       "memo": "학원 등록비"
     },
@@ -176,9 +196,53 @@
       "categoryid": 6,
       "date": "2025-05-03",
       "amount": 200000,
-      "tendency": "계획적 소비",
+      "tendencyid": 1,
       "payment": "교통비",
       "memo": "교통"
+    },
+    {
+      "id": "2",
+      "userid": 1,
+      "typeid": 2,
+      "categoryid": 6,
+      "date": "2025-06-03",
+      "amount": 200000,
+      "tendencyid": 1,
+      "payment": "교통비",
+      "memo": "버스비"
+    },
+    {
+      "id": "2",
+      "userid": 1,
+      "typeid": 2,
+      "categoryid": 7,
+      "date": "2025-06-03",
+      "amount": 200000,
+      "tendencyid": 1,
+      "payment": "교통비",
+      "memo": "택시비"
+    },
+    {
+      "id": "2",
+      "userid": 1,
+      "typeid": 1,
+      "categoryid": 2,
+      "date": "2025-06-09",
+      "amount": 2000000,
+      "tendencyid": 3,
+      "payment": "용돈",
+      "memo": "아부지 용돈"
+    }
+  ],
+  "tendency": [
+    { "id": 1, "feel": "계획적 소비" },
+    {
+      "id": 2,
+      "feel": "충동적 소비"
+    },
+    {
+      "id": 3,
+      "feel": "수입"
     }
   ]
 }
