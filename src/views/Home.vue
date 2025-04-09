@@ -49,7 +49,7 @@
         <PieChart :chartData="chartData" />
       </div>
       <div class="piggyAni">
-        <FinalPig/>
+        <FinalPig />
       </div>
     </div>
 
@@ -61,9 +61,9 @@
         </h2>
         <ul>
           <li
-              v-for="(tx, index) in transactions.slice(0, 3)"
-              :key="index"
-              class="transactionItem"
+            v-for="(tx, index) in transactions.slice(0, 3)"
+            :key="index"
+            class="transactionItem"
           >
             <div class="transactionDate">{{ tx.date }} {{ tx.category }}</div>
             <div class="transactionContent">
@@ -89,13 +89,14 @@ import axios from 'axios';
 import CategoryPieChart from '@/components/CategoryPieChart.vue';
 import PieChart from '@/components/PieChart.vue';
 import { RouterLink } from 'vue-router';
-import IndividualPig from "@/components/IndividualPig.vue";
-import PiggyFace from "@/components/Piggyface.vue";
-import PiggyfaceDefault from "@/components/PiggyfaceDefault.vue";
-import FinalPig from "@/components/FinalPig.vue";
-import {useDashboardStore} from "@/stores/store.js";
+import IndividualPig from '@/components/IndividualPig.vue';
+import PiggyFace from '@/components/Piggyface.vue';
+import PiggyfaceDefault from '@/components/PiggyfaceDefault.vue';
+import FinalPig from '@/components/FinalPig.vue';
+import { useDashboardStore } from '@/stores/store.js';
+import { useRouter } from 'vue-router';
 
-
+const router = useRouter();
 //pinia사용을 위한 dashboard변수 정의
 const dashboard = useDashboardStore();
 
@@ -161,7 +162,7 @@ const fetchData = async () => {
     }, {});
 
     const sorted = moneyData.sort(
-        (a, b) => new Date(b.date) - new Date(a.date)
+      (a, b) => new Date(b.date) - new Date(a.date)
     );
     const recentTransactions = sorted.slice(0, 5).map((entry) => ({
       date: entry.date,
@@ -183,21 +184,21 @@ onMounted(() => {
 });
 
 const maxChartValue = computed(() =>
-    Math.max(
-        ...chartData.value.map((item) => Math.max(item.income, item.expense))
-    )
+  Math.max(
+    ...chartData.value.map((item) => Math.max(item.income, item.expense))
+  )
 );
 
 const totalIncome = computed(() =>
-    transactions.value
-        .filter((tx) => tx.amount > 0)
-        .reduce((sum, tx) => sum + tx.amount, 0)
+  transactions.value
+    .filter((tx) => tx.amount > 0)
+    .reduce((sum, tx) => sum + tx.amount, 0)
 );
 
 const totalExpense = computed(() =>
-    transactions.value
-        .filter((tx) => tx.amount < 0)
-        .reduce((sum, tx) => sum + Math.abs(tx.amount), 0)
+  transactions.value
+    .filter((tx) => tx.amount < 0)
+    .reduce((sum, tx) => sum + Math.abs(tx.amount), 0)
 );
 
 const balance = computed(() => totalIncome.value - totalExpense.value);
@@ -208,7 +209,7 @@ const balance = computed(() => totalIncome.value - totalExpense.value);
 // });
 
 const mypageClick = () => {
-  //router.push('./mypage');
+  router.push('./myPage');
   alert('mypage page');
 };
 
@@ -241,8 +242,6 @@ const monthAmount = () => {
   //router.push('./monthAmount');
   alert('이번달 요약이동');
 };
-
-
 </script>
 
 <style scoped>
@@ -415,7 +414,6 @@ const monthAmount = () => {
   display: flex;
   justify-content: center;
   align-items: center;
-
 }
 
 .chartLabel {

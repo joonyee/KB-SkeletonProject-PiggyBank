@@ -7,6 +7,7 @@ import ExpenseList from '@/views/ExpenseList.vue';
 import Home from '@/views/Home.vue';
 import MonthlyAnalysis from '@/views/MonthlyAnalysis.vue';
 import TransactionDetail from '@/views/TransactionDetail.vue';
+import MyPage from '@/views/MyPage.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -36,6 +37,12 @@ const router = createRouter({
       path: '/transaction/:id',
       name: 'TransactionDetail',
       component: TransactionDetail,
+      props: true,
+    },
+    {
+      path: '/myPage',
+      name: 'MyPage',
+      component: MyPage,
       props: true,
     },
   ],
