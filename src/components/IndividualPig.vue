@@ -82,7 +82,7 @@
 import {useDashboardStore} from "@/stores/store.js";
 
 const dashboard = useDashboardStore();
-const savingsRate = dashboard.savingsAmount;
+const savingsRate = dashboard.savingsRate;
 
 // 기본 크기 설정
 const baseSize = 200;

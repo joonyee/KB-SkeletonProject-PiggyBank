@@ -194,7 +194,7 @@ const totalExpense = dashboard.totalExpense;
 
 const balance = dashboard.balance;
 
-const savingsRate = dashboard.savingsAmount
+const savingsRate = dashboard.savingsRate
 
 const mypageClick = () => {
   //router.push('./mypage');

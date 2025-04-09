@@ -15,7 +15,7 @@ export const useDashboardStore = defineStore('dashboard', () => {
             .reduce((sum, tx) => sum + tx.amount, 0)
     );
     //home.vue에 savingsRate에 해당하는 부분
-    const savingsAmount = computed(() => {
+    const savingsRate = computed(() => {
         if (totalIncome.value === 0) return 0;
         return Math.round((balance.value / totalIncome.value) * 100);
     });
@@ -100,7 +100,7 @@ export const useDashboardStore = defineStore('dashboard', () => {
         transactions,
         loading,
         fetchData,
-        savingsAmount,
+        savingsRate,
         totalIncome,
         balance,
         totalExpense,
