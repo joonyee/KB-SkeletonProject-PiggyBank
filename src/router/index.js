@@ -6,7 +6,7 @@ import AgeExpenseAnalysis from "@/views/AgeExpenseAnalysis.vue";
 import ExpenseList from "@/views/ExpenseList.vue";
 import Home from "@/views/Home.vue";
 import MonthlyAnalysis from "@/views/MonthlyAnalysis.vue";
-import MyPage from "@/views/MyPage.vue";
+import ExpenseTendency from "@/views/ExpenseTendency.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -38,10 +38,9 @@ const router = createRouter({
       component: ExpenseList,
     },
     {
-      path: "/myPage",
-      name: "MyPage",
-      component: MyPage,
-      props: true,
+      path: "/expenseTendency",
+      name: "ExpenseTendency",
+      component: ExpenseTendency,
     },
   ],
 });

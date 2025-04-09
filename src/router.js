@@ -5,8 +5,8 @@ import SignUp from "@/views/SignUp.vue";
 import AgeExpenseAnalysis from "@/views/AgeExpenseAnalysis.vue";
 import ExpenseList from "@/views/ExpenseList.vue";
 import MonthlyAnalysis from "./views/MonthlyAnalysis.vue";
+import ExpenseTendency from "@/views/ExpenseTendency.vue";
 
-import MyPage from "./views/MyPage.vue";
 import Home from "@/views/Home.vue";
 
 const routes = [
@@ -17,8 +17,7 @@ const routes = [
   { path: "/ageExpenseAnalysis", component: AgeExpenseAnalysis },
   { path: "/expenseList", component: ExpenseList },
   { path: "/monthlyAnalysis", component: MonthlyAnalysis },
-
-  { path: "/myPage", component: MyPage },
+  { path: "/expenseTendency", component: ExpenseTendency },
 ];
 
 const router = createRouter({
