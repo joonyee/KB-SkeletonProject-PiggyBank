@@ -2,17 +2,31 @@
 import { ref, computed, onMounted } from 'vue';
 import Profile from '@/components/Profile.vue';
 import ProfileInput from '@/components/ProfileInput.vue';
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
+
+const goToHome = () => {
+  router.push('./home');
+};
 </script>
 
 <template>
   <header class="dashboardHeader">
-    <h1 class="dashboardTitle">💡 Piggy Bank</h1>
+    <h1 class="dashboardTitle">
+      <img
+        src="/src/assets/icons/logo.png"
+        class="iconImage"
+        @click="goToHome"
+      />Piggy Bank Piggy Bank
+    </h1>
     <div class="flex items-center gap-2 relative">
       <button @click="toggleDarkMode" class="darkModeButton">
         {{ isDarkMode ? '☀️' : '🌙' }}
       </button>
       <button class="mypageButton" @click="mypageClick">마이페이지</button>
       <button class="inputValue" @click="inputClick">새 거래추가</button>
+      <button class="logout" @click="logout">로그아웃</button>
     </div>
   </header>
   <div class="background">
@@ -30,6 +44,11 @@ import ProfileInput from '@/components/ProfileInput.vue';
   </div>
 </template>
 <style scoped>
+.iconImage {
+  width: 60px;
+  height: 60px;
+  /* object-fit: contain; */
+}
 .background {
   background-color: #ffe4e6;
   min-height: 100vh;
