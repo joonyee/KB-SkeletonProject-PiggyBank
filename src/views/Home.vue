@@ -52,6 +52,9 @@
 
         <FinalPig />
 
+
+        <FinalPig />
+
         <IndividualPig />
 
       </div>
@@ -98,6 +101,10 @@ import IndividualPig from '@/components/IndividualPig.vue';
 import PiggyFace from '@/components/Piggyface.vue';
 import PiggyfaceDefault from '@/components/PiggyfaceDefault.vue';
 import FinalPig from '@/components/FinalPig.vue';
+import { useDashboardStore } from '@/stores/store.js';
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
 import { useMainStore } from '@/stores/store.js';
 
 
@@ -196,6 +203,17 @@ const maxChartValue = computed(() =>
   )
 );
 
+const totalIncome = computed(() =>
+  transactions.value
+    .filter((tx) => tx.amount > 0)
+    .reduce((sum, tx) => sum + tx.amount, 0)
+);
+
+const totalExpense = computed(() =>
+  transactions.value
+    .filter((tx) => tx.amount < 0)
+    .reduce((sum, tx) => sum + Math.abs(tx.amount), 0)
+);
 const totalIncome = dashboard.totalIncome;
 
 const totalExpense = dashboard.totalExpense;
@@ -205,8 +223,9 @@ const balance = dashboard.balance;
 const savingsRate = dashboard.savingsRate;
 
 const mypageClick = () => {
-  //router.push('./mypage');
-  alert("mypage page");
+
+  router.push('./myPage');
+  alert('mypage page');
 };
 
 const inputClick = () => {
