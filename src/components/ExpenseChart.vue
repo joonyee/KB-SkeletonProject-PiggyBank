@@ -1,38 +1,29 @@
-<template>
-  <div class="chart-container">
-    <h3 class="chart-title">{{ title }}</h3>
-    <div class="chart-wrapper">
-      <canvas ref="chartCanvas" class="chart-canvas"></canvas>
-    </div>
-  </div>
-</template>
-
 <script setup>
-import { onMounted, ref } from 'vue';
+import { ref, onMounted, computed, watch } from 'vue';
 import { Chart } from 'chart.js/auto';
 
 const props = defineProps({
-  title: String,
   labels: Array,
   myData: Array,
   avgData: Array,
 });
 
-const chartCanvas = ref(null);
-let chartInstance = null;
+const barChartRef = ref(null);
+const donutChartRef = ref(null);
 
-function getCSSVariable(variableName) {
-  return getComputedStyle(document.documentElement)
-    .getPropertyValue(variableName)
-    .trim();
-}
+let barChart = null;
+let donutChart = null;
 
-onMounted(() => {
-  const primaryColor = getCSSVariable('--primary-color');
-  const secondaryColor = getCSSVariable('--secondary-color');
-  const textColor = getCSSVariable('--text-color');
+const myTotal = computed(() => props.myData.reduce((a, b) => a + b, 0));
+const avgTotal = computed(() => props.avgData.reduce((a, b) => a + b, 0));
 
-  chartInstance = new Chart(chartCanvas.value, {
+const primaryColor = '#FF69B4';
+const softColor = '#FFD1E8';
+
+const initBarChart = () => {
+  if (barChart) barChart.destroy();
+
+  barChart = new Chart(barChartRef.value, {
     type: 'bar',
     data: {
       labels: props.labels,
@@ -42,15 +33,13 @@ onMounted(() => {
           data: props.myData,
           backgroundColor: primaryColor,
           borderRadius: 5,
-          borderSkipped: false,
           barThickness: 30,
         },
         {
           label: '평균 소비',
           data: props.avgData,
-          backgroundColor: secondaryColor,
+          backgroundColor: softColor,
           borderRadius: 5,
-          borderSkipped: false,
           barThickness: 30,
         },
       ],
@@ -60,24 +49,11 @@ onMounted(() => {
       responsive: true,
       maintainAspectRatio: false,
       plugins: {
-        legend: {
-          display: true,
-          position: 'top',
-          labels: {
-            font: {
-              size: 16,
-              family: getCSSVariable('--font-nanum-gothic'),
-            },
-            color: textColor,
-          },
-        },
+        legend: { position: 'top' },
         tooltip: {
           callbacks: {
-            label: function (context) {
-              return `${
-                context.dataset.label
-              }: ₩${context.raw.toLocaleString()}`;
-            },
+            label: (ctx) =>
+              `${ctx.dataset.label}: ₩${ctx.raw.toLocaleString()}`,
           },
         },
       },
@@ -85,44 +61,117 @@ onMounted(() => {
         x: {
           beginAtZero: true,
           ticks: {
-            callback: (value) => `₩${value.toLocaleString()}`,
-            font: {
-              size: 14,
-              family: getCSSVariable('--font-nanum-gothic'),
-            },
-            color: textColor,
+            callback: (v) => `₩${v.toLocaleString()}`,
+            color: '#333',
           },
         },
         y: {
-          beginAtZero: true,
           ticks: {
-            font: {
-              size: 14,
-              family: getCSSVariable('--font-nanum-gothic'),
-            },
-            color: textColor,
+            color: '#333',
           },
         },
       },
     },
   });
+};
+
+const initDonutChart = () => {
+  if (donutChart) donutChart.destroy();
+
+  donutChart = new Chart(donutChartRef.value, {
+    type: 'doughnut',
+    data: {
+      labels: ['나의 소비', '평균 소비'],
+      datasets: [
+        {
+          data: [myTotal.value, avgTotal.value],
+          backgroundColor: [primaryColor, softColor],
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { position: 'bottom' },
+        tooltip: {
+          callbacks: {
+            label: (ctx) => `${ctx.label}: ₩${ctx.raw.toLocaleString()}`,
+          },
+        },
+      },
+    },
+  });
+};
+
+onMounted(() => {
+  initBarChart();
+  initDonutChart();
 });
+
+watch(
+  () => [props.myData, props.avgData],
+  () => {
+    initBarChart();
+    initDonutChart();
+  }
+);
 </script>
+<template>
+  <div class="chart-container">
+    <div class="chart-section">
+      <h3 class="chart-title">카테고리별 소비 비교</h3>
+      <canvas ref="barChartRef" class="chart-canvas"></canvas>
+    </div>
+
+    <div class="summary-section">
+      <p class="summary-text">
+        총 소비 : <strong>{{ myTotal.toLocaleString() }}원</strong><br />
+        또래 평균 : <strong>{{ avgTotal.toLocaleString() }}원</strong>
+      </p>
+
+      <p class="result-text">
+        <span v-if="myTotal > avgTotal" class="over-msg">
+          ⚠️ 평균보다
+          <strong>{{ (myTotal - avgTotal).toLocaleString() }}원</strong> 더
+          사용하셨습니다.
+        </span>
+        <span v-else class="good-msg">
+          🎉 평균보다
+          <strong>{{ (avgTotal - myTotal).toLocaleString() }}원</strong> 적게
+          사용하셨습니다!
+        </span>
+      </p>
+
+      <div class="chart-section">
+        <h3 class="chart-title">총 소비 비교</h3>
+        <canvas ref="donutChartRef" class="chart-canvas"></canvas>
+      </div>
+    </div>
+  </div>
+</template>
 
 <style scoped>
-@import '@/assets/styles/global.css';
-
 .chart-container {
   display: flex;
   flex-direction: column;
+  gap: 50px;
   align-items: center;
+  width: 100%;
+  padding: 30px 10px;
 }
 
-.chart-wrapper {
-  position: relative;
-  width: 1000px;
-  height: 500px;
-  overflow: hidden; /* 스크롤 방지 */
+.chart-section {
+  width: 100%;
+  max-width: 1000px;
+  height: 400px;
+}
+
+.chart-title {
+  font: var(--ng-reg-22);
+  text-align: center;
+  margin-bottom: 16px;
+  color: var(--primary-color);
 }
 
 .chart-canvas {
@@ -130,12 +179,31 @@ onMounted(() => {
   height: 100%;
 }
 
-.chart-title {
-  font: var(--ng-bold-20);
+.summary-section {
   text-align: center;
-  margin-bottom: 10px;
-  color: var(--primary-color); /* 글로벌 변수 사용 */
+  margin-top: 30px;
+  font: var(--ng-reg-18);
+  color: var(--text-color);
+}
+
+.summary-text {
+  margin-bottom: 20px;
+  font: var(--ng-reg-20);
+}
+
+.result-text {
+  margin-bottom: 30px;
+  font-size: 16px;
+  font: var(--ng-reg-18);
+}
+
+.over-msg {
+  color: #ff4d4f;
+  font: var(--ng-reg-18);
+}
+
+.good-msg {
+  color: var(--text-success);
+  font: var(--ng-reg-18);
 }
 </style>
-git remote set-url origin
-https://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@github.com/KB-SkeletonProject/KB_skeleton_project.git
