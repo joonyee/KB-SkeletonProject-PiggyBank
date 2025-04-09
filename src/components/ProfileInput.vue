@@ -2,14 +2,14 @@
 import { ref, computed, onMounted } from 'vue';
 
 // input 태그 내 초기값
-const form = ref({
-  password: 'abcd',
-  confirmPassword: 'abcd',
-  phone: '010-1234-1234',
-  email: 'example@gmail.com',
-  alarm: true,
-});
-
+// const form = ref({
+//   id: '',
+//   password: 'abcd',
+//   confirmPassword: 'abcd',
+//   email: 'example@gmail.com',
+//   alarm: true,
+// });
+const form = ref({});
 const initialForm = ref({});
 
 // 비밀번호 보기/숨기기
@@ -31,7 +31,13 @@ const isPasswordMatch = computed(
 );
 
 onMounted(() => {
-  initialForm.value = { ...form.value };
+  const userInfo = JSON.parse(localStorage.getItem('loggedInUserInfo'));
+
+  form.value = { ...userInfo };
+  initialForm.value = { ...userInfo };
+
+  form.value.confirmPassword = userInfo.password; // 비밀번호 일치 확인
+  form.value.alarm = true; // 알람 설정(기본 true)
 });
 
 // 초기화 버튼 클릭 이벤트
@@ -71,6 +77,34 @@ const toggleAlarm = () => {
   <h3>정보 변경</h3>
   <hr />
   <div class="wrapper">
+    <label class="label-wrapper">연령</label>
+
+    <select v-model="form.age">
+      <option>10대</option>
+      <option>20대</option>
+      <option>30대</option>
+      <option>40대</option>
+      <option>50대 이상</option>
+    </select>
+
+    <label class="label-wrapper">성별</label>
+    <div class="gender-buttons">
+      <button
+        type="button"
+        :class="{ selected: form.gender === '남성' }"
+        @click="gender = '남성'"
+      >
+        남성
+      </button>
+      <button
+        type="button"
+        :class="{ selected: form.gender === '여성' }"
+        @click="gender = '여성'"
+      >
+        여성
+      </button>
+    </div>
+
     <label class="label-wrapper">비밀번호</label>
     <div class="input-with-icon">
       <input
@@ -105,11 +139,11 @@ const toggleAlarm = () => {
       {{ passwordMatchMessage }}
     </label>
 
-    <label class="label-wrapper">휴대전화</label>
+    <!-- <label class="label-wrapper">휴대전화</label>
     <input v-model="form.phone" type="text" class="input-wrapper" />
 
     <label class="label-wrapper">이메일</label>
-    <input v-model="form.email" type="text" class="input-wrapper" />
+    <input v-model="form.email" type="text" class="input-wrapper" /> -->
 
     <div class="alarm-box">
       <div class="alarm-text-wrapper">
@@ -146,11 +180,51 @@ const toggleAlarm = () => {
   margin: 20px 0 2.5px 0;
 }
 .input-wrapper {
-  width: 90%;
+  width: 95%;
   height: 35px;
   padding-left: 10px;
   border: 1px solid #716a6c;
   border-radius: 10px;
+}
+
+/* 연령대 선택 박스 */
+select {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: inherit;
+}
+
+/* 성별 선택 버튼 */
+.gender-buttons {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.gender-buttons button {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: white;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+  color: #333;
+}
+
+.gender-buttons button:hover {
+  background-color: #ffc7ef;
+  color: black;
+}
+
+.gender-buttons button.selected {
+  background-color: #ffc7ef;
+  color: black;
+  border: 1px solid #ffc7ef;
 }
 
 /* 비밀번호 input (비밀번호 보기) */
@@ -162,7 +236,7 @@ const toggleAlarm = () => {
 /* 비밀번호 보기/숨기기 버튼 */
 .input-with-icon button {
   position: absolute;
-  right: 50px;
+  right: 20px;
   top: 50%;
   transform: translateY(-50%);
   background: none;

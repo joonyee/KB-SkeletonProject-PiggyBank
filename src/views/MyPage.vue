@@ -2,6 +2,7 @@
 import { ref, computed, onMounted } from 'vue';
 import Profile from '@/components/Profile.vue';
 import ProfileInput from '@/components/ProfileInput.vue';
+import Notice from '@/components/Notice.vue';
 </script>
 
 <template>
@@ -14,6 +15,7 @@ import ProfileInput from '@/components/ProfileInput.vue';
         </div>
         <div class="right-box">
           <ProfileInput />
+          <Notice />
         </div>
       </div>
     </div>
