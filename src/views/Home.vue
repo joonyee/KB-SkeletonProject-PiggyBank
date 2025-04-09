@@ -48,7 +48,7 @@
         <PieChart :chartData="chartData" />
       </div>
       <div class="piggyAni">
-        <FinalPig />
+        <IndividualPig />
       </div>
     </div>
 
@@ -97,6 +97,7 @@ import { useDashboardStore } from '@/stores/store.js';
 
 const store = useDashboardStore();
 console.log(store.savingsRate);
+
 const dropdownOpen = ref(false);
 const toggleDropdown = () => {
   dropdownOpen.value = !dropdownOpen.value;
@@ -111,6 +112,7 @@ const toggleDarkMode = () => {
   document.documentElement.classList.toggle('dark', isDarkMode.value);
 };
 
+//여기서 부터 pinia로 옮겨서 다른 컴포넌트도 사용할 수 있게 바꿉니다.
 const chartData = ref([]);
 const categorySpending = ref([]);
 const transactions = ref([]);
@@ -119,6 +121,7 @@ const loading = ref(true); // 로딩 상태 추가
 const fetchData = async () => {
   try {
     const response = await axios.get('http://localhost:3000/money');
+
     const moneyData = response.data;
     const monthlyTotals = {};
     moneyData.forEach((entry) => {
@@ -183,7 +186,6 @@ const fetchData = async () => {
 
     console.log(categoryTotals);
 
-    // 카테고리 이름 매핑
     const categoryRes = await axios.get('http://localhost:3000/category');
     const categoryMap = categoryRes.data.reduce((map, cat) => {
       map[cat.id] = cat.name;
@@ -203,6 +205,10 @@ const fetchData = async () => {
         amount: entry.typeid === 1 ? entry.amount : -entry.amount,
       }));
 
+    // const sorted = moneyData.sort(
+    //   (a, b) => new Date(b.date) - new Date(a.date)
+    // );
+
     // 차트용 데이터 세팅
     transactions.value = recentTransactions;
     categorySpending.value = Object.entries(categoryTotals).map(
@@ -217,7 +223,7 @@ const fetchData = async () => {
     loading.value = false;
   }
 };
-
+//여기까지
 onMounted(() => {
   fetchData();
 });
