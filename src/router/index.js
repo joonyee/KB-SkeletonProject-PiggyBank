@@ -4,6 +4,7 @@ import Login from '@/views/Login.vue';
 import SignUp from '@/views/SignUp.vue';
 import AgeExpenseAnalysis from '@/views/AgeExpenseAnalysis.vue';
 import ExpenseList from '@/views/ExpenseList.vue';
+import Home from '@/views/Home.vue';
 import MonthlyAnalysis from '@/views/MonthlyAnalysis.vue';
 
 const router = createRouter({
@@ -23,6 +24,9 @@ const router = createRouter({
       component: AgeExpenseAnalysis,
     },
 
+    { path: '/home', component: Home },
+
+
     {
       path: '/monthlyAnalysis',
       name: 'MonthlyAnalysis',
@@ -33,17 +37,7 @@ const router = createRouter({
       name: 'ExpenseList',
       component: ExpenseList,
     },
-    // {
-    //   path: '/expenseList/transaction/:id',
-    //   name: 'TransactionDetail',
-    //   component: TransactionDetail,
-    //   props: true,
-    // },
-    // {
-    //   path: '/transactionDetail',
-    //   name: 'TransactionDetail',
-    //   component: TransactionDetail,
-    // },
+
   ],
 });
 

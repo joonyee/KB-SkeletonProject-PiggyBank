@@ -1,6 +1,7 @@
 <script setup>
 import { ref } from 'vue';
 import PiggyFace from '@/components/Piggyface.vue';
+import Header from "@/components/Header.vue";
 
 const eyeOffset = ref({ x: 0, y: 0 });
 
@@ -20,7 +21,10 @@ const handleMouseMove = (e) => {
 </script>
 
 <template>
+<div class="entire-container">
+  <Header/>
   <div class="wrapper" @mousemove="handleMouseMove">
+
     <h1 class="title">Piggy Bank</h1>
     <PiggyFace :eyeOffset="eyeOffset" />
     <div class="buttons">
@@ -36,14 +40,17 @@ const handleMouseMove = (e) => {
       >
     </div>
   </div>
+
+</div>
+
 </template>
 
 <style scoped>
 .title {
   color: #d6336c;
-  font-size: 36px;
+  font-size: 80px;
   font-weight: bold;
-  margin-bottom: 20px;
+  margin-bottom: 93px;
   font-family: 'Nanum Gothic', sans-serif;
   text-align: center;
 }
@@ -60,6 +67,14 @@ const handleMouseMove = (e) => {
   flex-direction: column;
   align-items: center;
   justify-content: center;
+
+  /*background-color: #f8f9fa;
+  min-height: calc(100vh - 60px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding-top: 60px;  이거 스타일 적용하면 header가 보임. */
 }
 
 /* 눈 깜빡임 애니메이션 */
@@ -82,7 +97,7 @@ const handleMouseMove = (e) => {
 
 /* 버튼 스타일 */
 .buttons {
-  margin-top: 20px;
+  margin-top: 100px;
   display: flex;
   gap: 15px;
 }

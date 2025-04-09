@@ -1,214 +1,118 @@
 <template>
   <div class="dashboard">
     <!-- Header -->
-    <header class="dashboard-header">
-      <h1 class="dashboard-title">💡 Piggy Bank</h1>
+    <header class="dashboardHeader">
+      <h1 class="dashboardTitle">💡 Piggy Bank</h1>
       <div class="flex items-center gap-2 relative">
-        <button @click="toggleDarkMode" class="darkMode-button">
-          {{ isDarkMode ? '☀️' : '🌙' }}
+        <button @click="toggleDarkMode" class="darkModeButton">
+          {{ isDarkMode ? "☀️" : "🌙" }}
         </button>
-        <button class="mypage-button">마이페이지</button>
-        <button class="inputValue">새 거래추가</button>
+        <button class="mypageButton" @click="mypageClick">마이페이지</button>
+        <button class="inputValue" @click="inputClick">새 거래추가</button>
       </div>
     </header>
 
     <!-- Summary Cards -->
-    <div class="summary-grid">
-      <div class="income-card">
-        <div class="card-label">이번 달 수입</div>
-        <div class="card-value">₩{{ totalIncome.toLocaleString() }}</div>
+    <div class="summaryGrid">
+      <div class="incomeCard">
+        <div class="cardLabel" @click="monthAmount">이번 달 수입</div>
+        <div class="cardValue">₩{{ totalIncome.toLocaleString() }}</div>
       </div>
-      <div class="expense-card">
-        <div class="card-label">이번 달 지출</div>
-        <div class="card-value">₩{{ totalExpense.toLocaleString() }}</div>
+      <div class="expenseCard">
+        <div class="cardLabel" @click="monthAmount">이번 달 지출</div>
+        <div class="cardValue">₩{{ totalExpense.toLocaleString() }}</div>
       </div>
-      <div class="balance-card">
-        <div class="card-label">이번 달 잔액</div>
-        <div class="card-value">₩{{ balance.toLocaleString() }}</div>
+      <div class="balanceCard">
+        <div class="cardLabel" @click="monthAmount">이번 달 잔액</div>
+        <div class="cardValue">₩{{ balance.toLocaleString() }}</div>
       </div>
-      <div class="savings-card">
-        <div class="card-label">저축률</div>
-        <div class="card-value">{{ savingsRate }}%</div>
+      <!-- <div class="piggyAni"></div> -->
+
+      <div class="savingsCard">
+        <div class="nowSavings">
+          <div class="cardLabel" @click="savingClick">현재 저축률</div>
+          <div class="cardValue">{{ savingsRate }}%</div>
+        </div>
+        <div class="goalSavings">
+          <div class="cardLabel" @click="savingClick">목표 저축률</div>
+          <div class="cardValue">{{ savingsRate }}%</div>
+        </div>
       </div>
     </div>
 
     <!-- Monthly Chart & Category Spending -->
-    <div class="chart-section">
-      <div class="monthly-chart">
-        <h2 class="section-title">📈 월간 수입/지출 추이</h2>
+    <div class="chartSection">
+      <div class="monthlyChart">
+        <h2 class="sectionTitle" @click="monthlyClick">
+          📈 월간 수입/지출 추이
+        </h2>
         <PieChart :chartData="chartData" />
-
-        <!-- <div class="chart-bars">
-            <div
-              v-for="(item, index) in chartData"
-              :key="index"
-              class="chart-bar"
-            >
-              <div class="bar-wrapper">
-                <div
-                  class="income-bar"
-                  :style="{ height: (item.income / maxChartValue) * 100 + '%' }"
-                ></div>
-                <div
-                  class="expense-bar"
-                  :style="{ height: (item.expense / maxChartValue) * 100 + '%' }"
-                ></div>
-              </div>
-              <div class="chart-label">{{ item.month }}월</div>
-            </div>
-          </div> -->
-        <!-- <div class="chart-legend">
-            <div class="legend-item">
-              <span class="legend-dot income-dot"></span> 수입
-            </div>
-            <div class="legend-item">
-              <span class="legend-dot expense-dot"></span> 지출
-            </div>
-          </div> -->
       </div>
-      <div class="category-summary">
-        <h2 class="section-title">📊 카테고리별 지출</h2>
-        <CategoryPieChart :categorySpending="categorySpending" />
+      <div class="piggyAni">
+        <IndividualPig />
       </div>
     </div>
 
     <!-- Transaction Summary & History -->
-    <div class="transaction-section">
-      <div class="transaction-history">
-        <h2 class="section-title">🧾 최근 거래내역</h2>
+    <div class="transactionSection">
+      <div class="transactionHistory">
+        <h2 class="sectionTitle" @click="transactionsClick">
+          🧾 최근 거래내역
+        </h2>
         <ul>
           <li
-            v-for="(tx, index) in transactions"
+            v-for="(tx, index) in transactions.slice(0, 3)"
             :key="index"
-            class="transaction-item"
+            class="transactionItem"
           >
-            <div class="transaction-date">{{ tx.date }} {{ tx.category }}</div>
-            <div class="transaction-content">
+            <div class="transactionDate">{{ tx.date }} {{ tx.category }}</div>
+            <div class="transactionContent">
               <div>{{ tx.description }}</div>
-              <div :class="tx.amount > 0 ? 'amount-income' : 'amount-expense'">
+              <div :class="tx.amount > 0 ? 'amountIncome' : 'amountExpense'">
                 ₩{{ Math.abs(tx.amount).toLocaleString() }}
               </div>
             </div>
           </li>
         </ul>
       </div>
-      <div class="monthly-summary">
-        <h2 class="section-title">📌 이번 달 요약</h2>
-        <div class="summary-cards">
-          <div class="summary-card income">
-            <p class="summary-label">수입</p>
-            <p class="summary-amount">₩{{ totalIncome.toLocaleString() }}</p>
-          </div>
-          <div class="summary-card expense">
-            <p class="summary-label">지출</p>
-            <p class="summary-amount">₩{{ totalExpense.toLocaleString() }}</p>
-          </div>
-          <div class="summary-card balance">
-            <p class="summary-label">잔액</p>
-            <p class="summary-amount">₩{{ balance.toLocaleString() }}</p>
-          </div>
-        </div>
+      <div class="categorySummary">
+        <h2 class="sectionTitle" @click="categoryClick">📊 카테고리별 지출</h2>
+        <CategoryPieChart :categorySpending="categorySpending" />
       </div>
     </div>
   </div>
 </template>
 
-<!-- <script setup>
-import { ref, computed } from 'vue';
-import CategoryPieChart from '@/components/CategoryPieChart.vue';
-import PieChart from '@/components/PieChart.vue';
-
-const dropdownOpen = ref(false);
-const toggleDropdown = () => {
-  dropdownOpen.value = !dropdownOpen.value;
-};
-const logout = () => {
-  console.log('로그아웃 실행됨');
-};
-
-const isDarkMode = ref(false);
-const toggleDarkMode = () => {
-  isDarkMode.value = !isDarkMode.value;
-  document.documentElement.classList.toggle('dark', isDarkMode.value);
-};
-
-const chartData = [
-  { month: 9, income: 100, expense: 70 },
-  { month: 10, income: 120, expense: 90 },
-  { month: 11, income: 110, expense: 80 },
-  { month: 12, income: 115, expense: 85 },
-  { month: 1, income: 110, expense: 40 },
-];
-
-const maxChartValue = Math.max(
-  ...chartData.map((item) => Math.max(item.income, item.expense))
-);
-
-const categorySpending = [
-  { category: '식비', amount: 320000, percent: 32 },
-  { category: '교통비', amount: 150000, percent: 15 },
-  { category: '주거비', amount: 250000, percent: 25 },
-  { category: '통신비', amount: 130000, percent: 13 },
-];
-
-const transactions = [
-  {
-    date: '2024-01-15',
-    category: '식비',
-    description: '점심식사',
-    amount: -15000,
-  },
-  {
-    date: '2024-01-14',
-    category: '급여',
-    description: '1월 급여',
-    amount: 3000000,
-  },
-  {
-    date: '2024-01-13',
-    category: '교통비',
-    description: '택시',
-    amount: -25000,
-  },
-];
-
-const totalIncome = computed(() =>
-  transactions
-    .filter((tx) => tx.amount > 0)
-    .reduce((sum, tx) => sum + tx.amount, 0)
-);
-const totalExpense = computed(() =>
-  transactions
-    .filter((tx) => tx.amount < 0)
-    .reduce((sum, tx) => sum + Math.abs(tx.amount), 0)
-);
-const balance = computed(() => totalIncome.value - totalExpense.value);
-
-const savingsRate = computed(() => {
-  if (totalIncome.value === 0) return 0;
-  return Math.round((balance.value / totalIncome.value) * 100);
-});
-</script> -->
 <script setup>
-import { ref, computed, onMounted } from 'vue';
-import axios from 'axios';
-import CategoryPieChart from '@/components/CategoryPieChart.vue';
-import PieChart from '@/components/PieChart.vue';
+import { ref, computed, onMounted } from "vue";
+import axios from "axios";
+import CategoryPieChart from "@/components/CategoryPieChart.vue";
+import PieChart from "@/components/PieChart.vue";
+import { RouterLink } from "vue-router";
+import IndividualPig from "@/components/IndividualPig.vue";
+import PiggyFace from "@/components/Piggyface.vue";
+import PiggyfaceDefault from "@/components/PiggyfaceDefault.vue";
+import FinalPig from "@/components/FinalPig.vue";
+import { useDashboardStore } from "@/stores/store.js";
+
+//pinia사용을 위한 dashboard변수 정의
+const dashboard = useDashboardStore();
 
 const dropdownOpen = ref(false);
 const toggleDropdown = () => {
   dropdownOpen.value = !dropdownOpen.value;
 };
 const logout = () => {
-  console.log('로그아웃 실행됨');
+  console.log("로그아웃 실행됨");
 };
 
 const isDarkMode = ref(false);
 const toggleDarkMode = () => {
   isDarkMode.value = !isDarkMode.value;
-  document.documentElement.classList.toggle('dark', isDarkMode.value);
+  document.documentElement.classList.toggle("dark", isDarkMode.value);
 };
 
+//여기서 부터 pinia로 옮겨서 다른 컴포넌트도 사용할 수 있게 바꿉니다.
 const chartData = ref([]);
 const categorySpending = ref([]);
 const transactions = ref([]);
@@ -216,28 +120,65 @@ const loading = ref(true); // 로딩 상태 추가
 
 const fetchData = async () => {
   try {
-    const chartResponse = await axios.get('http://localhost:3000/chartData');
-    chartData.value = chartResponse.data;
-    console.log('chartData:', chartData.value); // 데이터 형식 확인
+    const response = await axios.get("http://localhost:3000/money");
+    const moneyData = response.data;
+    const monthlyTotals = {};
+    moneyData.forEach((entry) => {
+      const month = entry.date.slice(0, 7);
 
-    const categoryResponse = await axios.get(
-      'http://localhost:3000/categorySpending'
-    );
-    categorySpending.value = categoryResponse.data;
+      if (!monthlyTotals[month]) {
+        monthlyTotals[month] = { income: 0, expense: 0 };
+      }
 
-    const transactionResponse = await axios.get(
-      'http://localhost:3000/transactions'
+      if (entry.typeid === 1) {
+        monthlyTotals[month].income += entry.amount;
+      } else if (entry.typeid === 2) {
+        monthlyTotals[month].expense += entry.amount;
+      }
+    });
+    console.log(monthlyTotals);
+
+    const categoryTotals = {};
+    moneyData.forEach((entry) => {
+      if (entry.typeid === 2) {
+        const catId = entry.categoryid;
+
+        if (!categoryTotals[catId]) {
+          categoryTotals[catId] = 0;
+        }
+
+        categoryTotals[catId] += entry.amount;
+      }
+    });
+
+    console.log(categoryTotals);
+
+    const categoryRes = await axios.get("http://localhost:3000/category");
+    const categoryMap = categoryRes.data.reduce((map, cat) => {
+      map[cat.id] = cat.name;
+      return map;
+    }, {});
+
+    const sorted = moneyData.sort(
+      (a, b) => new Date(b.date) - new Date(a.date)
     );
-    transactions.value = transactionResponse.data;
+    const recentTransactions = sorted.slice(0, 5).map((entry) => ({
+      date: entry.date,
+      category: categoryMap[entry.categoryid] || "기타",
+      description: entry.payment,
+      amount: entry.typeid === 1 ? entry.amount : -entry.amount,
+    }));
+
+    transactions.value = recentTransactions;
   } catch (error) {
-    console.error('데이터 로딩 실패:', error);
+    console.error("데이터 로딩 실패:", error);
   } finally {
-    loading.value = false; // 로딩 상태 종료
+    loading.value = false;
   }
 };
-
+//여기까지
 onMounted(() => {
-  fetchData();
+  dashboard.fetchData();
 });
 
 const maxChartValue = computed(() =>
@@ -246,24 +187,48 @@ const maxChartValue = computed(() =>
   )
 );
 
-const totalIncome = computed(() =>
-  transactions.value
-    .filter((tx) => tx.amount > 0)
-    .reduce((sum, tx) => sum + tx.amount, 0)
-);
+const totalIncome = dashboard.totalIncome;
 
-const totalExpense = computed(() =>
-  transactions.value
-    .filter((tx) => tx.amount < 0)
-    .reduce((sum, tx) => sum + Math.abs(tx.amount), 0)
-);
+const totalExpense = dashboard.totalExpense;
 
-const balance = computed(() => totalIncome.value - totalExpense.value);
+const balance = dashboard.balance;
 
-const savingsRate = computed(() => {
-  if (totalIncome.value === 0) return 0;
-  return Math.round((balance.value / totalIncome.value) * 100);
-});
+const savingsRate = dashboard.savingsRate;
+
+const mypageClick = () => {
+  //router.push('./mypage');
+  alert("mypage page");
+};
+
+const inputClick = () => {
+  //router.push('./inputValue');
+  alert("money input");
+};
+
+const savingClick = () => {
+  //router.push('./savings-card');
+  alert("저축률 페이지");
+};
+
+const monthlyClick = () => {
+  //router.push('./monthlychart');
+  alert("월간 수입/지출 페이지");
+};
+
+const categoryClick = () => {
+  //router.push('./categorypage');
+  alert("카테고리 페이지 이동");
+};
+
+const transactionsClick = () => {
+  //   router.push('/transaction'); 페이지 만들어서 라우팅 하면 끝
+  alert("최근 거래내역 페이지 이동");
+};
+
+const monthAmount = () => {
+  //router.push('./monthAmount');
+  alert("이번달 요약이동");
+};
 </script>
 
 <style scoped>
@@ -283,7 +248,7 @@ const savingsRate = computed(() => {
 }
 
 /* 다크모드 버튼 */
-.darkMode-button {
+.darkModeButton {
   padding: 8px 12px;
   font-size: 1.2rem;
   border: 1px solid #ccc;
@@ -292,11 +257,11 @@ const savingsRate = computed(() => {
 }
 
 /* 마이페이지 버튼 */
-.mypage-button {
+.mypageButton {
   background-color: white;
   border: black solid 1px;
   border-radius: 0.5rem;
-  padding: 8px 16px;
+  padding: 12px 24px;
   cursor: pointer;
 }
 
@@ -314,8 +279,10 @@ const savingsRate = computed(() => {
   background: linear-gradient(to bottom right, #1f2937, #111827);
   color: black;
 }
-
-.dashboard-header {
+.dark .dashboardHeader {
+  background-color: #ae7695;
+}
+.dashboardHeader {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -326,23 +293,39 @@ const savingsRate = computed(() => {
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-.section-grid {
+.sectionGrid {
   display: grid;
   grid-template-columns: 2fr 1fr;
   gap: 2rem;
   margin-bottom: 2rem;
 }
 
-.summary-grid {
-  display: grid;
+.summaryGrid {
+  display: flex;
   grid-template-columns: repeat(4, 1fr);
   gap: 2rem;
   margin-bottom: 2rem;
 }
-.income-card,
-.expense-card,
-.balance-card,
-.savings-card {
+/* .piggyAni {
+  background-color: white;
+  padding: 1.5rem;
+  border-radius: 1rem;
+  width: 100%;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  flex: 7;
+} */
+.dark .incomeCard,
+.dark .expenseCard,
+.dark .balanceCard,
+.dark .savingsCard {
+  background-color: #cecece;
+}
+.incomeCard,
+.expenseCard,
+.balanceCard,
+.savingsCard {
+  /* flex: 3; */
+  /* float: right; */
   background-color: white;
   padding: 1.5rem;
   border-radius: 1rem;
@@ -350,109 +333,88 @@ const savingsRate = computed(() => {
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
 }
 
-.chart-section,
-.transaction-section {
-  display: flex;
-  gap: 2rem;
-  margin-bottom: 2rem;
-  align-items: stretch;
-}
-
-.monthly-chart,
-.transaction-history,
-.category-summary,
-.monthly-summary {
-  flex: 1;
+/* .savingsCard > .nowSavings,
+.goalSavings {
   background-color: white;
   padding: 1.5rem;
   border-radius: 1rem;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+} */
+.incomeCard > .cardValue {
+  color: #10b981;
+  font-size: 20px;
+  font-weight: bold;
 }
-.transaction-section {
+.expenseCard > .cardValue {
+  color: #ef4444;
+  font-size: 20px;
+  font-weight: bold;
+}
+.balanceCard > .cardValue {
+  color: #6366f1;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.savingsCard > .nowSavings > .cardValue,
+.goalSavings > .cardValue {
+  color: #f9a8d4;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.chartSection,
+.transactionSection {
   display: flex;
   gap: 2rem;
   margin-bottom: 2rem;
+  align-items: stretch;
+  width: 100%;
 }
 
-.transaction-history {
+.dark .monthlyChart,
+.dark .transactionHistory,
+.dark .categorySummary,
+.dark .piggyAni {
+  background-color: #cecece;
+}
+
+.monthlyChart,
+.transactionHistory {
   flex: 7;
+  background-color: white;
+  padding: 1.5rem;
+  border-radius: 1rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  min-width: 0;
 }
 
-.monthly-summary {
+.categorySummary,
+.piggyAni {
   flex: 3;
-}
-
-.chart-section {
+  background-color: white;
+  padding: 1.5rem;
+  border-radius: 1rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  min-width: 0;
+  /*piggyAni안에 돼지 컴포넌트를 가운데 정렬하기 위한 style*/
   display: flex;
-  gap: 2rem;
-  margin-bottom: 2rem;
+  justify-content: center;
+  align-items: center;
 }
 
-.monthly-chart {
-  flex: 7;
-}
-
-.category-summary {
-  flex: 3;
-}
-
-/* .chart-bars {
-    display: flex;
-    justify-content: space-around; 
-    align-items: flex-end;
-    width: 100%;
-    height: 200px;
-    margin-top: 1rem;
-    padding: 0 1rem;
-  }
-  
-  .chart-bar {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 40px;
-    height: 100%;
-  }
-  
-  .bar-wrapper {
-    display: flex;
-    align-items: flex-end;
-    gap: 4px;
-    height: 100%;
-  }
-  .income-bar,
-  .expense-bar {
-    width: 12px;
-    border-radius: 4px;
-  }
-  
-  .income-bar {
-    background-color: #4ade80; 
-  }
-  
-  .expense-bar {
-    background-color: #f87171; 
-  } */
-
-.chart-label {
+.chartLabel {
   margin-top: 0.5rem;
   font-size: 0.8rem;
 }
 
-.transaction-history {
-  background-color: #fff;
-  border-radius: 12px;
-  padding: 20px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-}
-
-.section-title {
+.sectionTitle {
   font-size: 18px;
   font-weight: bold;
   margin-bottom: 16px;
 }
 
-.transaction-item {
+.transactionItem {
   display: flex;
   flex-direction: column;
   background-color: #f9f9f9;
@@ -461,28 +423,28 @@ const savingsRate = computed(() => {
   margin-bottom: 12px;
 }
 
-.transaction-date {
+.transactionDate {
   font-size: 14px;
   color: #888;
   margin-bottom: 4px;
 }
 
-.transaction-content {
+.transactionContent {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
-.amount-income {
+.amountIncome {
   color: #1abc9c;
   font-weight: bold;
 }
 
-.amount-expense {
+.amountExpense {
   color: #e74c3c;
   font-weight: bold;
 }
-.chart-legend {
+.chartLegend {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -492,13 +454,13 @@ const savingsRate = computed(() => {
   color: #333;
 }
 
-.legend-item {
+.legendItem {
   display: flex;
   align-items: center;
   font-weight: bold;
 }
 
-.legend-dot {
+.legendDot {
   width: 10px;
   height: 10px;
   border-radius: 50%;
@@ -506,22 +468,24 @@ const savingsRate = computed(() => {
   margin-right: 6px;
 }
 
-.income-dot {
+.incomeDot {
   background-color: #2ecc71;
 }
 
-.expense-dot {
+.expenseDot {
   background-color: #e74c3c;
 }
 
-.summary-cards {
+.summaryCards {
   display: flex;
   gap: 16px;
   justify-content: space-between;
   flex-wrap: wrap;
 }
-
-.summary-card {
+.dark .transactionItem {
+  background-color: #e8e8e8;
+}
+.summaryCard {
   flex: 1 1 30%;
   padding: 16px;
   border-radius: 12px;
@@ -530,26 +494,26 @@ const savingsRate = computed(() => {
   text-align: center;
 }
 
-.summary-label {
+.summaryLabel {
   font-size: 16px;
   color: #6b7280;
   margin-bottom: 8px;
 }
 
-.summary-amount {
+.summaryAmount {
   font-size: 20px;
   font-weight: bold;
 }
 
-.income .summary-amount {
+.income .summaryAmount {
   color: #10b981;
 }
 
-.expense .summary-amount {
+.expense .summaryAmount {
   color: #ef4444;
 }
 
-.balance .summary-amount {
+.balance .summaryAmount {
   color: #6366f1;
 }
 </style>
