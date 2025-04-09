@@ -2,19 +2,26 @@
   <div class="dashboard">
     <!-- Header -->
     <header class="dashboardHeader">
-      <h1 class="dashboardTitle">💡 Piggy Bank</h1>
+      <h1 class="dashboardTitle">
+        <img
+          src="/src/assets/icons/logo.png"
+          class="iconImage"
+          @click="goToHome"
+        />Piggy Bank
+      </h1>
       <div class="flex items-center gap-2 relative">
         <button @click="toggleDarkMode" class="darkModeButton">
           {{ isDarkMode ? '☀️' : '🌙' }}
         </button>
         <button class="mypageButton" @click="mypageClick">마이페이지</button>
         <button class="inputValue" @click="openModal">새 거래추가</button>
-        
+
         <TransactionModal
           :isOpen="isModalOpen"
           :date="selectedDate"
           @close="closeModal"
         />
+        <button class="logout" @click="logout">로그아웃</button>
       </div>
     </header>
 
@@ -102,6 +109,7 @@ import FinalPig from '@/components/FinalPig.vue';
 import { useDashboardStore } from '@/stores/store.js';
 import { useRouter } from 'vue-router';
 import TransactionModal from '@/components/TransactionModal.vue';
+// import { PigIntro } from '@/views/PigIntro.vue';
 
 const router = useRouter();
 
@@ -111,9 +119,6 @@ console.log(store.savingsRate);
 const dropdownOpen = ref(false);
 const toggleDropdown = () => {
   dropdownOpen.value = !dropdownOpen.value;
-};
-const logout = () => {
-  console.log('로그아웃 실행됨');
 };
 
 const isDarkMode = ref(false);
@@ -130,23 +135,29 @@ const loading = ref(true); // 로딩 상태 추가
 
 const fetchData = async () => {
   try {
-    const response = await axios.get('http://localhost:3000/money');
+    const userId = localStorage.getItem('loggedInUserId');
+    if (!userId) {
+      throw new Error('로그인 정보가 없습니다.');
+    } else {
+      console.log('현재 로그인한 유저 ID:', userId);
+    }
 
-    const moneyData = response.data;
+    const response = await axios.get('http://localhost:3000/money');
+    const moneyData = response.data.filter((entry) => entry.userid == userId); // 👈 유저별 필터
+
     const monthlyTotals = {};
     moneyData.forEach((entry) => {
       const month = entry.date.slice(0, 7);
-
       if (!monthlyTotals[month]) {
         monthlyTotals[month] = { income: 0, expense: 0 };
       }
-
       if (entry.typeid === 1) {
         monthlyTotals[month].income += entry.amount;
       } else if (entry.typeid === 2) {
         monthlyTotals[month].expense += entry.amount;
       }
     });
+
     chartData.value = Object.entries(monthlyTotals).map(
       ([month, { income, expense }]) => ({
         month,
@@ -155,18 +166,15 @@ const fetchData = async () => {
       })
     );
 
-    console.log(chartData);
     const sorted = moneyData.sort(
       (a, b) => new Date(b.date) - new Date(a.date)
     );
 
-    // 가장 최근 달 구하기 (예: '2025-04')
     const latestMonth =
       sorted.length > 0
         ? new Date(sorted[0].date).toISOString().slice(0, 7)
         : null;
 
-    // 최근 달 지출 내역만 필터링
     const recentMonthData = moneyData.filter((entry) => {
       const entryMonth = new Date(entry.date).toISOString().slice(0, 7);
       return (
@@ -175,6 +183,7 @@ const fetchData = async () => {
         entryMonth === latestMonth
       );
     });
+
     const recentMonthInData = moneyData.filter((entry) => {
       const entryMonth = new Date(entry.date).toISOString().slice(0, 7);
       return (
@@ -184,7 +193,6 @@ const fetchData = async () => {
       );
     });
 
-    // 카테고리별 합산
     const categoryTotals = {};
     recentMonthData.forEach((entry) => {
       const catId = entry.categoryid;
@@ -194,15 +202,12 @@ const fetchData = async () => {
       categoryTotals[catId] += entry.amount;
     });
 
-    console.log(categoryTotals);
-
     const categoryRes = await axios.get('http://localhost:3000/category');
     const categoryMap = categoryRes.data.reduce((map, cat) => {
       map[cat.id] = cat.name;
       return map;
     }, {});
 
-    // 트랜잭션 출력용 가공 (지출/수입 전부)
     const recentTransactions = sorted
       .filter((entry) => {
         const entryMonth = new Date(entry.date).toISOString().slice(0, 7);
@@ -215,11 +220,6 @@ const fetchData = async () => {
         amount: entry.typeid === 1 ? entry.amount : -entry.amount,
       }));
 
-    // const sorted = moneyData.sort(
-    //   (a, b) => new Date(b.date) - new Date(a.date)
-    // );
-
-    // 차트용 데이터 세팅
     transactions.value = recentTransactions;
     categorySpending.value = Object.entries(categoryTotals).map(
       ([id, amount]) => ({
@@ -233,6 +233,7 @@ const fetchData = async () => {
     loading.value = false;
   }
 };
+
 //여기까지
 onMounted(() => {
   fetchData();
@@ -266,6 +267,13 @@ const mypageClick = () => {
   router.push('./myPage');
   alert('mypage page');
 };
+const logout = () => {
+  alert('안녕히가세요!');
+
+  localStorage.removeItem('loggedInUserId');
+
+  router.push('/');
+};
 
 const inputClick = () => {
   //router.push('./inputValue');
@@ -283,6 +291,9 @@ const closeModal = () => {
 const savingClick = () => {
   //router.push('./savings-card');
   alert('저축률 페이지');
+};
+const goToHome = () => {
+  router.push('./home');
 };
 
 const monthlyClick = () => {
@@ -317,6 +328,14 @@ const goToMonthlyAnalysis = () => {
 </script>
 
 <style scoped>
+.iconImage {
+  width: 60px;
+  height: 60px;
+  /* object-fit: contain; */
+}
+.dashboardTitle {
+  gap: 10px;
+}
 .dashboard {
   padding: 2rem;
   margin: 0;
@@ -343,6 +362,17 @@ const goToMonthlyAnalysis = () => {
 
 /* 마이페이지 버튼 */
 .mypageButton {
+  background-color: rgb(254, 235, 253);
+  border: 1px solid rgb(251, 209, 251);
+  border-radius: 0.5rem;
+  padding: 12px 24px;
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  font-weight: 600;
+  color: #333;
+}
+.logout {
   background-color: rgb(254, 235, 253);
   border: 1px solid rgb(251, 209, 251);
   border-radius: 0.5rem;
