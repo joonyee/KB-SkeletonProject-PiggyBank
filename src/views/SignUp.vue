@@ -11,17 +11,28 @@
 
         <label class="label-text">비밀번호</label>
         <div class="password-field">
-          <input :type="showPassword ? 'text' : 'password'" placeholder="8자 이상 입력해주세요" v-model="password" />
+          <input
+            :type="showPassword ? 'text' : 'password'"
+            placeholder="8자 이상 입력해주세요"
+            v-model="password"
+          />
           <span @click="togglePassword" class="toggle">보기</span>
         </div>
 
         <label class="label-text">비밀번호 확인</label>
         <div class="password-field">
-          <input :type="showConfirm ? 'text' : 'password'" placeholder="비밀번호를 한 번 더 입력해주세요" v-model="confirmPassword" />
+          <input
+            :type="showConfirm ? 'text' : 'password'"
+            placeholder="비밀번호를 한 번 더 입력해주세요"
+            v-model="confirmPassword"
+          />
           <span @click="toggleConfirm" class="toggle">보기</span>
         </div>
 
-        <p v-if="confirmPassword" :class="passwordMatch ? 'match' : 'not-match'">
+        <p
+          v-if="confirmPassword"
+          :class="passwordMatch ? 'match' : 'not-match'"
+        >
           {{ passwordMatch ? '비밀번호가 같습니다!' : '비밀번호가 다릅니다!' }}
         </p>
 
@@ -37,16 +48,16 @@
         <label class="label-text">성별(선택)</label>
         <div class="gender-buttons">
           <button
-              type="button"
-              :class="{ selected: gender === '남성' }"
-              @click="gender = '남성'"
+            type="button"
+            :class="{ selected: gender === '남성' }"
+            @click="gender = '남성'"
           >
             남성
           </button>
           <button
-              type="button"
-              :class="{ selected: gender === '여성' }"
-              @click="gender = '여성'"
+            type="button"
+            :class="{ selected: gender === '여성' }"
+            @click="gender = '여성'"
           >
             여성
           </button>
@@ -55,7 +66,7 @@
         <button type="submit" class="signup-btn">회원가입</button>
       </form>
 
-      <p class="login-text" >
+      <p class="login-text">
         이미 계정이 있으신가요?
         <router-link to="/login" class="login-link">로그인</router-link>
       </p>
@@ -64,39 +75,72 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed } from 'vue';
+import axios from 'axios';
+import { useRouter } from 'vue-router';
 
-const email = ref('')
-const name = ref('')
-const password = ref('')
-const confirmPassword = ref('')
-const ageGroup = ref('10대')
-const gender = ref('')
-const showPassword = ref(false)
-const showConfirm = ref(false)
+const router = useRouter();
+
+const email = ref('');
+const name = ref('');
+const password = ref('');
+const confirmPassword = ref('');
+const ageGroup = ref('10대');
+const gender = ref('');
+const showPassword = ref(false);
+const showConfirm = ref(false);
 
 const togglePassword = () => {
-  showPassword.value = !showPassword.value
-}
+  showPassword.value = !showPassword.value;
+};
 
 const toggleConfirm = () => {
-  showConfirm.value = !showConfirm.value
-}
-//비밀번호 일치하는지 여부 체크
-const passwordMatch = computed(() => {
-  return password.value && confirmPassword.value && password.value === confirmPassword.value
-})
+  showConfirm.value = !showConfirm.value;
+};
 
-const handleSignUp = () => {
-  console.log('회원가입 정보:', {
-    email: email.value,
-    name: name.value,
-    password: password.value,
-    confirmPassword: confirmPassword.value,
-    ageGroup: ageGroup.value,
-    gender: gender.value,
-  })
-}
+const passwordMatch = computed(() => {
+  return (
+    password.value &&
+    confirmPassword.value &&
+    password.value === confirmPassword.value
+  );
+});
+
+const handleSignUp = async () => {
+  if (!passwordMatch.value) {
+    alert('비밀번호가 일치하지 않습니다.');
+    return;
+  }
+
+  try {
+    // 1. 연령대 ID 매핑
+    const ageResponse = await axios.get('http://localhost:3000/ageArea');
+    const ageEntry = ageResponse.data.find((age) => age.age === ageGroup.value);
+    const ageId = ageEntry ? ageEntry.id : null;
+
+    if (!ageId) {
+      alert('유효한 연령대를 선택해주세요.');
+      return;
+    }
+
+    // 2. 회원 정보 저장
+    const newUser = {
+      userId: email.value,
+      password: password.value,
+      name: name.value,
+      age: ageId,
+      gender: gender.value || '미선택',
+    };
+
+    await axios.post('http://localhost:3000/user', newUser);
+
+    alert('회원가입 성공!');
+    router.push('/login'); // 로그인 페이지로 이동
+  } catch (error) {
+    console.error('회원가입 실패:', error);
+    alert('회원가입 중 오류가 발생했습니다.');
+  }
+};
 </script>
 
 <style scoped>
@@ -177,7 +221,6 @@ select {
   margin-bottom: 20px;
   text-align: left;
 }
-
 
 .gender-buttons {
   display: flex;
