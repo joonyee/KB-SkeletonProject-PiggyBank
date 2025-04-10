@@ -17,10 +17,10 @@
         <button class="inputValue" @click="openModal">새 거래추가</button>
 
         <TransactionModal
-          v-if="isTransactionModalOpen"
-          :isOpen="isTransactionModalOpen"
-          @close="closeTransactionModal"
-          @add="handleAddTransaction"
+          v-if="isModalOpen"
+          :isOpen="isModalOpen"
+          @close="closeModal"
+          @add="openModal"
         />
 
         <button class="logout" @click="logout">로그아웃</button>
