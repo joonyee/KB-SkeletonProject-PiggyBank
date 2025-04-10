@@ -42,6 +42,7 @@ const props = defineProps({
 
 const transactions = ref([]);
 const categoryData = ref([]);
+const fixedExpenses = ref([]);
 // 전달받은 연도와 월에 해당하는 거래 내역 필터링
 const monthlyTransactions = computed(() => {
   return transactions.value.filter((tx) => {
@@ -63,11 +64,18 @@ const totalIncome = computed(() =>
 );
 
 // 총 지출: typeid === 2
-const totalExpense = computed(() =>
-  monthlyTransactions.value
+const totalExpense = computed(() => {
+  const transactionExpenses = monthlyTransactions.value
     .filter((tx) => tx.typeid === 2) // 지출만 필터링
-    .reduce((sum, tx) => sum + tx.amount, 0)
-);
+    .reduce((sum, tx) => sum + tx.amount, 0);
+
+  const fixedExpensesTotal = fixedExpenses.value.reduce(
+    (sum, expense) => sum + expense.amount,
+    0
+  );
+
+  return transactionExpenses + fixedExpensesTotal;
+});
 
 // 잔액: 수입 - 지출
 const balance = computed(() => totalIncome.value - totalExpense.value);
@@ -106,13 +114,15 @@ const formatMoney = (num) => {
 // 거래 데이터 로드
 onMounted(async () => {
   try {
-    const [moneyRes, categoryRes] = await Promise.all([
+    const [moneyRes, categoryRes, expenseRes] = await Promise.all([
       axios.get('http://localhost:3000/money'),
       axios.get('http://localhost:3000/category'),
+      axios.get('http://localhost:3000/fixedExpenses'),
     ]);
 
     transactions.value = moneyRes.data;
     categoryData.value = categoryRes.data;
+    fixedExpenses.value = expenseRes.data;
   } catch (error) {
     console.error('Failed to fetch transactions or categories:', error);
   }
