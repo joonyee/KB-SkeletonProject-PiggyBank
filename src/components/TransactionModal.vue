@@ -598,14 +598,17 @@ input[type="number"] {
 
 /* 다크모드 스타일 */
 .dark .modal {
-  background-color: #2e2e4d;
+  background-color: #1f2937;
+}
+.dark .modalHeader h2 {
+  background-color: #1f2937;
+  color: #ffffff;
 }
 .dark .modalBody {
-  background-color: #2e2e4d;
+  background-color: #1f2937;
 }
-
 .dark .modalFooter {
-  background-color: #2e2e4d;
+  background-color: #1f2937;
 }
 
 @media (max-width: 767px) {
