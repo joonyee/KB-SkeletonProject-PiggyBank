@@ -51,11 +51,10 @@ const openDetailModal = (transaction) => {
 };
 const closeDetailModal = () => (isDetailModalOpen.value = false);
 
-const showEditModal = ref(false); // 새로운 모달 오픈 변수
-const editTarget = ref(null); // 선택된 거래
+const showEditModal = ref(false);
+const editTarget = ref(null);
 
 const handleEditClick = (transaction) => {
-  console.log('[수정 클릭]', transaction);
   editTarget.value = { ...transaction };
   showEditModal.value = true;
 };
@@ -63,16 +62,11 @@ const closeEdit = () => {
   showEditModal.value = false;
   editTarget.value = null;
 };
-// const applyEdit = (updated) => {
-//   const index = transactions.value.findIndex((t) => t.id === updated.id);
-//   if (index !== -1) transactions.value[index] = { ...updated };
-//   closeEdit();
-// };
+
 const applyEdit = async (updated) => {
   try {
     await axios.patch(`http://localhost:3000/money/${updated.id}`, updated);
 
-    // 카테고리 이름 매핑
     const categoryName = getCategoryName(updated.categoryid);
     const updatedDisplayData = {
       id: updated.id,
@@ -94,14 +88,6 @@ const applyEdit = async (updated) => {
   }
 };
 
-// ✅ 거래 삭제
-// const deleteTransaction = (id) => {
-//   if (confirm('정말 삭제하시겠습니까?')) {
-//     const index = transactions.value.findIndex((t) => t.id === id);
-//     if (index !== -1) transactions.value.splice(index, 1);
-//     if (selectedTransaction.value?.id === id) closeEditModal();
-//   }
-// };
 const deleteTransaction = async (id) => {
   if (confirm('정말 삭제하시겠습니까?')) {
     try {
@@ -115,7 +101,6 @@ const deleteTransaction = async (id) => {
   }
 };
 
-// ✅ 정렬 기능
 const sortKey = ref('');
 const sortOrder = ref('asc');
 const sortBy = (key) => {
@@ -139,27 +124,27 @@ const sortBy = (key) => {
   });
 };
 
-// ✅ 카테고리 이름 조회
 const getCategoryName = (id) => {
   const cat = categories.value.find((c) => c.id === id);
   return cat ? cat.name : '기타';
 };
 
-// ✅ 통계 계산
 const totalIncome = ref(0);
 const totalExpense = ref(0);
 const allAccount = ref(0);
+
 const calculateTotals = () => {
   totalIncome.value = transactions.value
     .filter((item) => item.type === 'income')
-    .reduce((acc, item) => acc + item.amount, 0);
+    .reduce((acc, item) => acc + Number(item.amount), 0);
+
   totalExpense.value = transactions.value
     .filter((item) => item.type === 'expense')
-    .reduce((acc, item) => acc + item.amount, 0);
+    .reduce((acc, item) => acc + Number(item.amount), 0);
+
   allAccount.value = totalIncome.value - totalExpense.value;
 };
 
-// ✅ 거래 불러오기
 const fetchTransactions = async () => {
   try {
     const userId = localStorage.getItem('loggedInUserId');
@@ -171,7 +156,7 @@ const fetchTransactions = async () => {
       id: item.id,
       date: item.date,
       category: getCategoryName(item.categoryid),
-      amount: item.amount,
+      amount: Number(item.amount),
       description: item.memo,
       type: item.typeid === 1 ? 'income' : 'expense',
     }));
@@ -183,7 +168,6 @@ const fetchTransactions = async () => {
   }
 };
 
-// ✅ 필터 적용
 const applyFilter = (filterData) => {
   const { startDate, endDate, type, categories } = filterData;
   let filtered = [...originalTransactions.value];
@@ -197,11 +181,41 @@ const applyFilter = (filterData) => {
   transactions.value = filtered;
   calculateTotals();
 };
-
 const handleAddTransaction = async (newTransaction) => {
   try {
-    const res = await axios.post(`http://localhost:3000/money`, newTransaction);
-    transactions.value.push(res.data);
+    const userId = localStorage.getItem('loggedInUserId');
+    if (!userId) {
+      alert('로그인이 필요합니다.');
+      return;
+    }
+
+    // 사용자 ID 포함한 payload 생성
+    const payload = {
+      ...newTransaction,
+      userid: userId,
+    };
+
+    // POST 요청 → DB 저장
+    const res = await axios.post(`http://localhost:3000/money`, payload);
+
+    // 응답값 기반으로 프론트에 표시할 데이터 생성
+    const newItem = {
+      id: res.data.id,
+      date: res.data.date,
+      category: getCategoryName(res.data.categoryid),
+      amount: Number(res.data.amount),
+      description: res.data.memo,
+      type: res.data.typeid === 1 ? 'income' : 'expense',
+    };
+
+    // 중복 방지 후 추가
+    const exists = transactions.value.some((t) => t.id === newItem.id);
+    if (!exists) {
+      transactions.value.unshift(newItem);
+      // originalTransactions.value.unshift(newItem);
+    }
+
+    // 모달 닫기 및 합계 계산
     closeTransactionModal();
     calculateTotals();
   } catch (err) {
@@ -210,7 +224,6 @@ const handleAddTransaction = async (newTransaction) => {
   }
 };
 
-// ✅ 초기 실행 시 카테고리 및 거래 정보 불러오기
 onMounted(async () => {
   try {
     const res = await axios.get('http://localhost:3000/category');
@@ -247,25 +260,41 @@ onMounted(async () => {
       <div class="summary-header">
         <div class="summary-cards">
           <div class="summary-card">
-            <span>이번 달 수입</span>
+            <span>총 수입</span>
             <span class="income">{{ totalIncome.toLocaleString() }}원</span>
           </div>
           <div class="summary-card">
-            <span>이번 달 지출</span>
+            <span>총 지출</span>
             <span class="expense">{{ totalExpense.toLocaleString() }}원</span>
           </div>
           <div class="summary-card">
-            <span>이번 달 잔액</span>
+            <span>총 자산</span>
             <span class="balance">{{ allAccount.toLocaleString() }}원</span>
           </div>
         </div>
       </div>
       <!-- 필터 버튼 상단 우측 -->
       <div class="table-toolbar">
-        <button class="filter-btn" @click="openFilterModal">
-          <i class="fa-solid fa-filter"></i> 필터
+        <button class="round-btn" @click="openFilterModal">
+          <i class="fa-solid fa-filter"></i>
+          <span>필터</span>
+        </button>
+        <button
+          class="round-btn"
+          @click="
+            applyFilter({
+              startDate: '',
+              endDate: '',
+              type: 'all',
+              categories: [],
+            })
+          "
+        >
+          <i class="fa-solid fa-arrow-rotate-left"></i>
+          <span>초기화</span>
         </button>
       </div>
+
       <!-- 거래 목록 -->
       <table class="transaction-table">
         <thead>
@@ -518,6 +547,39 @@ th i {
   gap: 6px;
   height: 40px;
   margin-left: auto;
+}
+.reset-btn {
+  background-color: var(--background-color);
+  border: none;
+  border-radius: 8px;
+  padding: 10px 16px;
+  margin-left: 10px;
+  font: var(--ng-reg-16);
+  color: var(--hot-pink);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 40px;
+  cursor: pointer;
+}
+.table-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin: 10px 0;
+}
+
+.round-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid #fbcee8;
+  border-radius: 999px;
+  background-color: white;
+  color: black;
+  padding: 6px 14px;
+  font: var(--ng-reg-14);
+  cursor: pointer;
 }
 
 /* 헤더  */

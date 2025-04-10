@@ -43,7 +43,7 @@
             }"
             @click="openCategoryModal"
           >
-            {{ selectedCategory || "선택해주세요" }}
+            {{ selectedCategory || '선택해주세요' }}
           </div>
           <div v-if="showCategoryError" class="errorMessage">
             카테고리를 선택해주세요
@@ -141,10 +141,10 @@
 </template>
 
 <script setup>
-import { ref, watch, onMounted, onBeforeUnmount } from "vue";
-import axios from "axios";
-import CategoryModal from "./CategoryModal.vue";
-import "../assets/styles/global.css";
+import { ref, watch, onMounted, onBeforeUnmount } from 'vue';
+import axios from 'axios';
+import CategoryModal from './CategoryModal.vue';
+import '../assets/styles/global.css';
 
 // 외부에서 모달 열림 여부와 사용자 ID를 props로 전달받음(수정 필요)
 const props = defineProps({
@@ -158,33 +158,33 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits(["save", "close"]);
+const emit = defineEmits(['add', 'close']);
 
 // 상태 변수 정의
 const isModalOpen = ref(props.isOpen);
 const isCategoryModalOpen = ref(false);
-const activeTab = ref("expense");
+const activeTab = ref('expense');
 const selectedDate = ref(formatDate(new Date()));
-const selectedCategory = ref("");
-const amount = ref("");
-const description = ref("");
-const paymentMethod = ref("account");
-const tendency = ref("planned");
+const selectedCategory = ref('');
+const amount = ref('');
+const description = ref('');
+const paymentMethod = ref('account');
+const tendency = ref('planned');
 const showCategoryError = ref(false);
 const isMobile = ref(false);
 
 // 카테고리 이름 목록
 const categories = {
-  income: ["급여", "용돈", "부수입", "기타수입"],
+  income: ['급여', '용돈', '부수입', '기타수입'],
   expense: [
-    "식비",
-    "교통비",
-    "주거비",
-    "의류비",
-    "의료비",
-    "여가비",
-    "교육비",
-    "기타지출",
+    '식비',
+    '교통비',
+    '주거비',
+    '의류비',
+    '의료비',
+    '여가비',
+    '교육비',
+    '기타지출',
   ],
 };
 
@@ -207,7 +207,7 @@ const categoryMap = {
 // 소비 성향 → ID 매핑
 const tendencyMap = {
   planned: 1,
-  "충동적 지출": 2,
+  '충동적 지출': 2,
   수입: 3,
 };
 
@@ -228,15 +228,15 @@ watch(
 
 // 탭 변경 시 카테고리 초기화
 watch(activeTab, () => {
-  selectedCategory.value = "";
+  selectedCategory.value = '';
 });
 
 // 날짜 포맷을 yyyy-mm-dd 형식으로 변환
 function formatDate(date) {
   const d = new Date(date);
   const year = d.getFullYear();
-  const month = ("0" + (d.getMonth() + 1)).slice(-2);
-  const day = ("0" + d.getDate()).slice(-2);
+  const month = ('0' + (d.getMonth() + 1)).slice(-2);
+  const day = ('0' + d.getDate()).slice(-2);
   return `${year}-${month}-${day}`;
 }
 
@@ -267,13 +267,13 @@ async function saveTransaction() {
     return;
   }
 
-  const isIncome = activeTab.value === "income";
+  const isIncome = activeTab.value === 'income';
   const typeId = isIncome ? 1 : 2;
   const categoryId = categoryMap[selectedCategory.value];
 
   if (!categoryId) {
-    alert("유효하지 않은 카테고리입니다.");
-    console.error("카테고리 매핑 오류:", selectedCategory.value);
+    alert('유효하지 않은 카테고리입니다.');
+    console.error('카테고리 매핑 오류:', selectedCategory.value);
     return;
   }
 
@@ -290,27 +290,29 @@ async function saveTransaction() {
 
   try {
     const response = await axios.post(
-      "http://localhost:3000/money",
+      'http://localhost:3000/money',
       transaction
     );
-    console.log("저장 성공:", response.data);
-    alert("거래가 저장되었습니다");
-    emit("save", response.data);
+    console.log('저장 성공:', response.data);
+    alert('거래가 저장되었습니다');
+
+    emit('add', response.data);
+
     resetForm();
     closeModal();
   } catch (error) {
-    console.error("저장 실패:", error);
-    alert("저장 중 오류가 발생했습니다.");
+    console.error('저장 실패:', error);
+    alert('저장 중 오류가 발생했습니다.');
   }
 }
 
 // 입력값 초기화
 function resetForm() {
-  selectedCategory.value = "";
-  amount.value = "";
-  description.value = "";
-  paymentMethod.value = "account";
-  tendency.value = "planned";
+  selectedCategory.value = '';
+  amount.value = '';
+  description.value = '';
+  paymentMethod.value = 'account';
+  tendency.value = 'planned';
   selectedDate.value = formatDate(new Date());
   showCategoryError.value = false;
 }
@@ -319,17 +321,17 @@ function resetForm() {
 function closeModal() {
   resetForm();
   isModalOpen.value = false;
-  emit("close");
+  emit('close');
 }
 
 // 마운트/언마운트 시 화면 크기 이벤트 등록/해제
 onMounted(() => {
   checkScreenSize();
-  window.addEventListener("resize", checkScreenSize);
+  window.addEventListener('resize', checkScreenSize);
 });
 
 onBeforeUnmount(() => {
-  window.removeEventListener("resize", checkScreenSize);
+  window.removeEventListener('resize', checkScreenSize);
 });
 </script>
 
@@ -560,13 +562,13 @@ onBeforeUnmount(() => {
   background-color: #ffa6d8;
 }
 
-input[type="number"]::-webkit-outer-spin-button,
-input[type="number"]::-webkit-inner-spin-button {
+input[type='number']::-webkit-outer-spin-button,
+input[type='number']::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
 
-input[type="number"] {
+input[type='number'] {
   appearance: textfield;
   -moz-appearance: textfield;
 }

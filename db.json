@@ -61,33 +61,33 @@
   ],
   "ageArea": [
     {
-      "id": 1,
+      "id": "1",
       "age": "10대"
     },
     {
-      "id": 2,
+      "id": "2",
       "age": "20대"
     },
     {
-      "id": 3,
+      "id": "3",
       "age": "30대"
     },
     {
-      "id": 4,
+      "id": "4",
       "age": "40대"
     },
     {
-      "id": 5,
+      "id": "5",
       "age": "50대 이상"
     }
   ],
   "type": [
     {
-      "id": 1,
+      "id": "1",
       "name": "수입"
     },
     {
-      "id": 2,
+      "id": "2",
       "name": "지출"
     }
   ],
@@ -123,114 +123,113 @@
       "id": "fd50"
     }
   ],
-
   "category": [
     {
-      "id": 1,
+      "id": "1",
       "name": "급여"
     },
     {
-      "id": 2,
+      "id": "2",
       "name": "용돈"
     },
     {
-      "id": 3,
+      "id": "3",
       "name": "부수입"
     },
     {
-      "id": 4,
+      "id": "4",
       "name": "환급/지원금"
     },
     {
-      "id": 5,
+      "id": "5",
       "name": "기타수입"
     },
     {
-      "id": 6,
+      "id": "6",
       "name": "식사/카페"
     },
     {
-      "id": 7,
+      "id": "7",
       "name": "배달/간식"
     },
     {
-      "id": 8,
+      "id": "8",
       "name": "쇼핑"
     },
     {
-      "id": 9,
+      "id": "9",
       "name": "교통/차량"
     },
     {
-      "id": 10,
+      "id": "10",
       "name": "주거/관리"
     },
     {
-      "id": 11,
+      "id": "11",
       "name": "건강/병원"
     },
     {
-      "id": 12,
+      "id": "12",
       "name": "취미/여가"
     },
     {
-      "id": 13,
+      "id": "13",
       "name": "구독서비스"
     },
     {
-      "id": 14,
+      "id": "14",
       "name": "여행/외출"
     },
     {
-      "id": 15,
+      "id": "15",
       "name": "기타지출"
     }
   ],
   "payment": [
     {
-      "id": 1,
+      "id": "1",
       "name": "카드"
     },
     {
-      "id": 2,
+      "id": "2",
       "name": "현금"
     },
     {
-      "id": 3,
+      "id": "3",
       "name": "계좌이체"
     },
     {
-      "id": 4,
+      "id": "4",
       "name": "수입"
     }
   ],
   "fixedExpenses": [
     {
-      "id": 1,
+      "id": "1",
       "day": 7,
       "description": "보험료(롯데)",
       "amount": 45450
     },
     {
-      "id": 2,
+      "id": "2",
       "day": 10,
       "description": "넷플릭스 구독",
       "amount": 14000
     },
     {
-      "id": 3,
+      "id": "3",
       "day": 15,
       "description": "멤버십(Amazon Prime)",
       "amount": 6500
     },
     {
-      "id": 4,
+      "id": "4",
       "day": 23,
       "description": "통신요금(LG U+)",
       "amount": 105450
     },
     {
-      "id": 5,
+      "id": "5",
       "day": 25,
       "description": "헬스장 3개월 결제",
       "amount": 150000
@@ -238,84 +237,29 @@
   ],
   "money": [
     {
-      "id": 1,
+      "id": "1",
       "userid": "1111",
       "typeid": 1,
-      "categoryid": 2,
+      "categoryid": "2",
       "date": "2025-06-01",
-      "amount": 500000,
-      "tendencyid": 3,
-      "payment": 4,
+      "amount": 50000000,
+      "tendencyid": 1,
+      "payment": 2,
       "memo": "아부지 용돈"
     },
     {
-      "id": 2,
+      "id": "7",
       "userid": "1111",
       "typeid": 2,
-      "categoryid": 10,
-      "date": "2025-06-01",
-      "amount": 200000,
-      "tendencyid": 1,
-      "payment": 1,
-      "memo": "학원 등록비"
-    },
-    {
-      "id": 3,
-      "userid": "1111",
-      "typeid": 2,
-      "categoryid": 10,
-      "date": "2025-04-01",
-      "amount": 200000,
+      "categoryid": "14",
+      "date": "2025-05-01",
+      "amount": 200000000,
       "tendencyid": 1,
       "payment": 2,
-      "memo": "학원 등록비"
+      "memo": "상하이 여행"
     },
     {
-      "id": 4,
-      "userid": "1111",
-      "typeid": 2,
-      "categoryid": 10,
-      "date": "2025-04-01",
-      "amount": 200000,
-      "tendencyid": 1,
-      "payment": 3,
-      "memo": "학원 등록비"
-    },
-    {
-      "id": 5,
-      "userid": "1111",
-      "typeid": 2,
-      "categoryid": 9,
-      "date": "2025-05-01",
-      "amount": 200000,
-      "tendencyid": 1,
-      "payment": 1,
-      "memo": "학원 등록비"
-    },
-    {
-      "id": 6,
-      "userid": "1111",
-      "typeid": 2,
-      "categoryid": 12,
-      "date": "2025-06-01",
-      "amount": 200000,
-      "tendencyid": 2,
-      "payment": 1,
-      "memo": "인형 뽑기"
-    },
-    {
-      "id": 7,
-      "userid": "1111",
-      "typeid": 2,
-      "categoryid": 12,
-      "date": "2025-05-01",
-      "amount": 200000,
-      "tendencyid": 2,
-      "payment": 1,
-      "memo": "인형 뽑기"
-    },
-    {
-      "id": 8,
+      "id": "8",
       "userid": "1111",
       "typeid": 2,
       "categoryid": 1,
@@ -326,7 +270,7 @@
       "memo": "1월 첫째주 정기 지출"
     },
     {
-      "id": 9,
+      "id": "9",
       "userid": "1111",
       "typeid": 2,
       "categoryid": 2,
@@ -337,7 +281,7 @@
       "memo": "1월 중순 교육비"
     },
     {
-      "id": 10,
+      "id": "10",
       "userid": "1111",
       "typeid": 2,
       "categoryid": 3,
@@ -348,7 +292,7 @@
       "memo": "갑작스런 외식"
     },
     {
-      "id": 11,
+      "id": "11",
       "userid": "1111",
       "typeid": 2,
       "categoryid": 4,
@@ -359,7 +303,7 @@
       "memo": "2월 생활비"
     },
     {
-      "id": 12,
+      "id": "12",
       "userid": "fb5c",
       "typeid": 2,
       "categoryid": 6,
@@ -370,7 +314,7 @@
       "memo": "2월 생활비"
     },
     {
-      "id": 13,
+      "id": "13",
       "userid": "1111",
       "typeid": 2,
       "categoryid": 6,
@@ -381,7 +325,7 @@
       "memo": "3월 학원비"
     },
     {
-      "id": 14,
+      "id": "14",
       "userid": "1111",
       "typeid": 2,
       "categoryid": 7,
@@ -392,7 +336,7 @@
       "memo": "카페+쇼핑"
     },
     {
-      "id": 15,
+      "id": "15",
       "userid": "1111",
       "typeid": 2,
       "categoryid": 9,
@@ -403,7 +347,7 @@
       "memo": "4월 등록비"
     },
     {
-      "id": 16,
+      "id": "16",
       "userid": "1111",
       "typeid": 2,
       "categoryid": 10,
@@ -412,19 +356,320 @@
       "tendencyid": 2,
       "payment": 3,
       "memo": "편의점+간식"
+    },
+    {
+      "id": "c490",
+      "typeid": 2,
+      "categoryid": 5,
+      "date": "2025-04-10",
+      "amount": 11234000,
+      "tendencyid": 2,
+      "payment": 3,
+      "memo": ""
+    },
+    {
+      "id": "c217",
+      "typeid": 1,
+      "categoryid": 1,
+      "date": "2025-04-10",
+      "amount": 111111111,
+      "tendencyid": 3,
+      "payment": 4,
+      "memo": "용돈"
+    },
+    {
+      "id": "05cd",
+      "typeid": 1,
+      "categoryid": 2,
+      "date": "2025-04-10",
+      "amount": 1200000,
+      "tendencyid": 3,
+      "payment": 4,
+      "memo": "용돈"
+    },
+    {
+      "id": "5948",
+      "typeid": 2,
+      "categoryid": 5,
+      "date": "2025-04-10",
+      "amount": 10000000,
+      "tendencyid": 2,
+      "payment": 3,
+      "memo": ""
+    },
+    {
+      "id": "2d7e",
+      "typeid": 1,
+      "categoryid": 3,
+      "date": "2025-04-10",
+      "amount": 1111111,
+      "tendencyid": 3,
+      "payment": 4,
+      "memo": ""
+    },
+    {
+      "id": "3bbf",
+      "typeid": 2,
+      "categoryid": 5,
+      "date": "2025-04-10",
+      "amount": 100000,
+      "tendencyid": 1,
+      "payment": 1,
+      "memo": "샐러드"
+    },
+    {
+      "id": "7064",
+      "typeid": 2,
+      "categoryid": 5,
+      "date": "2025-04-10",
+      "amount": 100000,
+      "tendencyid": 1,
+      "payment": 1,
+      "memo": "샐러드"
+    },
+    {
+      "id": "7653",
+      "typeid": 2,
+      "categoryid": 5,
+      "date": "2025-04-10",
+      "amount": 10000,
+      "tendencyid": 1,
+      "payment": 3,
+      "memo": "샐러드"
+    },
+    {
+      "id": "2613",
+      "typeid": 2,
+      "categoryid": 5,
+      "date": "2025-04-10",
+      "amount": 20000,
+      "tendencyid": 2,
+      "payment": 3,
+      "memo": "치킨"
+    },
+    {
+      "id": "c08e",
+      "typeid": 2,
+      "categoryid": 5,
+      "date": "2025-04-10",
+      "amount": 120000,
+      "tendencyid": 2,
+      "payment": 3,
+      "memo": "피자"
+    },
+    {
+      "id": "c08e",
+      "typeid": 2,
+      "categoryid": 5,
+      "date": "2025-04-10",
+      "amount": 120000,
+      "tendencyid": 2,
+      "payment": 3,
+      "memo": "피자",
+      "userid": "1111"
+    },
+    {
+      "id": "c08e",
+      "typeid": 2,
+      "categoryid": 5,
+      "date": "2025-04-10",
+      "amount": 120000,
+      "tendencyid": 2,
+      "payment": 3,
+      "memo": "피자",
+      "userid": "1111"
+    },
+    {
+      "id": "181e",
+      "typeid": 2,
+      "categoryid": 6,
+      "date": "2025-04-10",
+      "amount": 55000,
+      "tendencyid": 1,
+      "payment": 2,
+      "memo": "기후동행카드"
+    },
+    {
+      "id": "181e",
+      "typeid": 2,
+      "categoryid": 6,
+      "date": "2025-04-10",
+      "amount": 55000,
+      "tendencyid": 1,
+      "payment": 2,
+      "memo": "기후동행카드",
+      "userid": "1111"
+    },
+    {
+      "id": "181e",
+      "typeid": 2,
+      "categoryid": 6,
+      "date": "2025-04-10",
+      "amount": 55000,
+      "tendencyid": 1,
+      "payment": 2,
+      "memo": "기후동행카드",
+      "userid": "1111"
+    },
+    {
+      "id": "bc0c",
+      "typeid": 2,
+      "categoryid": 8,
+      "date": "2025-04-10",
+      "amount": 12000,
+      "tendencyid": 1,
+      "payment": 3,
+      "memo": "병원비"
+    },
+    {
+      "id": "bc0c",
+      "typeid": 2,
+      "categoryid": 8,
+      "date": "2025-04-10",
+      "amount": 12000,
+      "tendencyid": 1,
+      "payment": 3,
+      "memo": "병원비",
+      "userid": "1111"
+    },
+    {
+      "id": "5308",
+      "typeid": 2,
+      "categoryid": 11,
+      "date": "2025-04-10",
+      "amount": 22000,
+      "tendencyid": 2,
+      "payment": 1,
+      "memo": "술"
+    },
+    {
+      "id": "5308",
+      "typeid": 2,
+      "categoryid": 11,
+      "date": "2025-04-10",
+      "amount": 22000,
+      "tendencyid": 2,
+      "payment": 1,
+      "memo": "술",
+      "userid": "1111"
+    },
+    {
+      "id": "e528",
+      "typeid": 2,
+      "categoryid": 5,
+      "date": "2025-04-10",
+      "amount": 199999,
+      "tendencyid": 2,
+      "payment": 3,
+      "memo": "엽떡"
+    },
+    {
+      "id": "e528",
+      "typeid": 2,
+      "categoryid": 5,
+      "date": "2025-04-10",
+      "amount": 199999,
+      "tendencyid": 2,
+      "payment": 3,
+      "memo": "엽떡",
+      "userid": "1111"
+    },
+    {
+      "id": "199f",
+      "typeid": 1,
+      "categoryid": 1,
+      "date": "2025-04-10",
+      "amount": 1000000,
+      "tendencyid": 3,
+      "payment": 4,
+      "memo": "알바비"
+    },
+    {
+      "id": "199f",
+      "typeid": 1,
+      "categoryid": 1,
+      "date": "2025-04-10",
+      "amount": 1000000,
+      "tendencyid": 3,
+      "payment": 4,
+      "memo": "알바비",
+      "userid": "1111"
+    },
+    {
+      "id": "d498",
+      "typeid": 2,
+      "categoryid": 10,
+      "date": "2025-04-23",
+      "amount": 100000,
+      "tendencyid": 2,
+      "payment": 3,
+      "memo": "보헴서"
+    },
+    {
+      "id": "d498",
+      "typeid": 2,
+      "categoryid": 10,
+      "date": "2025-04-23",
+      "amount": 100000,
+      "tendencyid": 2,
+      "payment": 3,
+      "memo": "보헴서",
+      "userid": "1111"
+    },
+    {
+      "id": "d30b",
+      "typeid": 1,
+      "categoryid": 2,
+      "date": "2025-04-10",
+      "amount": 100000,
+      "tendencyid": 3,
+      "payment": 4,
+      "memo": "용돈이용"
+    },
+    {
+      "id": "d30b",
+      "typeid": 1,
+      "categoryid": 2,
+      "date": "2025-04-10",
+      "amount": 100000,
+      "tendencyid": 3,
+      "payment": 4,
+      "memo": "용돈이용",
+      "userid": "1111"
+    },
+    {
+      "id": "4c6b",
+      "typeid": 2,
+      "categoryid": 7,
+      "date": "2025-04-10",
+      "amount": 1234567788090,
+      "tendencyid": 1,
+      "payment": 3,
+      "memo": "관리비"
+    },
+    {
+      "id": "4c6b",
+      "typeid": 2,
+      "categoryid": 7,
+      "date": "2025-04-10",
+      "amount": 1234567788090,
+      "tendencyid": 1,
+      "payment": 3,
+      "memo": "관리비",
+      "userid": "1111"
     }
   ],
   "tendency": [
     {
-      "id": 1,
+      "id": "1",
       "feel": "계획적 소비"
     },
     {
-      "id": 2,
+      "id": "2",
       "feel": "충동적 소비"
     },
     {
-      "id": 3,
+      "id": "3",
       "feel": "수입"
     }
   ]
