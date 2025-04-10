@@ -33,9 +33,9 @@
     {
       "id": "a487",
       "userId": "asdf@naver.com",
-      "password": "aaaaaaaa",
+      "password": "new123",
       "name": "aaaaa",
-      "age": 4,
+      "age": "2",
       "gender": "남성",
       "userImg": "",
       "goalSavings": 10
@@ -91,6 +91,39 @@
       "name": "지출"
     }
   ],
+  "chartData": [
+    {
+      "month": 1,
+      "income": 110000,
+      "expense": 40000,
+      "id": "74fa"
+    },
+    {
+      "month": 2,
+      "income": 120000,
+      "expense": 45000,
+      "id": "5086"
+    },
+    {
+      "month": 3,
+      "income": 130000,
+      "expense": 42000,
+      "id": "9c38"
+    },
+    {
+      "month": 4,
+      "income": 125000,
+      "expense": 48000,
+      "id": "50eb"
+    },
+    {
+      "month": 5,
+      "income": 125000,
+      "expense": 48000,
+      "id": "fd50"
+    }
+  ],
+
   "category": [
     {
       "id": 1,
@@ -111,17 +144,48 @@
     {
       "id": 5,
       "name": "기타수입"
+
     },
-    { "id": 6, "name": "식사/카페" },
-    { "id": 7, "name": "배달/간식" },
-    { "id": 8, "name": "쇼핑" },
-    { "id": 9, "name": "교통/차량" },
-    { "id": 10, "name": "주거/관리" },
-    { "id": 11, "name": "건강/병원" },
-    { "id": 12, "name": "취미/여가" },
-    { "id": 13, "name": "구독서비스" },
-    { "id": 14, "name": "여행/외출" },
-    { "id": 15, "name": "기타지출" }
+    {
+      "id": 6,
+      "name": "식사/카페"
+    },
+    {
+      "id": 7,
+      "name": "배달/간식"
+    },
+    {
+      "id": 8,
+      "name": "쇼핑"
+    },
+    {
+      "id": 9,
+      "name": "교통/차량"
+    },
+    {
+      "id": 10,
+      "name": "주거/관리"
+    },
+    {
+      "id": 11,
+      "name": "건강/병원"
+    },
+    {
+      "id": 12,
+      "name": "취미/여가"
+    },
+    {
+      "id": 13,
+      "name": "구독서비스"
+    },
+    {
+      "id": 14,
+      "name": "여행/외출"
+    },
+    {
+      "id": 15,
+      "name": "기타지출"
+    }
   ],
   "payment": [
     {
@@ -181,6 +245,7 @@
       "categoryid": 2,
       "date": "2025-06-01",
       "amount": 500000,
+
       "tendencyid": 3,
       "payment": 4,
       "memo": "아부지 용돈"
@@ -305,6 +370,50 @@
       "tendencyid": 1,
       "payment": 1,
       "memo": "2월 생활비"
+    },
+    {
+      "id": 13,
+      "userid": "1111",
+      "typeid": 2,
+      "categoryid": 6,
+      "date": "2025-03-01",
+      "amount": 280000,
+      "tendencyid": 1,
+      "payment": 3,
+      "memo": "3월 학원비"
+    },
+    {
+      "id": 14,
+      "userid": "1111",
+      "typeid": 2,
+      "categoryid": 7,
+      "date": "2025-03-05",
+      "amount": 140000,
+      "tendency": 2,
+      "payment": 1,
+      "memo": "카페+쇼핑"
+    },
+    {
+      "id": 15,
+      "userid": "1111",
+      "typeid": 2,
+      "categoryid": 9,
+      "date": "2025-04-01",
+      "amount": 220000,
+      "tendencyid": 1,
+      "payment": 1,
+      "memo": "4월 등록비"
+    },
+    {
+      "id": 16,
+      "userid": "1111",
+      "typeid": 2,
+      "categoryid": 10,
+      "date": "2025-04-02",
+      "amount": 100000,
+      "tendencyid": 2,
+      "payment": 3,
+      "memo": "편의점+간식"
     }
   ],
   "tendency": [

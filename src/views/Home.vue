@@ -47,7 +47,7 @@
         </div>
         <div class="goalSavings">
           <div class="cardLabel" @click="goToMonthlyAnalysis">목표 저축률</div>
-          <div class="cardValue">{{ savingsRate }}%</div>
+          <div class="cardValue">{{ savingGoal }}%</div>
         </div>
       </div>
     </div>
@@ -61,7 +61,107 @@
         <PieChart :chartData="chartData" />
       </div>
       <div class="piggyAni">
-        <!-- <IndividualPig /> -->
+        <h2 class="sectionTitle">🐷저축률을 높여 돼지에게 먹이를 주세요!</h2>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          :width="size"
+          :height="size"
+          viewBox="0 0 200 200"
+        >
+          <!-- 그라디언트 정의 -->
+          <defs>
+            <radialGradient id="faceGradient" cx="50%" cy="50%" r="60%">
+              <stop offset="0%" stop-color="#FFD8F0" />
+              <stop offset="100%" stop-color="#FFA8DC" />
+            </radialGradient>
+            <radialGradient id="earGradient" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="#FFD0EB" />
+              <stop offset="100%" stop-color="#FF9FD6" />
+            </radialGradient>
+          </defs>
+
+          <!-- 귀 -->
+          <circle
+            :cx="earLeft.cx"
+            :cy="earLeft.cy"
+            :r="earSize"
+            fill="url(#earGradient)"
+          />
+          <circle
+            :cx="earRight.cx"
+            :cy="earRight.cy"
+            :r="earSize"
+            fill="url(#earGradient)"
+          />
+
+          <!-- 얼굴 -->
+          <circle cx="100" cy="100" :r="faceRadius" fill="url(#faceGradient)" />
+
+          <!-- 왼쪽 눈 -->
+          <rect
+            :x="eyeLeft.x"
+            :y="eyeLeft.y"
+            :width="eyeSize.width"
+            :height="eyeSize.height"
+            rx="3"
+            fill="#000"
+            class="blink"
+          />
+          <circle
+            :cx="eyeLeft.x + eyeSize.width / 2"
+            :cy="eyeLeft.y + eyeSize.height / 2"
+            :r="eyeHighlightSize"
+            fill="white"
+          />
+
+          <!-- 오른쪽 눈 -->
+          <rect
+            :x="eyeRight.x"
+            :y="eyeRight.y"
+            :width="eyeSize.width"
+            :height="eyeSize.height"
+            rx="3"
+            fill="#000"
+            class="blink"
+          />
+          <circle
+            :cx="eyeRight.x + eyeSize.width / 2"
+            :cy="eyeRight.y + eyeSize.height / 2"
+            :r="eyeHighlightSize"
+            fill="white"
+          />
+
+          <!-- 코 -->
+          <ellipse
+            cx="100"
+            :cy="nosePosition.cy"
+            :rx="noseSize.rx"
+            :ry="noseSize.ry"
+            fill="#FFB6DC"
+          />
+          <ellipse
+            cx="100"
+            :cy="nosePosition.cy"
+            :rx="noseSize.rx"
+            :ry="noseSize.ry"
+            fill="rgba(0, 0, 0, 0.05)"
+          />
+          <circle
+            :cx="noseHoles.left.cx"
+            :cy="noseHoles.left.cy"
+            :r="noseHoleSize"
+            fill="#000"
+          />
+          <circle
+            :cx="noseHoles.right.cx"
+            :cy="noseHoles.right.cy"
+            :r="noseHoleSize"
+            fill="#000"
+          />
+        </svg>
+        <p class="piggyMessage">
+          {{ piggyMessage }}
+        </p>
       </div>
     </div>
 
@@ -112,8 +212,8 @@ import TransactionModal from '@/components/TransactionModal.vue';
 
 const router = useRouter();
 
-const store = useDashboardStore();
-console.log(store.savingsRate);
+// const store = useDashboardStore();
+// console.log(store.savingsRate);
 
 const dropdownOpen = ref(false);
 const toggleDropdown = () => {
@@ -130,6 +230,7 @@ const toggleDarkMode = () => {
 const chartData = ref([]);
 const categorySpending = ref([]);
 const transactions = ref([]);
+const savingGoal = ref(null);
 const loading = ref(true); // 로딩 상태 추가
 
 const fetchData = async () => {
@@ -140,6 +241,10 @@ const fetchData = async () => {
     } else {
       console.log('현재 로그인한 유저 ID:', userId);
     }
+    const responseGoal = await axios.get(
+      `http://localhost:3000/user/${userId}`
+    );
+    savingGoal.value = responseGoal.data.goalSavings;
 
     const response = await axios.get('http://localhost:3000/money');
     const moneyData = response.data.filter((entry) => entry.userid == userId); // 👈 유저별 필터
@@ -262,9 +367,10 @@ const savingsRate = computed(() => {
   if (totalIncome.value === 0) return 0;
   return Math.round((balance.value / totalIncome.value) * 100);
 });
+console.log(savingsRate);
+
 const mypageClick = () => {
   router.push('./myPage');
-  alert('mypage page');
 };
 const logout = () => {
   alert('안녕히가세요!');
@@ -272,11 +378,6 @@ const logout = () => {
   localStorage.removeItem('loggedInUserId');
 
   router.push('/');
-};
-
-const inputClick = () => {
-  //router.push('./inputValue');
-  alert('money input');
 };
 
 const isModalOpen = ref(false);
@@ -287,32 +388,12 @@ const closeModal = () => {
   isModalOpen.value = false;
 };
 
-const savingClick = () => {
-  //router.push('./savings-card');
-  alert('저축률 페이지');
-};
 const goToHome = () => {
   router.push('./home');
 };
 
 const monthlyClick = () => {
   router.push('./calendar');
-  alert('월간 수입/지출 페이지');
-};
-
-const categoryClick = () => {
-  //router.push('./categorypage');
-  alert('카테고리 페이지 이동');
-};
-
-const transactionsClick = () => {
-  //   router.push('/transaction'); 페이지 만들어서 라우팅 하면 끝
-  alert('최근 거래내역 페이지 이동');
-};
-
-const monthAmount = () => {
-  //router.push('./monthAmount');
-  alert('이번달 요약이동');
 };
 
 const goToExpenseList = () => {
@@ -324,9 +405,141 @@ const goToAgeExpenseAnalysis = () => {
 const goToMonthlyAnalysis = () => {
   router.push('/monthlyAnalysis');
 };
+const baseSize = 200;
+
+// 크기 비율 계산 (저축률 기반)
+const sizeRatio = computed(() => savingsRate.value / 100 + 0.2);
+const size = computed(() => baseSize * (0.6 + sizeRatio.value * 0.4));
+const faceRadius = computed(() => 80 * sizeRatio.value);
+const earSize = computed(() => 15 * sizeRatio.value);
+
+const earLeft = computed(() => ({
+  cx: 100 - faceRadius.value * 0.55,
+  cy: 100 - faceRadius.value * 0.7,
+}));
+const earRight = computed(() => ({
+  cx: 100 + faceRadius.value * 0.55,
+  cy: 100 - faceRadius.value * 0.7,
+}));
+
+const eyeSize = computed(() => ({
+  width: 10 * sizeRatio.value,
+  height: 25 * sizeRatio.value,
+}));
+const eyeHighlightSize = computed(() => 2 * sizeRatio.value);
+
+const eyeLeft = computed(() => ({
+  x: 100 - faceRadius.value * 0.3 - eyeSize.value.width / 2,
+  y: 100 - faceRadius.value * 0.1 - eyeSize.value.height / 2,
+}));
+const eyeRight = computed(() => ({
+  x: 100 + faceRadius.value * 0.3 - eyeSize.value.width / 2,
+  y: 100 - faceRadius.value * 0.1 - eyeSize.value.height / 2,
+}));
+
+const noseSize = computed(() => ({
+  rx: 30 * sizeRatio.value,
+  ry: 20 * sizeRatio.value,
+}));
+const nosePosition = computed(() => ({
+  cy: 100 + faceRadius.value * 0.3,
+}));
+const noseHoleSize = computed(() => 5 * sizeRatio.value);
+const noseHoles = computed(() => ({
+  left: {
+    cx: 100 - noseSize.value.rx * 0.4,
+    cy: nosePosition.value.cy,
+  },
+  right: {
+    cx: 100 + noseSize.value.rx * 0.4,
+    cy: nosePosition.value.cy,
+  },
+}));
+const piggyMessage = computed(() => {
+  if (savingsRate.value < 0) return '돼지가 집을 나가버렸어요 😰';
+  if (savingsRate.value < 50) return '돼지가 배가 고파요 😢';
+  if (savingsRate.value < 70) return '돼지가 괜찮아해요 🙂';
+  if (savingsRate.value < 90) return '돼지가 행복해해요 😄';
+  return '돼지가 완전 포동포동해요 🐷💖';
+});
+
+// const sizeRatio = savingsRate.value / 100 + 0.2; // 크기 비율 (0~1 사이) + 기본값 0.2
+// const size = baseSize * (0.6 + sizeRatio * 0.4); // 결과 60% ~ 100% 크기
+// console.log(savingsRate.value);
+// console.log(size);
+
+// // 얼굴 크기
+// const faceRadius = 80 * sizeRatio; // 얼굴 반지름
+
+// // 귀 크기와 위치 계산
+// const earSize = 15 * sizeRatio; // 귀 크기
+// const earLeft = { cx: 100 - faceRadius * 0.55, cy: 100 - faceRadius * 0.7 }; // 왼쪽 귀 중심
+// const earRight = { cx: 100 + faceRadius * 0.55, cy: 100 - faceRadius * 0.7 }; // 오른쪽 귀 중심
+
+// // 눈 크기와 위치 계산
+// const eyeSize = {
+//   width: 10 * sizeRatio, // 눈 너비
+//   height: 25 * sizeRatio, // 눈 높이
+// };
+// const eyeHighlightSize = 2 * sizeRatio; // 눈 하이라이트 크기
+// const eyeLeft = {
+//   x: 100 - faceRadius * 0.3 - eyeSize.width / 2,
+//   y: 100 - faceRadius * 0.1 - eyeSize.height / 2,
+// };
+// const eyeRight = {
+//   x: 100 + faceRadius * 0.3 - eyeSize.width / 2,
+//   y: 100 - faceRadius * 0.1 - eyeSize.height / 2,
+// };
+
+// // 코 크기와 위치 계산
+// const noseSize = {
+//   rx: 30 * sizeRatio, // 코 타원의 x 반지름
+//   ry: 20 * sizeRatio, // 코 타원의 y 반지름
+// };
+// const nosePosition = {
+//   cy: 100 + faceRadius * 0.3, // 얼굴 크기에 따라 코의 y 위치를 조정
+// };
+
+// // 코 구멍 크기와 위치
+// const noseHoleSize = 5 * sizeRatio; // 코 구멍 크기
+// const noseHoles = {
+//   left: {
+//     cx: 100 - noseSize.rx * 0.4, // 코 타원의 중심에서 좌측 위치
+//     cy: nosePosition.cy, // 코 위치와 동일
+//   },
+//   right: {
+//     cx: 100 + noseSize.rx * 0.4, // 코 타원의 중심에서 우측 위치
+//     cy: nosePosition.cy, // 코 위치와 동일
+//   },
+// };
 </script>
 
 <style scoped>
+.blink {
+  animation: blinkAnim 3s infinite;
+  transform-origin: center center;
+}
+
+@keyframes blinkAnim {
+  0%,
+  94%,
+  100% {
+    transform: scaleY(1);
+  }
+  95%,
+  97% {
+    transform: scaleY(0.1);
+  }
+}
+.piggyMessage {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 16px;
+  display: flex;
+  justify-content: center; /* 가운데 정렬 */
+  align-items: center; /* 아이콘과 텍스트 수직 정렬 */
+  gap: 8px;
+}
 .iconImage {
   width: 60px;
   height: 60px;
@@ -519,10 +732,11 @@ const goToMonthlyAnalysis = () => {
   border-radius: 1rem;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
   min-width: 0;
-  /*piggyAni안에 돼지 컴포넌트를 가운데 정렬하기 위한 style*/
+
   display: flex;
-  justify-content: center;
-  align-items: center;
+  flex-direction: column; /* 세로 방향 정렬 */
+  align-items: center; /* 가로 가운데 정렬 */
+  justify-content: flex-start;
 }
 
 .chartLabel {
@@ -534,6 +748,10 @@ const goToMonthlyAnalysis = () => {
   font-size: 18px;
   font-weight: bold;
   margin-bottom: 16px;
+  display: flex;
+  justify-content: center; /* 가운데 정렬 */
+  align-items: center; /* 아이콘과 텍스트 수직 정렬 */
+  gap: 8px;
 }
 
 .transactionItem {

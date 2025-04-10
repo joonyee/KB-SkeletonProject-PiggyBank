@@ -114,8 +114,8 @@
               </button>
               <button
                 class="tendencyButton"
-                :class="{ active: tendency === 'impulsive' }"
-                @click="tendency = 'impulsive'"
+                :class="{ active: tendency === '충동적 지출' }"
+                @click="tendency = '충동적 지출'"
               >
                 충동적 지출
               </button>
@@ -142,18 +142,25 @@
 
 <script setup>
 import { ref, watch, onMounted, onBeforeUnmount } from "vue";
+import axios from "axios";
 import CategoryModal from "./CategoryModal.vue";
 import "../assets/styles/global.css";
 
+// 외부에서 모달 열림 여부와 사용자 ID를 props로 전달받음(수정 필요)
 const props = defineProps({
   isOpen: {
     type: Boolean,
     default: false,
   },
+  userId: {
+    type: Number,
+    required: true,
+  },
 });
 
 const emit = defineEmits(["save", "close"]);
 
+// 상태 변수 정의
 const isModalOpen = ref(props.isOpen);
 const isCategoryModalOpen = ref(false);
 const activeTab = ref("expense");
@@ -166,6 +173,7 @@ const tendency = ref("planned");
 const showCategoryError = ref(false);
 const isMobile = ref(false);
 
+// 카테고리 이름 목록
 const categories = {
   income: ["급여", "용돈", "부수입", "기타수입"],
   expense: [
@@ -180,6 +188,37 @@ const categories = {
   ],
 };
 
+// 카테고리명 → ID 매핑 객체
+const categoryMap = {
+  급여: 1,
+  용돈: 2,
+  부수입: 3,
+  기타수입: 4,
+  식비: 5,
+  교통비: 6,
+  주거비: 7,
+  의료비: 8,
+  교육비: 9,
+  의류비: 10,
+  여가비: 11,
+  기타지출: 12,
+};
+
+// 소비 성향 → ID 매핑
+const tendencyMap = {
+  planned: 1,
+  "충동적 지출": 2,
+  수입: 3,
+};
+
+// 결제 방식 → ID 매핑
+const paymentMap = {
+  account: 1,
+  negative: 2,
+  neutral: 3,
+};
+
+// props로 전달된 isOpen 변경 감지하여 내부 상태 동기화
 watch(
   () => props.isOpen,
   (newVal) => {
@@ -187,10 +226,12 @@ watch(
   }
 );
 
+// 탭 변경 시 카테고리 초기화
 watch(activeTab, () => {
   selectedCategory.value = "";
 });
 
+// 날짜 포맷을 yyyy-mm-dd 형식으로 변환
 function formatDate(date) {
   const d = new Date(date);
   const year = d.getFullYear();
@@ -199,48 +240,71 @@ function formatDate(date) {
   return `${year}-${month}-${day}`;
 }
 
+// 화면 크기 체크
 function checkScreenSize() {
   isMobile.value = window.innerWidth < 768;
 }
 
+// 카테고리 모달 열기/닫기/선택
 function openCategoryModal() {
   isCategoryModalOpen.value = true;
   showCategoryError.value = false;
 }
-
 function closeCategoryModal() {
   isCategoryModalOpen.value = false;
 }
-
 function selectCategory(category) {
   selectedCategory.value = category;
 }
-
 function handleCategoryTabChange(tab) {
   activeTab.value = tab;
 }
 
-function saveTransaction() {
+// 거래 저장 함수
+async function saveTransaction() {
   if (!selectedCategory.value) {
     showCategoryError.value = true;
     return;
   }
 
+  const isIncome = activeTab.value === "income";
+  const typeId = isIncome ? 1 : 2;
+  const categoryId = categoryMap[selectedCategory.value];
+
+  if (!categoryId) {
+    alert("유효하지 않은 카테고리입니다.");
+    console.error("카테고리 매핑 오류:", selectedCategory.value);
+    return;
+  }
+
   const transaction = {
-    type: activeTab.value,
-    category: selectedCategory.value,
-    amount: amount.value,
-    description: description.value,
-    paymentMethod: paymentMethod.value,
-    tendency: tendency.value,
+    userid: props.userId,
+    typeid: typeId,
+    categoryid: categoryId,
     date: selectedDate.value,
+    amount: Number(amount.value),
+    tendencyid: isIncome ? 3 : tendencyMap[tendency.value],
+    payment: isIncome ? 4 : paymentMap[paymentMethod.value],
+    memo: description.value,
   };
 
-  emit("save", transaction);
-  resetForm();
-  closeModal();
+  try {
+    const response = await axios.post(
+      "http://localhost:3000/money",
+      transaction
+    );
+    console.log("저장 성공:", response.data);
+    alert("거래가 저장되었습니다");
+    emit("save", response.data);
+    resetForm();
+    closeModal();
+  } catch (error) {
+    console.error("저장 실패:", error);
+    alert("저장 중 오류가 발생했습니다.");
+  }
 }
 
+// 입력값 초기화
 function resetForm() {
   selectedCategory.value = "";
   amount.value = "";
@@ -251,12 +315,14 @@ function resetForm() {
   showCategoryError.value = false;
 }
 
+// 모달 닫기
 function closeModal() {
   resetForm();
   isModalOpen.value = false;
   emit("close");
 }
 
+// 마운트/언마운트 시 화면 크기 이벤트 등록/해제
 onMounted(() => {
   checkScreenSize();
   window.addEventListener("resize", checkScreenSize);
@@ -501,6 +567,7 @@ input[type="number"]::-webkit-inner-spin-button {
 }
 
 input[type="number"] {
+  appearance: textfield;
   -moz-appearance: textfield;
 }
 

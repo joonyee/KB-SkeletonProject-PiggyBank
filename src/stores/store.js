@@ -113,6 +113,24 @@ export const useDashboardStore = defineStore('dashboard', () => {
       loading.value = false;
     }
   };
+  const totalIncome = computed(() =>
+    transactions.value
+      .filter((tx) => tx.amount > 0)
+      .reduce((sum, tx) => sum + tx.amount, 0)
+  );
+
+  const totalExpense = computed(() =>
+    transactions.value
+      .filter((tx) => tx.amount < 0)
+      .reduce((sum, tx) => sum + Math.abs(tx.amount), 0)
+  );
+
+  const balance = computed(() => totalIncome.value - totalExpense.value);
+
+  const savingsRate = computed(() => {
+    if (totalIncome.value === 0) return 0;
+    return Math.round((balance.value / totalIncome.value) * 100);
+  });
 
   return {
     chartData,

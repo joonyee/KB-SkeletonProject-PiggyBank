@@ -18,9 +18,21 @@ onMounted(async () => {
   const res = await fetch("http://localhost:3000/money");
   const data = await res.json();
 
+  const tendencyMap = {
+    1: "계획",
+    2: "충동",
+    3: "수입",
+  };
+
+  // tendency 또는 tendencyid 중 사용 가능한 값 가져오기
+  const normalizedData = data.map((item) => ({
+    ...item,
+    tendency: item.tendency ?? item.tendencyid ?? null,
+  }));
+
   // 수입 또는 null인 항목 제외
-  const filtered = data.filter(
-    (item) => item.tendency !== null && item.tendency !== "수입"
+  const filtered = normalizedData.filter(
+    (item) => item.tendency !== null && item.tendency !== 3
   );
 
   // 최근 4개월 목록 생성
@@ -35,34 +47,29 @@ onMounted(async () => {
     return `${year}-${month}`; // e.g., "2025-04"
   });
 
-  // 최근 4개월 데이터만 필터
   const recentFiltered = filtered.filter((item) =>
     recentMonths.includes(item.date.slice(0, 7))
   );
 
-  // 계획/충동 분리
-  const planned = recentFiltered.filter((item) =>
-    item.tendency.includes("계획")
-  );
-  const impulse = recentFiltered.filter((item) =>
-    item.tendency.includes("충동")
-  );
-
   // 월별 합산
   const grouped = {};
-  [...planned, ...impulse].forEach((item) => {
-    const month = parseInt(item.date.split("-")[1], 10) + "월";
-    if (!grouped[month]) grouped[month] = { 계획: 0, 충동: 0 };
-    if (planned.includes(item)) grouped[month].계획 += item.amount;
-    else grouped[month].충동 += item.amount;
+
+  recentFiltered.forEach((item) => {
+    const monthLabel = parseInt(item.date.split("-")[1], 10) + "월";
+    const feel = tendencyMap[item.tendency];
+    if (!grouped[monthLabel]) grouped[monthLabel] = { 계획: 0, 충동: 0 };
+    if (feel === "계획") grouped[monthLabel].계획 += item.amount;
+    else if (feel === "충동") grouped[monthLabel].충동 += item.amount;
   });
 
   // 정렬된 월, 데이터 생성
-  const labels = Object.keys(grouped).sort((a, b) => parseInt(a) - parseInt(b));
+  const labels = recentMonths
+    .map((ym) => parseInt(ym.split("-")[1], 10) + "월")
+    .filter((m) => grouped[m]);
+
   const 계획Data = labels.map((month) => grouped[month].계획);
   const 충동Data = labels.map((month) => grouped[month].충동);
 
-  // Chart.js 렌더링
   new Chart(chartRef.value, {
     type: "bar",
     data: {
