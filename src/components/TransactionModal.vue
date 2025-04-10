@@ -163,7 +163,7 @@ const emit = defineEmits(["save", "close"]);
 // 상태 변수 정의
 const isModalOpen = ref(props.isOpen);
 const isCategoryModalOpen = ref(false);
-const activeTab = ref("expense"); // 수입/지출 탭
+const activeTab = ref("expense");
 const selectedDate = ref(formatDate(new Date()));
 const selectedCategory = ref("");
 const amount = ref("");
@@ -204,15 +204,19 @@ const categoryMap = {
   기타지출: 12,
 };
 
-// 지불 방식 코드 → 텍스트 매핑 함수
-function mapPaymentLabel(method) {
-  const mapping = {
-    account: "카드",
-    neutral: "계좌이체",
-    negative: "현금",
-  };
-  return mapping[method] || "현금"; // fallback
-}
+// 소비 성향 → ID 매핑
+const tendencyMap = {
+  planned: 1,
+  "충동적 지출": 2,
+  수입: 3,
+};
+
+// 결제 방식 → ID 매핑
+const paymentMap = {
+  account: 1,
+  negative: 2,
+  neutral: 3,
+};
 
 // props로 전달된 isOpen 변경 감지하여 내부 상태 동기화
 watch(
@@ -236,35 +240,28 @@ function formatDate(date) {
   return `${year}-${month}-${day}`;
 }
 
-// 화면 크기 체크하여 모바일 여부 판단
+// 화면 크기 체크
 function checkScreenSize() {
   isMobile.value = window.innerWidth < 768;
 }
 
-// 카테고리 선택 모달 열기
+// 카테고리 모달 열기/닫기/선택
 function openCategoryModal() {
   isCategoryModalOpen.value = true;
   showCategoryError.value = false;
 }
-
-// 카테고리 선택 모달 닫기
 function closeCategoryModal() {
   isCategoryModalOpen.value = false;
 }
-
-// 카테고리 선택 시 저장
 function selectCategory(category) {
   selectedCategory.value = category;
 }
-
-// 카테고리 모달에서 탭 변경 시 적용
 function handleCategoryTabChange(tab) {
   activeTab.value = tab;
 }
 
-// 거래 저장 함수 (axios로 서버에 POST)
+// 거래 저장 함수
 async function saveTransaction() {
-  // 카테고리를 선택하지 않은 경우 경고 표시
   if (!selectedCategory.value) {
     showCategoryError.value = true;
     return;
@@ -272,42 +269,33 @@ async function saveTransaction() {
 
   const isIncome = activeTab.value === "income";
   const typeId = isIncome ? 1 : 2;
-
-  // 카테고리 이름을 ID로 변환
   const categoryId = categoryMap[selectedCategory.value];
 
-  // 매핑 실패 시 경고
   if (!categoryId) {
     alert("유효하지 않은 카테고리입니다.");
     console.error("카테고리 매핑 오류:", selectedCategory.value);
     return;
   }
 
-  // 지불 수단 이름 가져오기
-  const paymentLabel = isIncome ? "수입" : mapPaymentLabel(paymentMethod.value);
-
-  // 최종 거래 객체 생성
   const transaction = {
     userid: props.userId,
     typeid: typeId,
     categoryid: categoryId,
     date: selectedDate.value,
     amount: Number(amount.value),
-    tendency: isIncome ? "수입" : tendency.value,
-    payment: paymentLabel,
+    tendencyid: isIncome ? 3 : tendencyMap[tendency.value],
+    payment: isIncome ? 4 : paymentMap[paymentMethod.value],
     memo: description.value,
   };
 
   try {
-    // 서버로 POST 요청 전송
     const response = await axios.post(
       "http://localhost:3000/money",
       transaction
     );
     console.log("저장 성공:", response.data);
-
     alert("거래가 저장되었습니다");
-    emit("save", response.data); // 부모 컴포넌트에 저장 결과 전달
+    emit("save", response.data);
     resetForm();
     closeModal();
   } catch (error) {
@@ -316,7 +304,7 @@ async function saveTransaction() {
   }
 }
 
-// 입력 폼 초기화
+// 입력값 초기화
 function resetForm() {
   selectedCategory.value = "";
   amount.value = "";
@@ -327,20 +315,19 @@ function resetForm() {
   showCategoryError.value = false;
 }
 
-// 모달 닫기 및 리셋
+// 모달 닫기
 function closeModal() {
   resetForm();
   isModalOpen.value = false;
   emit("close");
 }
 
-// 컴포넌트 마운트 시 이벤트 등록
+// 마운트/언마운트 시 화면 크기 이벤트 등록/해제
 onMounted(() => {
   checkScreenSize();
   window.addEventListener("resize", checkScreenSize);
 });
 
-// 컴포넌트 해제 시 이벤트 제거
 onBeforeUnmount(() => {
   window.removeEventListener("resize", checkScreenSize);
 });
