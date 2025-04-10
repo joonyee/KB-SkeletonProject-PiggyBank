@@ -113,7 +113,6 @@ const handleSignUp = async () => {
   }
 
   try {
-    // 1. 연령대 ID 매핑
     const ageResponse = await axios.get('http://localhost:3000/ageArea');
     const ageEntry = ageResponse.data.find((age) => age.age === ageGroup.value);
     const ageId = ageEntry ? ageEntry.id : null;
@@ -123,7 +122,6 @@ const handleSignUp = async () => {
       return;
     }
 
-    // 2. 회원 정보 저장
     const newUser = {
       userId: email.value,
       password: password.value,
@@ -135,7 +133,7 @@ const handleSignUp = async () => {
     await axios.post('http://localhost:3000/user', newUser);
 
     alert('회원가입 성공!');
-    router.push('/login'); // 로그인 페이지로 이동
+    router.push('/login');
   } catch (error) {
     console.error('회원가입 실패:', error);
     alert('회원가입 중 오류가 발생했습니다.');

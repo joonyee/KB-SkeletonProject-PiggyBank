@@ -10,7 +10,7 @@
 
     <!-- 추가 분석 영역: 소비 패턴 분석 카드, FixedExpense 버튼 등 -->
     <div class="analysis-section">
-      <div class="analysis-card">
+      <div class="analysis-card" @click="expense">
         <h3>소비 패턴 분석</h3>
         <div class="analysis-content">
           <div>
@@ -51,10 +51,12 @@ import Calendar from '@/components/Calendar.vue';
 import SummaryChart from '@/components/SummaryChart.vue';
 import FixedExpense from '@/components/FixedExpense.vue';
 import FixedModal from '@/components/FixedModal.vue';
+import { useRouter } from 'vue-router';
 
 // Calendar에서 관리하는 연도, 월 (Calendar에서는 0-indexed로 관리하므로 SummaryChart에 전달할 때는 +1)
 const currentYear = ref(2025);
 const currentMonth = ref(3); // 3이면 달력에서는 4월
+const router = useRouter();
 
 // 소비 패턴 데이터 (예시)
 const impulsiveCount = ref(3);
@@ -68,6 +70,10 @@ const openModal = () => {
 };
 const closeModal = () => {
   isModalOpen.value = false;
+};
+const expense = () => {
+  router.push('./expenseTendency');
+  alert('월간 수입/지출 페이지');
 };
 </script>
 <style scoped>

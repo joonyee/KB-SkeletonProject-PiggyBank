@@ -19,6 +19,11 @@
   --ng-bold-12: bold 12px var(--font-nanum-gothic);
   --ng-bold-10: bold 10px var(--font-nanum-gothic);
 
+  --ng-reg-34: normal 34px var(--font-nanum-gothic);
+  --ng-reg-32: normal 32px var(--font-nanum-gothic);
+  --ng-reg-30: normal 30px var(--font-nanum-gothic);
+  --ng-reg-28: normal 28px var(--font-nanum-gothic);
+  --ng-reg-26: normal 26px var(--font-nanum-gothic);
   --ng-reg-25: normal 25px var(--font-nanum-gothic);
   --ng-reg-24: normal 24px var(--font-nanum-gothic);
   --ng-reg-23: normal 23px var(--font-nanum-gothic);

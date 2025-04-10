@@ -63,7 +63,7 @@ const handleLogin = async () => {
     console.log('로그인 성공:', user);
     alert(`${user.name}님 환영합니다!`);
 
-    localStorage.setItem('loggedInUserId', user.userId);
+    localStorage.setItem('loggedInUserId', user.id);
     router.push('/home');
   } catch (error) {
     console.error('로그인 오류:', error);
