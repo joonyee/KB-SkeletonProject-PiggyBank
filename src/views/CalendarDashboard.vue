@@ -1,5 +1,6 @@
 <template>
   <!-- header -->
+
   <div class="dashboard">
     <header class="dashboardHeader">
       <h1 class="dashboardTitle">
@@ -59,7 +60,11 @@
         </div>
       </div>
 
-      <FixedModal v-if="isModalOpen" @close="closeModal" />
+      <FixedModal
+        v-if="isModalOpen"
+        :month="currentMonth + 1"
+        @close="closeModal"
+      />
     </div>
   </div>
 </template>
@@ -97,14 +102,27 @@ const currentYear = ref(2025);
 const currentMonth = ref(3); // 3이면 달력에서는 4월
 const router = useRouter();
 const transactions = ref([]);
+const savingGoal = ref(null);
+
 const UserId = localStorage.getItem("loggedInUserId");
+
 // 소비 패턴 데이터 (예시)
+
+const monthlyTransactions = computed(() => {
+  return transactions.value.filter((tx) => {
+    const [txYear, txMonth] = tx.date.split('-');
+    return (
+      Number(txYear) === currentYear.value &&
+      Number(txMonth) === currentMonth.value + 1
+    );
+  });
+});
 const impulsiveCount = computed(() => {
-  return transactions.value.filter((tx) => tx.tendencyid === 1).length;
+  return monthlyTransactions.value.filter((tx) => tx.tendencyid === 1).length;
 });
 
 const plannedCount = computed(() => {
-  return transactions.value.filter((tx) => tx.tendencyid === 2).length;
+  return monthlyTransactions.value.filter((tx) => tx.tendencyid === 2).length;
 });
 
 const totalCount = computed(() => {
@@ -120,15 +138,20 @@ const closeModal = () => {
   isModalOpen.value = false;
 };
 const expense = () => {
-  router.push("./expenseTendency");
-  alert("월간 수입/지출 페이지");
+
+  router.push('./expenseTendency');
+
 };
 onMounted(async () => {
   try {
-    const res = await axios.get(
-      `http://localhost:3000/fixedExpenses/${UserId}`
+    const UserId = localStorage.getItem('loggedInUserId');
+    const responseGoal = await axios.get(
+      `http://localhost:3000/user/${UserId}`
     );
-    transactions.value = res.data;
+    savingGoal.value = responseGoal.data.goalSavings;
+
+    const res = await axios.get('http://localhost:3000/money');
+    transactions.value = res.data.filter((entry) => entry.userid == UserId);
   } catch (error) {
     console.error("Failed to fetch transaction data:", error);
   }
@@ -191,10 +214,7 @@ onMounted(async () => {
   font-weight: 600;
   color: #333;
 }
-.dark .calendar-dashboard,
-.dark .analysis-section,
-.dark .analysis-card,
-.dark .analysis-content {
+.dark .calendar-dashboard {
   background-color: #121212;
 }
 .dark .dashboard {
@@ -204,6 +224,12 @@ onMounted(async () => {
 .dark .dashboardHeader {
   background-color: #fbcee8;
 }
+.dark .analysis-card {
+  background: #1f2937;
+  color: #e5e7eb;
+  border: 1px solid #1f2937;
+}
+
 .dashboardHeader {
   display: flex;
   justify-content: space-between;
@@ -226,6 +252,7 @@ onMounted(async () => {
   display: flex;
   justify-content: space-between;
   margin-top: 2rem;
+  cursor: pointer;
 }
 
 .analysis-card {

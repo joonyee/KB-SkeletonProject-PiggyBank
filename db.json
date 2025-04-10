@@ -166,33 +166,50 @@
   "fixedExpenses": [
     {
       "id": "1",
+      "userid": "1111",
+      "categoryid": 11,
       "day": 7,
       "description": "보험료(롯데)",
-      "amount": 45450
+      "amount": 45450,
+      "deletedAt": null
     },
     {
       "id": "2",
+      "userid": "1111",
       "day": 10,
+      "categoryid": 13,
       "description": "넷플릭스 구독",
-      "amount": 14000
+      "amount": 14000,
+      "deletedAt": null
     },
     {
       "id": "3",
+      "userid": "1111",
       "day": 15,
+      "categoryid": 13,
       "description": "멤버십(Amazon Prime)",
-      "amount": 6500
+      "amount": 6500,
+      "deletedAt": null
     },
     {
       "id": "4",
+      "userid": "1111",
       "day": 23,
+      "categoryid": 13,
       "description": "통신요금(LG U+)",
-      "amount": 105450
+      "amount": 105450,
+      "deletedAt": null
     },
     {
       "id": "5",
+      "userid": "1111",
       "day": 25,
+      "categoryid": 13,
       "description": "헬스장 3개월 결제",
-      "amount": 150000
+
+      "amount": 150000,
+      "deletedAt": null
+
     }
   ],
   "money": [

@@ -3,6 +3,10 @@
     <header class="calendar-header">
       <h2>{{ currentYear }}년 {{ currentMonth + 1 }}월</h2>
       <div class="right-section">
+        <div class="label-section">
+          <span class="label income-label">● 수입</span>
+          <span class="label expense-label">● 지출</span>
+        </div>
         <button class="arrow-button" @click="prevMonth">
           <img src="/arrow2.png" alt="Previous Month" />
         </button>
@@ -104,9 +108,20 @@ function updateCalendarData() {
   days.forEach((day) => {
     const formatted = day.date.toISOString().split('T')[0];
     const dayTx = transactions.value.filter((tx) => tx.date === formatted);
-    const fixedTx = fixedExpenses.value.filter(
-      (fx) => fx.day === day.date.getDate()
-    );
+    // 현재 달(1-indexed) 계산
+    const currentDisplayedMonth = currentMonth.value + 1;
+
+    // 고정 결제 예정액 필터링: 해당 날짜(day.date.getDate())와 일치하고,
+    // 만약 fx.deletedAt가 있다면 현재 달보다 작은 경우만 포함한다.
+    const fixedTx = fixedExpenses.value.filter((fx) => {
+      if (fx.day !== day.date.getDate()) return false;
+      if (fx.deletedAt !== null && fx.deletedAt !== undefined) {
+        // fx.deletedAt이 있다면, 현재 달이 deletedAt 미만이어야 표시 (즉, 삭제 효과가 아직 적용되지 않은 경우)
+        return currentDisplayedMonth < fx.deletedAt;
+      }
+      return true; // 삭제되지 않은 경우
+    });
+
     let incomeSum = 0,
       expenseSum = 0;
     dayTx.forEach((tx) => {
@@ -117,7 +132,7 @@ function updateCalendarData() {
       }
     });
     fixedTx.forEach((tx) => {
-      expenseSum += tx.amount; // 수입
+      expenseSum += tx.amount; // 고정 지출은 지출에 포함
     });
     day.income = incomeSum || null;
     day.expense = expenseSum || null;
@@ -126,14 +141,22 @@ function updateCalendarData() {
 }
 
 const isDataLoaded = ref(false);
-
+const savingGoal = ref(null);
 onMounted(async () => {
   try {
+    const UserId = localStorage.getItem('loggedInUserId');
+    const responseGoal = await axios.get(
+      `http://localhost:3000/user/${UserId}`
+    );
+    savingGoal.value = responseGoal.data.goalSavings;
+
     const [moneyRes, fixedRes] = await Promise.all([
       axios.get('http://localhost:3000/money'),
       axios.get('http://localhost:3000/fixedExpenses'),
     ]);
-    transactions.value = moneyRes.data;
+    transactions.value = moneyRes.data.filter(
+      (entry) => entry.userid == UserId
+    );
     fixedExpenses.value = fixedRes.data;
     isDataLoaded.value = true;
     updateCalendarData(); // 최초 1회 수동 호출
@@ -169,6 +192,16 @@ function nextMonth() {
 </script>
 
 <style scoped>
+.dark .calendar-wrapper,
+.dark .calendar-header,
+.dark .calendar-grid {
+  background-color: #1f2937;
+  color: #e5e7eb;
+}
+.dark .calendar-cell {
+  background-color: #374151;
+  border: 1px solid #4b5563;
+}
 .calendar-wrapper {
   max-width: 1200px;
   margin: 1rem auto;
@@ -178,6 +211,26 @@ function nextMonth() {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
+.label-section {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  font-size: 0.9rem;
+  margin-left: 2rem;
+}
+
+.label {
+  display: flex;
+  align-items: center;
+}
+
+.income-label {
+  color: #16a34a;
+}
+
+.expense-label {
+  color: #ef4444;
+}
 .calendar-header {
   display: flex;
   justify-content: space-between;
