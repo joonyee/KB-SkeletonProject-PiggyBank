@@ -5,16 +5,36 @@ import ProfileInput from '@/components/ProfileInput.vue';
 import { useRouter } from 'vue-router';
 
 const router = useRouter();
+const isLogoutModalOpen = ref(false);
+const isDarkMode = ref(false);
 
 const goToHome = () => {
   router.push('./home');
 };
 
-const isDarkMode = ref(false);
-
 const toggleDarkMode = () => {
   isDarkMode.value = !isDarkMode.value;
   document.documentElement.classList.toggle('dark', isDarkMode.value);
+};
+
+// 로그아웃 처리
+const logout = () => {
+  localStorage.removeItem('accessToken');
+  localStorage.removeItem('refreshToken');
+  router.push('/login');
+};
+
+const openLogoutModal = () => {
+  isLogoutModalOpen.value = true;
+};
+
+const confirmLogout = () => {
+  isLogoutModalOpen.value = false;
+  logout();
+};
+
+const cancelLogout = () => {
+  isLogoutModalOpen.value = false;
 };
 </script>
 
@@ -32,15 +52,17 @@ const toggleDarkMode = () => {
         <button @click="toggleDarkMode" class="darkModeButton">
           {{ isDarkMode ? '☀️' : '🌙' }}
         </button>
-        <button class="mypageButton" @click="mypageClick">마이페이지</button>
-        <button class="inputValue" @click="openModal">새 거래추가</button>
 
-        <TransactionModal
-          :isOpen="isModalOpen"
-          :date="selectedDate"
-          @close="closeModal"
-        />
-        <button class="logout" @click="logout">로그아웃</button>
+        <button class="logout" @click="openLogoutModal">로그아웃</button>
+        <div v-if="isLogoutModalOpen" class="modal">
+          <div class="modal-content">
+            <p>로그아웃 하시겠습니까?</p>
+            <div class="button-group">
+              <button @click="cancelLogout">취소</button>
+              <button @click="confirmLogout">확인</button>
+            </div>
+          </div>
+        </div>
       </div>
     </header>
 
@@ -59,6 +81,40 @@ const toggleDarkMode = () => {
 </template>
 
 <style scoped>
+.dashboardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #fbcee8;
+  padding: 1rem;
+  border-radius: 1rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.darkModeButton {
+  padding: 8px 12px;
+  font-size: 1.2rem;
+  border: 1px solid #ccc;
+  border-radius: 0.5rem;
+  cursor: pointer;
+}
+
+.logout {
+  background-color: rgb(254, 235, 253);
+  border: 1px solid rgb(251, 209, 251);
+  border-radius: 0.5rem;
+  padding: 12px 24px;
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  font-weight: 600;
+  color: #333;
+}
+
+.dashboardTitle {
+  cursor: pointer;
+}
 .dashboard {
   padding: 2rem;
   margin: 0;
@@ -128,8 +184,7 @@ const toggleDarkMode = () => {
 }
 
 .mypageButton,
-.logout,
-.inputValue {
+.logout {
   background-color: rgb(254, 235, 253);
   border: 1px solid rgb(251, 209, 251);
   border-radius: 0.5rem;
@@ -169,6 +224,43 @@ const toggleDarkMode = () => {
 .dark .wrapper {
   background-color: #2e2e4d;
   color: #f3f3f3;
+}
+
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  padding: 2rem;
+  border-radius: 1rem;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.button-group {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.button-group button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  background-color: #fbd6e7;
+  font-weight: 600;
 }
 
 @media screen and (max-width: 830px) {

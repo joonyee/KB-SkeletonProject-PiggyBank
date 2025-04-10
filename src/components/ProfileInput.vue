@@ -1,42 +1,30 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onBeforeMount } from 'vue';
+import axios from 'axios';
 
-// input 태그 내 초기값
-// const form = ref({
-//   id: '',
-//   password: 'abcd',
-//   confirmPassword: 'abcd',
-//   email: 'example@gmail.com',
-//   alarm: true,
-// });
 const form = ref({});
 const initialForm = ref({});
+const isModifyModalOpen = ref(false);
 
-onMounted(() => {
+onBeforeMount(() => {
   const userInfo = JSON.parse(localStorage.getItem('loggedInUserInfo'));
-  const ageGroup = getAgeGroup(userInfo.age); // 숫자 나이를 연령대로 변환
+  // const ageGroup = getAgeGroup(userInfo.age); // 숫자 나이를 연령대로 변환
 
+  console.log('userInfo');
+  console.log(userInfo.value);
   form.value = {
     ...userInfo,
-    age: ageGroup,
+    // age: ageGroup,
     confirmPassword: userInfo.password,
   };
-
+  console.log('form Info');
+  console.log(form.value);
   initialForm.value = { ...form.value };
 });
 
 // 비밀번호 보기/숨기기
 const showPassword = ref(false);
 const showConfirmPassword = ref(false);
-
-const getAgeGroup = (age) => {
-  if (age >= 10 && age < 20) return '10대';
-  if (age >= 20 && age < 30) return '20대';
-  if (age >= 30 && age < 40) return '30대';
-  if (age >= 40 && age < 50) return '40대';
-  if (age >= 50) return '50대 이상';
-  return '10대'; // 기본값 (10세 미만 등)
-};
 
 // 비밀번호 일치 확인
 const passwordMatchMessage = computed(() => {
@@ -54,13 +42,10 @@ const isPasswordMatch = computed(
 
 // 초기화 버튼 클릭 이벤트
 const initInfo = () => {
-  alert('초기화');
+  // alert('초기화');
+  showPassword.value = false;
+  showConfirmPassword.value = false;
   form.value = { ...initialForm.value };
-};
-
-// 수정 버튼 클릭 이벤트
-const modifyInfo = () => {
-  alert('정보를 수정하시겠습니까?');
 };
 
 // 비밀번호 보기/숨기기
@@ -79,6 +64,47 @@ const isFormChanged = computed(() => {
   );
 });
 
+// 정보 수정 확정 여부 모달창
+const openModifyModal = () => {
+  isModifyModalOpen.value = true;
+};
+
+// 수정 취소
+const cancelModify = () => {
+  isModifyModalOpen.value = false;
+};
+
+/// 수정 확정
+const confirmModify = async () => {
+  if (!isPasswordMatch.value) {
+    return;
+  }
+
+  isModifyModalOpen.value = false;
+  localStorage.setItem('loggedInUserInfo', JSON.stringify(form.value));
+
+  try {
+    const userId = form.value.id;
+    const updatedData = {
+      password: form.value.password,
+      age: form.value.age,
+      gender: form.value.gender,
+    };
+
+    const response = await axios.patch(
+      `http://localhost:3000/user/${userId}`,
+      updatedData
+    );
+    alert('정보가 수정되었습니다.');
+
+    showPassword.value = false;
+    showConfirmPassword.value = false;
+  } catch (error) {
+    console.error('서버 업데이트 실패:', error);
+    alert('정보를 수정하는 데 실패했어요.');
+  }
+};
+
 // 알람 버튼 on/off
 const toggleAlarm = () => {
   form.value.alarm = !form.value.alarm;
@@ -92,11 +118,11 @@ const toggleAlarm = () => {
     <label class="label-wrapper">연령</label>
 
     <select v-model="form.age">
-      <option value="10대">10대</option>
-      <option value="20대">20대</option>
-      <option value="30대">30대</option>
-      <option value="40대">40대</option>
-      <option value="50대">50대 이상</option>
+      <option value="1">10대</option>
+      <option value="2">20대</option>
+      <option value="3">30대</option>
+      <option value="4">40대</option>
+      <option value="5">50대 이상</option>
     </select>
 
     <label class="label-wrapper">성별</label>
@@ -150,13 +176,6 @@ const toggleAlarm = () => {
     >
       {{ passwordMatchMessage }}
     </label>
-
-    <!-- <label class="label-wrapper">휴대전화</label>
-    <input v-model="form.phone" type="text" class="input-wrapper" />
-
-    <label class="label-wrapper">이메일</label>
-    <input v-model="form.email" type="text" class="input-wrapper" /> -->
-
     <!-- <div class="alarm-box">
       <div class="alarm-text-wrapper">
         <label class="alarm-label">알림 설정🔔</label>
@@ -177,11 +196,21 @@ const toggleAlarm = () => {
       </button>
       <button
         class="modify-button"
-        @click="modifyInfo"
-        :disabled="!isFormChanged"
+        @click="openModifyModal"
+        :disabled="!isFormChanged || !isPasswordMatch"
       >
         수정
       </button>
+
+      <div v-if="isModifyModalOpen" class="modal">
+        <div class="modal-content">
+          <p>정보를 수정 하시겠습니까?</p>
+          <div class="button-group">
+            <button @click="cancelModify">취소</button>
+            <button @click="confirmModify">확인</button>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -273,7 +302,7 @@ select {
 }
 
 /* 알람 label 및 on/off 버튼 */
-.alarm-box {
+/* .alarm-box {
   margin-top: 20px;
   display: flex;
   flex-direction: row;
@@ -308,7 +337,7 @@ select {
 }
 .alarm-button.off {
   background-color: #d3d3d3;
-}
+} */
 
 /* 수정, 초기화 버튼 */
 .modify-button,
@@ -325,5 +354,41 @@ select {
 .modify-button {
   margin-left: 5px;
   background-color: #fbcee8;
+}
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  padding: 2rem;
+  border-radius: 1rem;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.button-group {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.button-group button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  background-color: #fbd6e7;
+  font-weight: 600;
 }
 </style>

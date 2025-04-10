@@ -1,5 +1,6 @@
 <script setup>
 import { ref } from 'vue';
+import Piggyface from './Piggyface.vue';
 
 const fileInput = ref(null);
 const previewImage = ref(null);
@@ -25,6 +26,7 @@ const handleFileChange = (event) => {
 <template>
   <div class="info-container">
     <div class="photo-box">
+      <!-- <Piggyface /> -->
       <img v-if="previewImage" :src="previewImage" class="profile-image" />
       <button class="edit-button" @click="triggerFileInput">+</button>
       <input type="file" ref="fileInput" @change="handleFileChange" hidden />
