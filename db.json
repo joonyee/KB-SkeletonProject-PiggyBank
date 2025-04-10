@@ -33,9 +33,9 @@
     {
       "id": "a487",
       "userId": "asdf@naver.com",
-      "password": "aaaaaaaa",
+      "password": "new123",
       "name": "aaaaa",
-      "age": 4,
+      "age": "2",
       "gender": "남성",
       "userImg": "",
       "goalSavings": 10
