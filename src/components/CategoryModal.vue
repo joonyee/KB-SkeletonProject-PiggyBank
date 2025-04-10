@@ -137,7 +137,7 @@ onBeforeUnmount(() => {
 
 .categoryModalContent {
   position: relative;
-  background-color: var(--background-color);
+  background-color: white;
   border-radius: 12px;
   width: 400px;
   max-width: 90%;
@@ -166,7 +166,7 @@ onBeforeUnmount(() => {
 .modalHeader h2 {
   margin: 0;
   font: var(--neo-bold-16);
-  color: var(--text-color);
+  color: #333333;
 }
 
 .closeButton {
@@ -174,7 +174,7 @@ onBeforeUnmount(() => {
   border: none;
   font-size: 24px;
   cursor: pointer;
-  color: var(--text-secondary);
+  color: #969696;
 }
 
 .tabContainer {
@@ -196,8 +196,8 @@ onBeforeUnmount(() => {
 }
 
 .tabButton.active {
-  background-color: var(--primary-color);
-  color: var(--text-color);
+  background-color: #ffc7ef;
+  color: #333333;
   font: var(--ng-bold-14);
 }
 
@@ -212,7 +212,7 @@ onBeforeUnmount(() => {
   padding: 12px;
   border: 1px solid #eee;
   border-radius: 6px;
-  background-color: var(--background-color);
+  background-color: white;
   text-align: center;
   cursor: pointer;
   font: var(--ng-reg-14);
@@ -220,6 +220,6 @@ onBeforeUnmount(() => {
 }
 
 .categoryItem:hover {
-  background-color: var(--secondary-color);
+  background-color: #ffe8fc;
 }
 </style>
