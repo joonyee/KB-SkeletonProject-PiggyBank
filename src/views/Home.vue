@@ -18,7 +18,7 @@
 
         <TransactionModal
           :isOpen="isModalOpen"
-          :date="selectedDate"
+          :date="selec2tedDate"
           @close="closeModal"
         />
         <button class="logout" @click="logout">로그아웃</button>
@@ -89,7 +89,6 @@
         <h2 class="sectionTitle" @click="goToAgeExpenseAnalysis">
           📊 카테고리별 지출
         </h2>
-        <<<<<<< HEAD ======= >>>>>>> 5c06886fcdcfb0a3236e3926dd27f07514a0638d
         <CategoryPieChart :categorySpending="categorySpending" />
       </div>
     </div>

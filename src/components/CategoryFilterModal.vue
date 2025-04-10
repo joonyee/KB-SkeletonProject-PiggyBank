@@ -1,22 +1,3 @@
-<!-- components/CategoryFilterModal.vue -->
-<template>
-  <div class="modal-backdrop" @click.self="$emit('close')">
-    <div class="modal-card">
-      <h3 class="modal-title">카테고리 선택</h3>
-      <div class="checkboxes">
-        <label v-for="category in allCategories" :key="category">
-          <input type="checkbox" v-model="selected" :value="category" />
-          {{ category }}
-        </label>
-      </div>
-      <div class="modal-actions">
-        <button @click="$emit('apply', selected)">적용</button>
-        <button @click="$emit('close')">닫기</button>
-      </div>
-    </div>
-  </div>
-</template>
-
 <script setup>
 import { ref, watch } from 'vue';
 
@@ -38,6 +19,30 @@ watch(
 const allCategories = props.categories;
 </script>
 
+<template>
+  <div class="modal-backdrop" @click.self="$emit('close')">
+    <div class="modal-card">
+      <h3 class="modal-title">카테고리 선택</h3>
+      <div class="checkboxes">
+        <label
+          v-for="category in allCategories"
+          :key="category"
+          class="checkbox-item"
+        >
+          <input type="checkbox" v-model="selected" :value="category" />
+          <span class="custom-checkbox">{{ category }}</span>
+        </label>
+      </div>
+      <div class="modal-actions">
+        <button class="apply-btn" @click="$emit('apply', selected)">
+          적용
+        </button>
+        <button class="cancel-btn" @click="$emit('close')">닫기</button>
+      </div>
+    </div>
+  </div>
+</template>
+
 <style scoped>
 .modal-backdrop {
   position: fixed;
@@ -53,30 +58,66 @@ const allCategories = props.categories;
 }
 
 .modal-card {
-  background-color: #fff;
-  border-radius: 12px;
-  padding: 24px;
-  width: 400px;
+  background-color: var(--card-color);
+  border-radius: 16px;
+  padding: 30px;
+  width: 420px;
   max-height: 80vh;
   overflow-y: auto;
 }
 
 .modal-title {
-  font-weight: bold;
-  margin-bottom: 16px;
-  font-size: 18px;
+  font: var(--ng-bold-20);
   text-align: center;
+  margin-bottom: 24px;
+  color: var(--text-color);
 }
 
 .checkboxes {
   display: flex;
   flex-direction: column;
+  gap: 12px;
+  padding: 0 10px;
+  margin-bottom: 24px;
+}
+
+.checkbox-item {
+  display: flex;
+  align-items: center;
+  font: var(--ng-reg-16);
+  color: var(--text-color);
   gap: 10px;
-  margin-bottom: 20px;
+}
+
+.checkbox-item input[type='checkbox'] {
+  accent-color: var(--primary-color);
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
 }
 
 .modal-actions {
   display: flex;
-  justify-content: center;
+  justify-content: space-around;
+  gap: 20px;
+}
+
+.apply-btn,
+.cancel-btn {
+  flex: 1;
+  padding: 10px 16px;
+  border-radius: 8px;
+  border: none;
+  font: var(--ng-reg-16);
+}
+
+.apply-btn {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+.cancel-btn {
+  background-color: #e4e4e4;
+  color: var(--text-color);
 }
 </style>

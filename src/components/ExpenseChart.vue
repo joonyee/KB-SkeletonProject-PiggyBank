@@ -115,6 +115,10 @@ const initDonutChart = () => {
 };
 
 onMounted(() => {
+  console.log('🔥 myData:', props.myData);
+  console.log('🔥 avgData:', props.avgData);
+  console.log('🔥 labels:', props.labels);
+
   initBarChart();
   initDonutChart();
 });

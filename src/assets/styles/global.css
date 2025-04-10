@@ -90,6 +90,9 @@
   --weekly-average-color: #64748b;
   --weekly-text-color: #333333;
   --weekly-number-color: #64748b;
+
+  /* 헤더  */
+  --header-bg: #fbcee8; /* 밝은 핑크 */
 }
 
 body {
@@ -128,4 +131,9 @@ h6 {
 
 .text-expense {
   color: var(--text-expense);
+}
+
+.dark {
+  --background-color: #1f1f1f;
+  --text-color: #ffffff;
 }

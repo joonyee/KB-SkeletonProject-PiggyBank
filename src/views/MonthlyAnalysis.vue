@@ -1,45 +1,103 @@
 <script setup>
 import { ref, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
 import axios from 'axios';
 import ChartCard from '../components/ChartCard.vue';
 import SavingsModal from '../components/SavingsModal.vue';
 
+const router = useRouter();
+
+// 헤더 기능: 다크모드
+const isDarkMode = ref(false);
+const toggleDarkMode = () => {
+  isDarkMode.value = !isDarkMode.value;
+  document.documentElement.classList.toggle('dark');
+};
+
+// 헤더 기능: 마이페이지 이동
+const mypageClick = () => {
+  router.push('/myPage');
+  alert('mypage page');
+};
+
+// 헤더 기능: 로그아웃
+const logout = () => {
+  alert('안녕히가세요!');
+  localStorage.removeItem('loggedInUserId');
+  router.push('/');
+};
+
+// 헤더 기능: 홈으로 이동
+const goToHome = () => {
+  router.push('/home');
+};
+
+// 헤더 기능: 새 거래 추가 모달
+const isTransactionModalOpen = ref(false);
+const openModal = () => {
+  isTransactionModalOpen.value = true;
+};
+const closeModal = () => {
+  isTransactionModalOpen.value = false;
+};
+
+// 현재 월, 연도
 const month = new Date().getMonth() + 1;
 const year = new Date().getFullYear();
 
+// 상태 변수
 const income = ref(0);
 const expense = ref(0);
 const balance = ref(0);
 const savingsRate = ref(0);
 const previousExpense = ref(0);
 const budget = ref(700000);
+const goalRate = ref(0);
 
 const savingsModalVisible = ref(false);
-const goalRate = ref(80);
 
+// 모달 토글
 const toggleSavingsModal = () => {
   savingsModalVisible.value = !savingsModalVisible.value;
 };
 
-const updateSavingsSettings = ({ monthlyIncome, savingsRate: newRate }) => {
+// 저축률 설정 업데이트 → user 데이터 패치
+const updateSavingsSettings = async ({
+  monthlyIncome,
+  savingsRate: newRate,
+}) => {
   income.value = monthlyIncome;
   savingsRate.value = newRate;
+
+  const userId = localStorage.getItem('loggedInUserId');
+  if (userId) {
+    await axios.patch(`http://localhost:3000/user/${userId}`, {
+      goalSavings: newRate,
+    });
+    goalRate.value = newRate;
+  }
 };
 
+// DB에서 월간 데이터 fetch
 const fetchMonthlyData = async () => {
   try {
-    const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+    const userId = localStorage.getItem('loggedInUserId');
 
-    if (!currentUser || !currentUser.id) {
-      console.error('로그인한 사용자 정보가 없습니다.');
+    if (!userId) {
+      alert('로그인이 필요합니다.');
       return;
     }
 
+    // 유저 정보에서 goalSavings 가져오기
+    const userRes = await axios.get(`http://localhost:3000/user/${userId}`);
+    goalRate.value = userRes.data.goalSavings ?? 0;
+
+    // 전체 거래 데이터에서 해당 유저의 지출/수입 필터
     const res = await axios.get('http://localhost:3000/money');
-    const data = res.data;
+    const allData = res.data;
+    const userData = allData.filter((item) => item.userid === userId);
 
-    const userData = data.filter((item) => item.userid === currentUser.id);
-
+    // 현재 월과 이전 월 계산
     const now = new Date();
     const currentMonth = now.toISOString().slice(0, 7);
     const previousMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1)
@@ -81,6 +139,23 @@ onMounted(fetchMonthlyData);
 </script>
 
 <template>
+  <header class="dashboardHeader">
+    <h1 class="dashboardTitle">
+      <img
+        src="/src/assets/icons/logo.png"
+        class="iconImage"
+        @click="goToHome"
+      />Piggy Bank
+    </h1>
+    <div class="flex items-center gap-2 relative">
+      <button @click="toggleDarkMode" class="darkModeButton">
+        {{ isDarkMode ? '☀️' : '🌙' }}
+      </button>
+      <button class="mypageButton" @click="mypageClick">마이페이지</button>
+      <button class="inputValue" @click="openModal">새 거래추가</button>
+      <button class="logout" @click="logout">로그아웃</button>
+    </div>
+  </header>
   <div class="monthly-analysis-container">
     <!-- 수입, 지출, 잔액, 저축률  -->
     <div class="summary-cards">
@@ -192,33 +267,15 @@ onMounted(fetchMonthlyData);
         />
       </div>
     </div>
-
-    <!-- 주간별 분석 -->
-    <!-- <div class="part-card weekly-chart">
-      <h2>주간별 분석</h2>
-      <ChartCard
-        chartType="line"
-        :chartData="{
-          labels: ['1주', '2주', '3주', '4주'],
-          datasets: [
-            {
-              label: '지출 변화',
-              data: weeklyExpenses,
-              fill: false,
-              borderColor: '#ffc7ef',
-              tension: 0.4,
-            },
-          ],
-        }"
-      />
-      <p class="weekly-average">
-        주간 평균: {{ weeklyAverage.toLocaleString() }}원
-      </p>
-    </div> -->
   </div>
 </template>
 
 <style scoped>
+body {
+  background-color: var(--background-color);
+  color: var(--text-color);
+}
+
 .monthly-analysis-container {
   max-width: 1200px;
   background-color: var(--background-color);
@@ -378,5 +435,94 @@ onMounted(fetchMonthlyData);
 .chart-container {
   height: 250px;
   width: 100%;
+}
+
+/* 헤더  */
+
+.dashboardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: var(--header-bg);
+  padding: 1rem;
+  border-radius: 1rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+.dashboardTitle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 24px;
+  font-weight: bold;
+}
+.iconImage {
+  width: 60px;
+  height: 60px;
+  cursor: pointer;
+}
+
+.flex {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.darkModeButton {
+  padding: 8px 12px;
+  font-size: 1.2rem;
+  border: 1px solid #ccc;
+  border-radius: 0.5rem;
+  cursor: pointer;
+}
+
+/* .mypageButton,
+.logout,
+.inputValue {
+  background-color: rgb(254, 235, 253);
+  border: 1px solid rgb(251, 209, 251);
+  border-radius: 0.5rem;
+  padding: 12px 24px;
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  font-weight: 600;
+  color: #333;
+} */
+
+.mypageButton {
+  background-color: rgb(254, 235, 253);
+  border: 1px solid rgb(251, 209, 251);
+  border-radius: 0.5rem;
+  padding: 12px 24px;
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  font-weight: 600;
+  color: #333;
+}
+
+.inputValue {
+  background-color: rgb(254, 235, 253);
+  border: 1px solid rgb(251, 209, 251);
+  border-radius: 0.5rem;
+  padding: 12px 24px;
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  font-weight: 600;
+  color: #333;
+}
+
+.logout {
+  background-color: rgb(254, 235, 253);
+  border: 1px solid rgb(251, 209, 251);
+  border-radius: 0.5rem;
+  padding: 12px 24px;
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  font-weight: 600;
+  color: #333;
 }
 </style>
