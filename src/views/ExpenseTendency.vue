@@ -1,15 +1,17 @@
 <template>
-  <div class="dashboard">
+  <div :class="['dashboard', { dark: isDarkMode }]">
     <!-- Header Section -->
     <div class="dashboardHeader">
       <div class="flex dashboardTitle">
         <img src="@/assets/icons/logo.png" alt="로고" class="iconImage" />
-        <h1>Dashboard</h1>
+        <h1>Piggy Bank</h1>
       </div>
       <div class="flex">
-        <button class="darkModeButton">🌙</button>
+        <button class="darkModeButton" @click="toggleDarkMode">
+          {{ isDarkMode ? "☀️" : "🌙" }}
+        </button>
         <button class="mypageButton" @click="goToMypage">마이페이지</button>
-        <button class="logout">로그아웃</button>
+        <button class="logout" @click="logout">로그아웃</button>
       </div>
     </div>
 
@@ -24,18 +26,51 @@
 import SummaryCards from "@/components/TendencyCount.vue";
 import MonthlyPatternChart from "@/components/MonthlyTendencyChart.vue";
 import { useRouter } from "vue-router";
+import { ref, onMounted } from "vue";
 
 const router = useRouter();
+
+//#2e2e4d
+
+// ✅ 다크모드 상태 (localStorage 적용)
+const isDarkMode = ref(false);
+
+onMounted(() => {
+  const savedMode = localStorage.getItem("darkMode");
+  if (savedMode === "true") {
+    isDarkMode.value = true;
+  }
+});
+
+const toggleDarkMode = () => {
+  isDarkMode.value = !isDarkMode.value;
+  localStorage.setItem("darkMode", isDarkMode.value.toString());
+};
+
+// 마이페이지 이동
 const goToMypage = () => {
-  router.push("/mypage"); // alert 제거된 상태
+  router.push("/mypage");
+};
+
+// 로그아웃
+const logout = () => {
+  alert("안녕히가세요!");
+  router.push("/");
 };
 </script>
 
 <style scoped>
 .dashboard {
   background-color: #fff9fe;
+  color: #000;
   min-height: 100vh;
   padding: 1rem;
+  transition: all 0.3s ease;
+}
+
+.dashboard.dark {
+  background-color: #121212;
+  color: #fff;
 }
 
 /* 헤더 스타일 */
@@ -92,7 +127,7 @@ const goToMypage = () => {
   display: block;
   text-align: center;
   padding: 1rem;
-  background: #ffc7ef;
+  background: #fbcee8;
   border-radius: 10px;
   font-weight: bold;
   margin: 2rem auto 1rem auto;
