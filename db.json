@@ -144,6 +144,7 @@
     {
       "id": 5,
       "name": "기타수입"
+
     },
     {
       "id": 6,
@@ -243,7 +244,8 @@
       "typeid": 1,
       "categoryid": 2,
       "date": "2025-06-01",
-      "amount": 100000,
+      "amount": 500000,
+
       "tendencyid": 3,
       "payment": 4,
       "memo": "아부지 용돈"
@@ -252,7 +254,7 @@
       "id": 2,
       "userid": "1111",
       "typeid": 2,
-      "categoryid": 9,
+      "categoryid": 10,
       "date": "2025-06-01",
       "amount": 200000,
       "tendencyid": 1,
@@ -263,7 +265,7 @@
       "id": 3,
       "userid": "1111",
       "typeid": 2,
-      "categoryid": 7,
+      "categoryid": 10,
       "date": "2025-04-01",
       "amount": 200000,
       "tendencyid": 1,
@@ -274,7 +276,7 @@
       "id": 4,
       "userid": "1111",
       "typeid": 2,
-      "categoryid": 4,
+      "categoryid": 10,
       "date": "2025-04-01",
       "amount": 200000,
       "tendencyid": 1,
@@ -296,7 +298,7 @@
       "id": 6,
       "userid": "1111",
       "typeid": 2,
-      "categoryid": 7,
+      "categoryid": 12,
       "date": "2025-06-01",
       "amount": 200000,
       "tendencyid": 2,
@@ -307,7 +309,7 @@
       "id": 7,
       "userid": "1111",
       "typeid": 2,
-      "categoryid": 4,
+      "categoryid": 12,
       "date": "2025-05-01",
       "amount": 200000,
       "tendencyid": 2,

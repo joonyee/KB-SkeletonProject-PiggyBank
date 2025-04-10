@@ -1,35 +1,110 @@
 <script setup>
+// ✅ 기본 Vue 및 라이브러리 임포트
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
+
+// ✅ 모달 컴포넌트 임포트
 import TransactionEditModal from '../components/TransactionEditModal.vue';
 import FilterModal from '../components/FilterModal.vue';
 import TransactionDetailModal from '../components/TransactionDetailModal.vue';
 import TransactionModal from '../components/TransactionModal.vue';
 
-const isModalOpen = ref(false);
-const openModal = () => {
-  isModalOpen.value = true;
-};
-const closeModal = () => {
-  isModalOpen.value = false;
+// ✅ 라우터 이동 관련
+const router = useRouter();
+const goToHome = () => router.push('/home');
+const mypageClick = () => router.push('/myPage');
+const logout = () => {
+  alert('로그아웃되었습니다.');
+  localStorage.removeItem('loggedInUserId');
+  router.push('/');
 };
 
+// ✅ 다크 모드
+const isDarkMode = ref(false);
+const toggleDarkMode = () => {
+  isDarkMode.value = !isDarkMode.value;
+  document.documentElement.classList.toggle('dark', isDarkMode.value);
+};
+
+// ✅ 거래 관련 상태
+const transactions = ref([]);
+const originalTransactions = ref([]);
+const categories = ref([]);
+
+// ✅ 필터 모달 상태
+const isFilterModalOpen = ref(false);
+const openFilterModal = () => (isFilterModalOpen.value = true);
+const closeFilterModal = () => (isFilterModalOpen.value = false);
+
+// ✅ 거래 추가 모달 상태
+const isTransactionModalOpen = ref(false);
+const openTransactionModal = () => (isTransactionModalOpen.value = true);
+const closeTransactionModal = () => (isTransactionModalOpen.value = false);
+
+// ✅ 거래 상세 모달 상태
 const isDetailModalOpen = ref(false);
 const selectedDetailTransaction = ref(null);
-
 const openDetailModal = (transaction) => {
   selectedDetailTransaction.value = transaction;
   isDetailModalOpen.value = true;
 };
+const closeDetailModal = () => (isDetailModalOpen.value = false);
 
-const closeDetailModal = () => {
-  isDetailModalOpen.value = false;
+const showEditModal = ref(false); // 새로운 모달 오픈 변수
+const editTarget = ref(null); // 선택된 거래
+
+const handleEditClick = (transaction) => {
+  console.log('[수정 클릭]', transaction);
+  editTarget.value = { ...transaction };
+  showEditModal.value = true;
+};
+const closeEdit = () => {
+  showEditModal.value = false;
+  editTarget.value = null;
+};
+// const applyEdit = (updated) => {
+//   const index = transactions.value.findIndex((t) => t.id === updated.id);
+//   if (index !== -1) transactions.value[index] = { ...updated };
+//   closeEdit();
+// };
+const applyEdit = async (updated) => {
+  try {
+    await axios.patch(`http://localhost:3000/money/${updated.id}`, updated);
+    const index = transactions.value.findIndex((t) => t.id === updated.id);
+    if (index !== -1) transactions.value[index] = { ...updated };
+    closeEdit();
+    calculateTotals();
+  } catch (err) {
+    console.error('수정 실패:', err);
+    alert('수정 중 오류가 발생했습니다.');
+  }
 };
 
+// ✅ 거래 삭제
+// const deleteTransaction = (id) => {
+//   if (confirm('정말 삭제하시겠습니까?')) {
+//     const index = transactions.value.findIndex((t) => t.id === id);
+//     if (index !== -1) transactions.value.splice(index, 1);
+//     if (selectedTransaction.value?.id === id) closeEditModal();
+//   }
+// };
+const deleteTransaction = async (id) => {
+  if (confirm('정말 삭제하시겠습니까?')) {
+    try {
+      await axios.delete(`http://localhost:3000/money/${id}`);
+      transactions.value = transactions.value.filter((t) => t.id !== id);
+      calculateTotals();
+    } catch (err) {
+      console.error('삭제 실패:', err);
+      alert('삭제 중 오류가 발생했습니다.');
+    }
+  }
+};
+
+// ✅ 정렬 기능
 const sortKey = ref('');
 const sortOrder = ref('asc');
-
 const sortBy = (key) => {
   if (sortKey.value === key) {
     sortOrder.value = sortOrder.value === 'asc' ? 'desc' : 'asc';
@@ -39,103 +114,28 @@ const sortBy = (key) => {
   }
 
   transactions.value.sort((a, b) => {
-    let aVal = a[key];
-    let bVal = b[key];
-
-    // 날짜 문자열 정렬
-    if (key === 'date') {
-      aVal = new Date(aVal);
-      bVal = new Date(bVal);
-    }
-
-    // 숫자 변환
-    if (key === 'amount') {
-      aVal = Number(aVal);
-      bVal = Number(bVal);
-    }
-
-    if (sortOrder.value === 'asc') {
-      return aVal > bVal ? 1 : -1;
-    } else {
-      return aVal < bVal ? 1 : -1;
-    }
+    let aVal = key === 'date' ? new Date(a[key]) : Number(a[key]) || a[key];
+    let bVal = key === 'date' ? new Date(b[key]) : Number(b[key]) || b[key];
+    return sortOrder.value === 'asc'
+      ? aVal > bVal
+        ? 1
+        : -1
+      : aVal < bVal
+      ? 1
+      : -1;
   });
 };
 
-const transactions = ref([]);
-
-const isEditModalOpen = ref(false);
-const selectedTransaction = ref(null);
-const isFilterModalOpen = ref(false);
-
-const openFilterModal = () => {
-  isFilterModalOpen.value = true;
+// ✅ 카테고리 이름 조회
+const getCategoryName = (id) => {
+  const cat = categories.value.find((c) => c.id === id);
+  return cat ? cat.name : '기타';
 };
 
-const closeFilterModal = () => {
-  isFilterModalOpen.value = false;
-};
-
-const applyFilter = (filterData) => {
-  const { startDate, endDate, type, categories } = filterData;
-
-  let filtered = [...originalTransactions.value];
-
-  if (startDate) {
-    filtered = filtered.filter((t) => t.date >= startDate);
-  }
-  if (endDate) {
-    filtered = filtered.filter((t) => t.date <= endDate);
-  }
-  if (type !== 'all') {
-    filtered = filtered.filter((t) => t.type === type);
-  }
-  if (categories && categories.length > 0) {
-    filtered = filtered.filter((t) => categories.includes(t.category));
-  }
-
-  transactions.value = filtered;
-  calculateTotals();
-  isFilterModalOpen.value = false;
-};
-
-const openEditModal = (transaction) => {
-  selectedTransaction.value = { ...transaction };
-  isEditModalOpen.value = true;
-};
-
-const closeEditModal = () => {
-  isEditModalOpen.value = false;
-};
-
-const updateTransaction = (updated) => {
-  const index = transactions.value.findIndex((t) => t.id === updated.id);
-  if (index !== -1) {
-    transactions.value[index] = { ...updated };
-  }
-  closeEditModal();
-};
-const router = useRouter();
-
+// ✅ 통계 계산
 const totalIncome = ref(0);
-
 const totalExpense = ref(0);
-
 const allAccount = ref(0);
-
-const originalTransactions = ref([]); // 원본 저장
-
-const fetchTransactions = async () => {
-  try {
-    const response = await axios.get('http://localhost:3000/transactions');
-    transactions.value = response.data;
-    originalTransactions.value = response.data;
-    calculateTotals();
-  } catch (error) {
-    console.error('데이터 불러오기 실패:', error);
-  }
-};
-
 const calculateTotals = () => {
   totalIncome.value = transactions.value
     .filter((item) => item.type === 'income')
@@ -146,28 +146,91 @@ const calculateTotals = () => {
   allAccount.value = totalIncome.value - totalExpense.value;
 };
 
-const goToAddTransaction = () => {
-  router.push('/addTransaction');
-};
+// ✅ 거래 불러오기
+const fetchTransactions = async () => {
+  try {
+    const userId = localStorage.getItem('loggedInUserId');
+    if (!userId) return alert('로그인이 필요합니다.');
 
-const deleteTransaction = (id) => {
-  if (confirm('정말 삭제하시겠습니까?')) {
-    const index = transactions.value.findIndex((t) => t.id === id);
-    if (index !== -1) {
-      transactions.value.splice(index, 1); // 삭제
-    }
-    if (selectedTransaction.value?.id === id) {
-      closeEditModal();
-    }
+    const response = await axios.get('http://localhost:3000/money');
+    const userData = response.data.filter((item) => item.userid === userId);
+    const mapped = userData.map((item) => ({
+      id: item.id,
+      date: item.date,
+      category: getCategoryName(item.categoryid),
+      amount: item.amount,
+      description: item.memo,
+      type: item.typeid === 1 ? 'income' : 'expense',
+    }));
+    transactions.value = mapped;
+    originalTransactions.value = mapped;
+    calculateTotals();
+  } catch (error) {
+    console.error('데이터 불러오기 실패:', error);
   }
 };
 
-onMounted(() => {
-  fetchTransactions();
+// ✅ 필터 적용
+const applyFilter = (filterData) => {
+  const { startDate, endDate, type, categories } = filterData;
+  let filtered = [...originalTransactions.value];
+
+  if (startDate) filtered = filtered.filter((t) => t.date >= startDate);
+  if (endDate) filtered = filtered.filter((t) => t.date <= endDate);
+  if (type !== 'all') filtered = filtered.filter((t) => t.type === type);
+  if (categories?.length)
+    filtered = filtered.filter((t) => categories.includes(t.category));
+
+  transactions.value = filtered;
+  calculateTotals();
+};
+
+// TransactionModal.vue에서 emits('add', 새거래객체) 하도록 만든 다음
+
+const handleAddTransaction = async (newTransaction) => {
+  try {
+    const res = await axios.post(`http://localhost:3000/money`, newTransaction);
+    transactions.value.push(res.data);
+    closeTransactionModal();
+    calculateTotals();
+  } catch (err) {
+    console.error('추가 실패:', err);
+    alert('추가 중 오류가 발생했습니다.');
+  }
+};
+
+// ✅ 초기 실행 시 카테고리 및 거래 정보 불러오기
+onMounted(async () => {
+  try {
+    const res = await axios.get('http://localhost:3000/category');
+    categories.value = res.data;
+    await fetchTransactions();
+  } catch (err) {
+    console.error('카테고리 불러오기 실패:', err);
+  }
 });
 </script>
 
 <template>
+  <header class="dashboardHeader">
+    <h1 class="dashboardTitle">
+      <img
+        src="/src/assets/icons/logo.png"
+        class="iconImage"
+        @click="goToHome"
+      />Piggy Bank
+    </h1>
+    <div class="flex items-center gap-2 relative">
+      <button @click="toggleDarkMode" class="darkModeButton">
+        {{ isDarkMode ? '☀️' : '🌙' }}
+      </button>
+      <button class="mypageButton" @click="mypageClick">마이페이지</button>
+      <button class="inputValue" @click="openTransactionModal">
+        새 거래추가
+      </button>
+      <button class="logout" @click="logout">로그아웃</button>
+    </div>
+  </header>
   <div class="expense-list-container">
     <div class="container">
       <div class="summary-header">
@@ -225,8 +288,9 @@ onMounted(() => {
             <td class="action-icons">
               <i
                 class="fa-solid fa-pen-to-square edit-icon"
-                @click.stop="openEditModal(transaction)"
+                @click.stop="handleEditClick(transaction)"
               ></i>
+
               <i
                 class="fa-solid fa-trash delete-icon"
                 @click="
@@ -243,11 +307,11 @@ onMounted(() => {
 
       <!-- 수정 모달 -->
       <TransactionEditModal
-        v-if="isEditModalOpen"
-        :isOpen="isEditModalOpen"
-        :transaction="selectedTransaction"
-        @close="closeEditModal"
-        @update="updateTransaction"
+        v-if="showEditModal && editTarget"
+        :isOpen="showEditModal"
+        :transaction="editTarget"
+        @close="closeEdit"
+        @update="applyEdit"
       />
 
       <!-- 필터 모달  -->
@@ -257,6 +321,7 @@ onMounted(() => {
         @close="closeFilterModal"
         @apply="applyFilter"
       />
+
       <TransactionDetailModal
         v-if="isDetailModalOpen"
         :isOpen="isDetailModalOpen"
@@ -265,13 +330,14 @@ onMounted(() => {
       />
 
       <!-- 거래 추가 버튼 -->
-      <button class="add-button" @click="openModal">
+      <button class="add-button" @click="openTransactionModal">
         <i class="fa-solid fa-plus"></i>
       </button>
       <TransactionModal
-        :isOpen="isModalOpen"
-        :date="selectedDate"
-        @close="closeModal"
+        v-if="isTransactionModalOpen"
+        :isOpen="isTransactionModalOpen"
+        @close="closeTransactionModal"
+        @add="handleAddTransaction"
       />
     </div>
   </div>
@@ -441,5 +507,57 @@ th i {
   gap: 6px;
   height: 40px;
   margin-left: auto;
+}
+
+/* 헤더  */
+.dashboardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #fbcee8;
+  padding: 1rem;
+  border-radius: 1rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+.dashboardTitle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 24px;
+  font-weight: bold;
+}
+.iconImage {
+  width: 60px;
+  height: 60px;
+  cursor: pointer;
+}
+
+.flex {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.darkModeButton {
+  padding: 8px 12px;
+  font-size: 1.2rem;
+  border: 1px solid #ccc;
+  border-radius: 0.5rem;
+  cursor: pointer;
+}
+
+.mypageButton,
+.logout,
+.inputValue {
+  background-color: rgb(254, 235, 253);
+  border: 1px solid rgb(251, 209, 251);
+  border-radius: 0.5rem;
+  padding: 12px 24px;
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  font-weight: 600;
+  color: #333;
 }
 </style>
