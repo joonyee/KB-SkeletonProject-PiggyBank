@@ -144,21 +144,18 @@
 import { ref, watch, onMounted, onBeforeUnmount } from "vue";
 import axios from "axios";
 import CategoryModal from "./CategoryModal.vue";
+import { useRouter } from "vue-router";
 import "../assets/styles/global.css";
 
-// 외부에서 모달 열림 여부와 사용자 ID를 props로 전달받음(수정 필요)
 const props = defineProps({
   isOpen: {
     type: Boolean,
     default: false,
   },
-  userId: {
-    type: Number,
-    required: true,
-  },
 });
 
 const emit = defineEmits(["save", "close"]);
+const router = useRouter();
 
 // 상태 변수 정의
 const isModalOpen = ref(props.isOpen);
@@ -172,6 +169,9 @@ const paymentMethod = ref("account");
 const tendency = ref("planned");
 const showCategoryError = ref(false);
 const isMobile = ref(false);
+
+// 로컬스토리지에서 로그인한 사용자 ID 가져오기
+const userId = ref(Number(localStorage.getItem("loggedInUserId")));
 
 // 카테고리 이름 목록
 const categories = {
@@ -188,7 +188,7 @@ const categories = {
   ],
 };
 
-// 카테고리명 → ID 매핑 객체
+// 카테고리명 → ID 매핑
 const categoryMap = {
   급여: 1,
   용돈: 2,
@@ -218,7 +218,7 @@ const paymentMap = {
   neutral: 3,
 };
 
-// props로 전달된 isOpen 변경 감지하여 내부 상태 동기화
+// props.isOpen 변화 감지
 watch(
   () => props.isOpen,
   (newVal) => {
@@ -231,7 +231,7 @@ watch(activeTab, () => {
   selectedCategory.value = "";
 });
 
-// 날짜 포맷을 yyyy-mm-dd 형식으로 변환
+// 날짜 포맷
 function formatDate(date) {
   const d = new Date(date);
   const year = d.getFullYear();
@@ -240,12 +240,12 @@ function formatDate(date) {
   return `${year}-${month}-${day}`;
 }
 
-// 화면 크기 체크
+// 화면 크기 확인
 function checkScreenSize() {
   isMobile.value = window.innerWidth < 768;
 }
 
-// 카테고리 모달 열기/닫기/선택
+// 카테고리 모달
 function openCategoryModal() {
   isCategoryModalOpen.value = true;
   showCategoryError.value = false;
@@ -260,8 +260,14 @@ function handleCategoryTabChange(tab) {
   activeTab.value = tab;
 }
 
-// 거래 저장 함수
+// 거래 저장
 async function saveTransaction() {
+  if (!userId.value) {
+    alert("로그인이 필요합니다.");
+    router.push("/login");
+    return;
+  }
+
   if (!selectedCategory.value) {
     showCategoryError.value = true;
     return;
@@ -277,8 +283,9 @@ async function saveTransaction() {
     return;
   }
 
+  // 🔽 userid를 문자열(String)로 저장
   const transaction = {
-    userid: props.userId,
+    userid: String(userId.value),
     typeid: typeId,
     categoryid: categoryId,
     date: selectedDate.value,
@@ -304,7 +311,7 @@ async function saveTransaction() {
   }
 }
 
-// 입력값 초기화
+// 폼 초기화
 function resetForm() {
   selectedCategory.value = "";
   amount.value = "";
@@ -322,10 +329,16 @@ function closeModal() {
   emit("close");
 }
 
-// 마운트/언마운트 시 화면 크기 이벤트 등록/해제
+// 마운트/언마운트 시 사이즈 체크
 onMounted(() => {
   checkScreenSize();
   window.addEventListener("resize", checkScreenSize);
+
+  // 로그인 여부 체크
+  if (!userId.value) {
+    alert("로그인이 필요합니다.");
+    router.push("/login");
+  }
 });
 
 onBeforeUnmount(() => {

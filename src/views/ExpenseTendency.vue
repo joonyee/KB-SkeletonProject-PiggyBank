@@ -32,7 +32,7 @@ const router = useRouter();
 
 //#2e2e4d
 
-// ✅ 다크모드 상태 (localStorage 적용)
+// 다크모드 상태 (localStorage 적용)
 const isDarkMode = ref(false);
 
 onMounted(() => {
