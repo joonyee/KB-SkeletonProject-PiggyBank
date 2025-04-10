@@ -222,4 +222,22 @@ onBeforeUnmount(() => {
 .categoryItem:hover {
   background-color: #ffe8fc;
 }
+
+/* 다크모드 스타일 */
+.dark .categoryModalContent {
+  background-color: #1f2937;
+}
+.dark .modalHeader {
+  border-bottom: 1px solid #1f2937;
+}
+.dark .modalHeader h2 {
+  color: white;
+}
+.dark .categoryItem {
+  background-color: #bcbec2;
+  border: 1px solid #bcbec2;
+}
+.dark .categoryItem:hover {
+  background-color: #ffe8fc;
+}
 </style>
