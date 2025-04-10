@@ -26,7 +26,7 @@ onMounted(async () => {
   // 로그인된 유저의 거래만 필터링
   const userData = data.filter((item) => item.userid === userId);
 
-  // 성향 매핑
+  // 경향 매핑
   const tendencyMap = {
     1: "계획",
     2: "충동",
@@ -44,39 +44,38 @@ onMounted(async () => {
     (item) => item.tendency !== null && item.tendency !== 3
   );
 
-  // 최근 4개월 구하기
+  // 최근 6개월 구하기 (오래된 → 최신순)
   const now = new Date();
   const currentYear = now.getFullYear();
   const currentMonth = now.getMonth();
 
-  const recentMonths = Array.from({ length: 4 }, (_, i) => {
+  const recentMonths = Array.from({ length: 6 }, (_, i) => {
     const date = new Date(currentYear, currentMonth - i, 1);
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, "0");
-    return `${year}-${month}`;
+    return `${year}-${month}`; // 예: "2025-03"
   }).reverse();
-
-  const recentFiltered = filtered.filter((item) =>
-    recentMonths.includes(item.date.slice(0, 7))
-  );
 
   // 월별로 그룹핑
   const grouped = {};
-  recentFiltered.forEach((item) => {
-    const monthLabel = parseInt(item.date.split("-")[1], 10) + "월";
+  filtered.forEach((item) => {
+    const ym = item.date.slice(0, 7); // "YYYY-MM"
+    const monthLabel = parseInt(ym.split("-")[1], 10) + "월"; // "n월"
     const feel = tendencyMap[item.tendency];
+
     if (!grouped[monthLabel]) grouped[monthLabel] = { 계획: 0, 충동: 0 };
     if (feel === "계획") grouped[monthLabel].계획 += item.amount;
     else if (feel === "충동") grouped[monthLabel].충동 += item.amount;
   });
 
-  // 정렬된 라벨 생성
-  const labels = recentMonths
-    .map((ym) => parseInt(ym.split("-")[1], 10) + "월")
-    .filter((m) => grouped[m]);
+  // 항상 6개월 라벨 유지
+  const labels = recentMonths.map(
+    (ym) => parseInt(ym.split("-")[1], 10) + "월"
+  );
 
-  const 계획Data = labels.map((month) => grouped[month].계획);
-  const 충동Data = labels.map((month) => grouped[month].충동);
+  // 데이터가 없는 달은 0으로 채움
+  const 계획Data = labels.map((month) => grouped[month]?.계획 ?? 0);
+  const 충동Data = labels.map((month) => grouped[month]?.충동 ?? 0);
 
   // 차트 렌더링
   new Chart(chartRef.value, {
