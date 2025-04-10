@@ -32,13 +32,13 @@ import { useRouter } from "vue-router";
 import { ref, onMounted } from "vue";
 
 const router = useRouter();
-const isDarkMode = ref(false); // 다크모드 상태
+const isDarkMode = ref(localStorage.getItem("darkMode") === "true"); // 다크모드 상태
 
 // 다크모드 상태 (localStorage 적용)
 onMounted(() => {
   const savedMode = localStorage.getItem("darkMode");
-  if (savedMode === "true") {
-    isDarkMode.value = true;
+  if (isDarkMode.value) {
+    document.documentElement.classList.add("dark");
   }
 });
 
@@ -48,6 +48,7 @@ const mypageClick = () => {
 const toggleDarkMode = () => {
   isDarkMode.value = !isDarkMode.value;
   document.documentElement.classList.toggle("dark", isDarkMode.value);
+  localStorage.setItem("darkMode", isDarkMode.value);
 };
 const goToHome = () => {
   router.push("/home");
