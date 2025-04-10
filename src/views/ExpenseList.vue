@@ -71,8 +71,21 @@ const closeEdit = () => {
 const applyEdit = async (updated) => {
   try {
     await axios.patch(`http://localhost:3000/money/${updated.id}`, updated);
+
+    // 카테고리 이름 매핑
+    const categoryName = getCategoryName(updated.categoryid);
+    const updatedDisplayData = {
+      id: updated.id,
+      date: updated.date,
+      category: categoryName,
+      amount: updated.amount,
+      description: updated.memo,
+      type: updated.typeid === 1 ? 'income' : 'expense',
+    };
+
     const index = transactions.value.findIndex((t) => t.id === updated.id);
-    if (index !== -1) transactions.value[index] = { ...updated };
+    if (index !== -1) transactions.value[index] = { ...updatedDisplayData };
+
     closeEdit();
     calculateTotals();
   } catch (err) {
@@ -184,8 +197,6 @@ const applyFilter = (filterData) => {
   transactions.value = filtered;
   calculateTotals();
 };
-
-// TransactionModal.vue에서 emits('add', 새거래객체) 하도록 만든 다음
 
 const handleAddTransaction = async (newTransaction) => {
   try {

@@ -1,19 +1,16 @@
-<script setup>
+<!-- <script setup>
 import { defineProps, defineEmits, ref, watch, computed } from 'vue';
+import axios from 'axios';
 
-// props: 수정 모달 열림 여부, 선택된 거래
 const props = defineProps({
   isOpen: Boolean,
   transaction: Object,
 });
 
-// emits: 모달 닫기, 수정된 거래 저장
 const emits = defineEmits(['close', 'update']);
 
-// 수정할 거래 정보 복사본
 const editedTransaction = ref({});
 
-// 거래 데이터 변경 시 업데이트
 watch(
   () => props.transaction,
   (newVal) => {
@@ -24,7 +21,100 @@ watch(
   { immediate: true }
 );
 
-// 선택 가능한 지불 수단 및 카테고리
+const paymentMethods = ['카드결제', '계좌거래', '현금'];
+
+const expenseCategories = [
+  '식사/카페', '배달/간식', '쇼핑', '교통/차량', '주거/관리',
+  '건강/병원', '취미/여가', '구독서비스', '여행/외출', '기타지출',
+];
+const incomeCategories = ['급여', '용돈', '부수입', '환급/지원금', '기타수입'];
+
+const categories = ref([]);
+
+const categoryList = computed(() =>
+  editedTransaction.value?.type === 'expense' ? expenseCategories : incomeCategories
+);
+
+const closeModal = () => {
+  emits('close');
+};
+
+const categoryToId = (name) => {
+  const match = categories.value.find((c) => c.name === name);
+  return match ? match.id : null;
+};
+
+const paymentToId = (method) => {
+  const map = { 카드결제: 1, 현금: 2, 계좌거래: 3, 수입: 4 };
+  return map[method];
+};
+
+const consumptionToId = (feel) => {
+  const map = { '계획적 지출': 1, '충동적 지출': 2, 수입: 3 };
+  return map[feel];
+};
+
+const saveTransaction = async () => {
+  try {
+    const payload = {
+      id: editedTransaction.value.id,
+      userid: editedTransaction.value.userid,
+      typeid: editedTransaction.value.type === 'income' ? 1 : 2,
+      categoryid: categoryToId(editedTransaction.value.category),
+      date: editedTransaction.value.date,
+      amount: editedTransaction.value.amount,
+      tendencyid: consumptionToId(editedTransaction.value.consumptionType),
+      payment: paymentToId(editedTransaction.value.paymentMethod),
+      memo: editedTransaction.value.description,
+    };
+
+    await axios.patch(`http://localhost:3000/money/${payload.id}`, payload);
+    emits('update', payload);
+    closeModal();
+  } catch (err) {
+    console.error('거래 수정 실패:', err);
+    alert('수정 중 오류가 발생했습니다.');
+  }
+};
+
+const setPaymentMethod = (method) => {
+  editedTransaction.value.paymentMethod = method;
+};
+
+const setConsumption = (type) => {
+  editedTransaction.value.consumptionType = type;
+};
+
+// 카테고리 데이터 불러오기
+import { onMounted } from 'vue';
+onMounted(async () => {
+  const res = await axios.get('http://localhost:3000/category');
+  categories.value = res.data;
+});
+</script> -->
+<script setup>
+import { defineProps, defineEmits, ref, watch, computed } from 'vue';
+import axios from 'axios';
+
+const props = defineProps({
+  isOpen: Boolean,
+  transaction: Object,
+});
+
+const emits = defineEmits(['close', 'update']);
+
+const editedTransaction = ref({});
+
+watch(
+  () => props.transaction,
+  (newVal) => {
+    if (newVal) {
+      editedTransaction.value = { ...newVal };
+    }
+  },
+  { immediate: true }
+);
+
 const paymentMethods = ['카드결제', '계좌거래', '현금'];
 
 const expenseCategories = [
@@ -41,42 +131,71 @@ const expenseCategories = [
 ];
 const incomeCategories = ['급여', '용돈', '부수입', '환급/지원금', '기타수입'];
 
-// 타입에 따라 카테고리 목록 동적 변경
+const categories = ref([]);
+
 const categoryList = computed(() =>
   editedTransaction.value?.type === 'expense'
     ? expenseCategories
     : incomeCategories
 );
 
-// 모달 닫기
 const closeModal = () => {
   emits('close');
 };
 
+const categoryToId = (name) => {
+  const match = categories.value.find((c) => c.name === name);
+  return match ? match.id : null;
+};
+
+const paymentToId = (method) => {
+  const map = { 카드결제: 1, 현금: 2, 계좌거래: 3, 수입: 4 };
+  return map[method];
+};
+
+const consumptionToId = (feel) => {
+  const map = { '계획적 지출': 1, '충동적 지출': 2, 수입: 3 };
+  return map[feel];
+};
+
 const saveTransaction = async () => {
   try {
-    await axios.patch(
-      `http://localhost:3000/money/${editedTransaction.value.id}`,
-      {
-        ...editedTransaction.value,
-      }
-    );
-    emits('update', editedTransaction.value);
+    const payload = {
+      id: editedTransaction.value.id,
+      userid: editedTransaction.value.userid,
+      typeid: editedTransaction.value.type === 'income' ? 1 : 2,
+      categoryid: categoryToId(editedTransaction.value.category),
+      date: editedTransaction.value.date,
+      amount: editedTransaction.value.amount,
+      tendencyid: consumptionToId(editedTransaction.value.consumptionType),
+      payment: paymentToId(editedTransaction.value.paymentMethod),
+      memo: editedTransaction.value.description,
+    };
+
+    await axios.patch(`http://localhost:3000/money/${payload.id}`, payload);
+    emits('update', payload);
     closeModal();
   } catch (err) {
     console.error('거래 수정 실패:', err);
     alert('수정 중 오류가 발생했습니다.');
   }
 };
-// 지불 수단, 소비 성향 설정
+
 const setPaymentMethod = (method) => {
   editedTransaction.value.paymentMethod = method;
 };
+
 const setConsumption = (type) => {
   editedTransaction.value.consumptionType = type;
 };
-</script>
 
+// 카테고리 데이터 불러오기
+import { onMounted } from 'vue';
+onMounted(async () => {
+  const res = await axios.get('http://localhost:3000/category');
+  categories.value = res.data;
+});
+</script>
 <template>
   <div v-if="isOpen" class="modal-backdrop">
     <div class="modal-content">
