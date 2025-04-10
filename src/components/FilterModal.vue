@@ -30,7 +30,7 @@ const applyFilter = () => {
 };
 
 const categories = {
-  income: ['급여', '용돈', '부수입', '환급/지원금'],
+  income: ['급여', '용돈', '부수입', '환급/지원금', '기타수입'],
   expense: [
     '식사/카페',
     '배달/간식',

@@ -33,9 +33,9 @@
     {
       "id": "a487",
       "userId": "asdf@naver.com",
-      "password": "aaaaaaaa",
+      "password": "new123",
       "name": "aaaaa",
-      "age": 4,
+      "age": "2",
       "gender": "남성",
       "userImg": "",
       "goalSavings": 10
@@ -91,6 +91,39 @@
       "name": "지출"
     }
   ],
+  "chartData": [
+    {
+      "month": 1,
+      "income": 110000,
+      "expense": 40000,
+      "id": "74fa"
+    },
+    {
+      "month": 2,
+      "income": 120000,
+      "expense": 45000,
+      "id": "5086"
+    },
+    {
+      "month": 3,
+      "income": 130000,
+      "expense": 42000,
+      "id": "9c38"
+    },
+    {
+      "month": 4,
+      "income": 125000,
+      "expense": 48000,
+      "id": "50eb"
+    },
+    {
+      "month": 5,
+      "income": 125000,
+      "expense": 48000,
+      "id": "fd50"
+    }
+  ],
+
   "category": [
     {
       "id": 1,
@@ -106,38 +139,51 @@
     },
     {
       "id": 4,
-      "name": "기타수입"
+      "name": "환급/지원금"
     },
     {
       "id": 5,
-      "name": "식비"
+      "name": "기타수입"
+
     },
     {
       "id": 6,
-      "name": "교통비"
+      "name": "식사/카페"
     },
     {
       "id": 7,
-      "name": "주거비"
+      "name": "배달/간식"
     },
     {
       "id": 8,
-      "name": "의료비"
+      "name": "쇼핑"
     },
     {
       "id": 9,
-      "name": "교육비"
+      "name": "교통/차량"
     },
     {
       "id": 10,
-      "name": "의류비"
+      "name": "주거/관리"
     },
     {
       "id": 11,
-      "name": "여가비"
+      "name": "건강/병원"
     },
     {
       "id": 12,
+      "name": "취미/여가"
+    },
+    {
+      "id": 13,
+      "name": "구독서비스"
+    },
+    {
+      "id": 14,
+      "name": "여행/외출"
+    },
+    {
+      "id": 15,
       "name": "기타지출"
     }
   ],
@@ -207,7 +253,7 @@
       "id": 2,
       "userid": "1111",
       "typeid": 2,
-      "categoryid": 9,
+      "categoryid": 10,
       "date": "2025-06-01",
       "amount": 200000,
       "tendencyid": 1,
@@ -218,7 +264,7 @@
       "id": 3,
       "userid": "1111",
       "typeid": 2,
-      "categoryid": 7,
+      "categoryid": 10,
       "date": "2025-04-01",
       "amount": 200000,
       "tendencyid": 1,
@@ -229,7 +275,7 @@
       "id": 4,
       "userid": "1111",
       "typeid": 2,
-      "categoryid": 4,
+      "categoryid": 10,
       "date": "2025-04-01",
       "amount": 200000,
       "tendencyid": 1,
@@ -251,7 +297,7 @@
       "id": 6,
       "userid": "1111",
       "typeid": 2,
-      "categoryid": 7,
+      "categoryid": 12,
       "date": "2025-06-01",
       "amount": 200000,
       "tendencyid": 2,
@@ -262,7 +308,7 @@
       "id": 7,
       "userid": "1111",
       "typeid": 2,
-      "categoryid": 4,
+      "categoryid": 12,
       "date": "2025-05-01",
       "amount": 200000,
       "tendencyid": 2,
