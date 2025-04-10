@@ -1,19 +1,22 @@
 <template>
-  <div :class="['dashboard', { dark: isDarkMode }]">
+  <div class="dashboard">
     <!-- Header Section -->
-    <div class="dashboardHeader">
-      <div class="flex dashboardTitle">
-        <img src="@/assets/icons/logo.png" alt="로고" class="iconImage" />
-        <h1>Piggy Bank</h1>
-      </div>
-      <div class="flex">
-        <button class="darkModeButton" @click="toggleDarkMode">
-          {{ isDarkMode ? '☀️' : '🌙' }}
+    <header class="dashboardHeader">
+      <h1 class="dashboardTitle">
+        <img
+          src="/src/assets/icons/logo.png"
+          class="iconImage"
+          @click="goToHome"
+        />Piggy Bank
+      </h1>
+      <div class="flex items-center gap-2 relative">
+        <button @click="toggleDarkMode" class="darkModeButton">
+          {{ isDarkMode ? "☀️" : "🌙" }}
         </button>
-        <button class="mypageButton" @click="goToMypage">마이페이지</button>
+        <button class="mypageButton" @click="mypageClick">마이페이지</button>
         <button class="logout" @click="logout">로그아웃</button>
       </div>
-    </div>
+    </header>
 
     <!-- Main Content -->
     <SummaryCards />
@@ -23,58 +26,53 @@
 </template>
 
 <script setup>
-import SummaryCards from '@/components/TendencyCount.vue';
-import MonthlyPatternChart from '@/components/MonthlyTendencyChart.vue';
-import { useRouter } from 'vue-router';
-import { ref, onMounted } from 'vue';
+import SummaryCards from "@/components/TendencyCount.vue";
+import MonthlyPatternChart from "@/components/MonthlyTendencyChart.vue";
+import { useRouter } from "vue-router";
+import { ref, onMounted } from "vue";
 
 const router = useRouter();
-
-//#2e2e4d
+const isDarkMode = ref(false); // 다크모드 상태
 
 // 다크모드 상태 (localStorage 적용)
-const isDarkMode = ref(false);
-
 onMounted(() => {
-  const savedMode = localStorage.getItem('darkMode');
-  if (savedMode === 'true') {
+  const savedMode = localStorage.getItem("darkMode");
+  if (savedMode === "true") {
     isDarkMode.value = true;
   }
 });
 
+const mypageClick = () => {
+  router.push("/myPage");
+};
 const toggleDarkMode = () => {
   isDarkMode.value = !isDarkMode.value;
-  localStorage.setItem('darkMode', isDarkMode.value.toString());
+  document.documentElement.classList.toggle("dark", isDarkMode.value);
 };
-
-// 마이페이지 이동
-const goToMypage = () => {
-  router.push('/mypage');
+const goToHome = () => {
+  router.push("/home");
 };
-
-// 로그아웃
 const logout = () => {
-  alert('안녕히가세요!');
+  alert("안녕히가세요!");
 
-  localStorage.removeItem('loggedInUserId');
-  localStorage.removeItem('loggedInUserInfo');
+  localStorage.removeItem("loggedInUserId");
+  localStorage.removeItem("loggedInUserInfo");
 
-  router.push('/');
+  router.push("/");
 };
 </script>
 
 <style scoped>
+.dark .dashboard {
+  background: linear-gradient(to bottom, #121212, #121212);
+  color: #1a1a2e;
+}
 .dashboard {
   background-color: #fff9fe;
   color: #000;
   min-height: 100vh;
   padding: 1rem;
   transition: all 0.3s ease;
-}
-
-.dashboard.dark {
-  background-color: #121212;
-  color: #fff;
 }
 
 /* 헤더 스타일 */
