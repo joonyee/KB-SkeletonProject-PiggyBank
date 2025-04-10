@@ -15,61 +15,69 @@ import Chart from "chart.js/auto";
 const chartRef = ref(null);
 
 onMounted(async () => {
+  // 로그인된 유저 ID 가져오기
+  const userInfo = JSON.parse(localStorage.getItem("loggedInUserInfo") || "{}");
+  const userId = userInfo.id;
+
+  // 전체 거래 내역 불러오기
   const res = await fetch("http://localhost:3000/money");
   const data = await res.json();
 
+  // 로그인된 유저의 거래만 필터링
+  const userData = data.filter((item) => item.userid === userId);
+
+  // 경향 매핑
   const tendencyMap = {
     1: "계획",
     2: "충동",
     3: "수입",
   };
 
-  // tendency 또는 tendencyid 중 사용 가능한 값 가져오기
-  const normalizedData = data.map((item) => ({
+  // tendency 또는 tendencyid 중 하나 사용
+  const normalizedData = userData.map((item) => ({
     ...item,
     tendency: item.tendency ?? item.tendencyid ?? null,
   }));
 
-  // 수입 또는 null인 항목 제외
+  // 수입 제외
   const filtered = normalizedData.filter(
     (item) => item.tendency !== null && item.tendency !== 3
   );
 
-  // 최근 4개월 목록 생성
+  // 최근 6개월 구하기 (오래된 → 최신순)
   const now = new Date();
   const currentYear = now.getFullYear();
   const currentMonth = now.getMonth();
 
-  const recentMonths = Array.from({ length: 4 }, (_, i) => {
+  const recentMonths = Array.from({ length: 6 }, (_, i) => {
     const date = new Date(currentYear, currentMonth - i, 1);
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, "0");
-    return `${year}-${month}`; // e.g., "2025-04"
-  });
+    return `${year}-${month}`; // 예: "2025-03"
+  }).reverse();
 
-  const recentFiltered = filtered.filter((item) =>
-    recentMonths.includes(item.date.slice(0, 7))
-  );
-
-  // 월별 합산
+  // 월별로 그룹핑
   const grouped = {};
-
-  recentFiltered.forEach((item) => {
-    const monthLabel = parseInt(item.date.split("-")[1], 10) + "월";
+  filtered.forEach((item) => {
+    const ym = item.date.slice(0, 7); // "YYYY-MM"
+    const monthLabel = parseInt(ym.split("-")[1], 10) + "월"; // "n월"
     const feel = tendencyMap[item.tendency];
+
     if (!grouped[monthLabel]) grouped[monthLabel] = { 계획: 0, 충동: 0 };
     if (feel === "계획") grouped[monthLabel].계획 += item.amount;
     else if (feel === "충동") grouped[monthLabel].충동 += item.amount;
   });
 
-  // 정렬된 월, 데이터 생성
-  const labels = recentMonths
-    .map((ym) => parseInt(ym.split("-")[1], 10) + "월")
-    .filter((m) => grouped[m]);
+  // 항상 6개월 라벨 유지
+  const labels = recentMonths.map(
+    (ym) => parseInt(ym.split("-")[1], 10) + "월"
+  );
 
-  const 계획Data = labels.map((month) => grouped[month].계획);
-  const 충동Data = labels.map((month) => grouped[month].충동);
+  // 데이터가 없는 달은 0으로 채움
+  const 계획Data = labels.map((month) => grouped[month]?.계획 ?? 0);
+  const 충동Data = labels.map((month) => grouped[month]?.충동 ?? 0);
 
+  // 차트 렌더링
   new Chart(chartRef.value, {
     type: "bar",
     data: {
