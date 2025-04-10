@@ -198,7 +198,7 @@
       "typeid": 1,
       "categoryid": 2,
       "date": "2025-06-01",
-      "amount": 50000000,
+      "amount": 100000,
       "tendency": 3,
       "payment": 4,
       "memo": "아부지 용돈"
@@ -209,7 +209,7 @@
       "typeid": 1,
       "categoryid": 2,
       "date": "2025-06-01",
-      "amount": 1000,
+      "amount": 100000000,
       "tendency": 3,
       "payment": 4,
       "memo": "아부지 용돈"
