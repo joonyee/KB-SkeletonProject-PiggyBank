@@ -400,7 +400,7 @@
       "categoryid": 7,
       "date": "2025-03-05",
       "amount": 140000,
-      "tendency": 2,
+      "tendencyid": 2,
       "payment": 1,
       "memo": "카페+쇼핑"
     },

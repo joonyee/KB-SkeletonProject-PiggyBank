@@ -4,9 +4,6 @@ import TransactionModal from "./components/TransactionModal.vue";
 
 <template>
   <router-view />
-  <!-- <div>
-    <TransactionModal :isOpen="true" />
-  </div> -->
 </template>
 
 <style scoped></style>
