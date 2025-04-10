@@ -130,6 +130,11 @@ onMounted(async () => {
 </script>
 
 <style scoped>
+.dark .month-summary-container,
+.dark .summary-header {
+  background-color: #374151; /* dark:bg-gray-800 */
+  color: #f9fafb; /* dark:text-gray-200 */
+}
 .month-summary-container {
   max-width: 1200px;
   margin: 2rem auto;

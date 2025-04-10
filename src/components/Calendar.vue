@@ -81,6 +81,7 @@ const currentMonth = computed(() => props.month);
 const calendarData = ref([]);
 const transactions = ref([]);
 const fixedExpenses = ref([]);
+const UserId = localStorage.getItem('loggedInUserId');
 
 const dayNames = ['일', '월', '화', '수', '목', '금', '토'];
 const isModalOpen = ref(false);
@@ -130,7 +131,7 @@ const isDataLoaded = ref(false);
 onMounted(async () => {
   try {
     const [moneyRes, fixedRes] = await Promise.all([
-      axios.get('http://localhost:3000/money'),
+      axios.get(`http://localhost:3000/fixedExpenses/${UserId}`),
       axios.get('http://localhost:3000/fixedExpenses'),
     ]);
     transactions.value = moneyRes.data;
@@ -169,6 +170,16 @@ function nextMonth() {
 </script>
 
 <style scoped>
+.dark .calendar-wrapper,
+.dark .calendar-header,
+.dark .calendar-grid {
+  background-color: #1f2937;
+  color: #e5e7eb;
+}
+.dark .calendar-cell {
+  background-color: #374151;
+  border: 1px solid #4b5563;
+}
 .calendar-wrapper {
   max-width: 1200px;
   margin: 1rem auto;

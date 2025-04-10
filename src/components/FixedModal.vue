@@ -88,8 +88,11 @@
         </div>
       </div>
 
-      <div v-if="activeTab === 'edit'" class="submit-button">
+      <div v-if="activeTab === 'edit'" class="modify-button">
         <button @click="enableEditMode">수정하기</button>
+        <button @click="deleteFixedExpense" class="delete-button">
+          삭제하기
+        </button>
       </div>
 
       <button class="close-button" @click="emit('close')">닫기</button>
@@ -229,17 +232,13 @@ const updateFixedExpense = async () => {
       alert('모든 필드를 입력해주세요.');
       return;
     }
-    await axios.put(
-      `http://localhost:3000/fixedExpenses/${
-        editableExpense.value.id || currentIndex.value
-      }`,
-      {
-        day: editableExpense.value.day,
-        description: editableExpense.value.description,
-        amount: editableExpense.value.amount,
-        notify: editableExpense.value.notify,
-      }
-    );
+    const id = editableExpense.value.id ?? currentIndex.value;
+    await axios.put(`http://localhost:3000/fixedExpenses/${id}`, {
+      day: editableExpense.value.day,
+      description: editableExpense.value.description,
+      amount: editableExpense.value.amount,
+      notify: editableExpense.value.notify,
+    });
     currentExpense.value = { ...editableExpense.value };
     expenses.value[currentIndex.value] = { ...editableExpense.value };
     alert('금융 일정이 수정되었습니다.');
@@ -247,6 +246,32 @@ const updateFixedExpense = async () => {
   } catch (error) {
     console.error('금융 일정 수정 중 오류 발생:', error);
     alert('금융 일정 수정에 실패했습니다.');
+  }
+};
+const deleteFixedExpense = async () => {
+  try {
+    const confirmDelete = confirm('정말로 이 금융 일정을 삭제하시겠습니까?');
+    if (!confirmDelete) return;
+
+    const id = editableExpense.value.id ?? currentIndex.value;
+
+    // 서버에서 삭제 요청
+    await axios.delete(`http://localhost:3000/fixedExpenses/${id}`);
+
+    // 로컬 데이터에서 삭제
+    expenses.value.splice(currentIndex.value, 1);
+
+    // 현재 인덱스 업데이트
+    if (currentIndex.value > 0) {
+      currentIndex.value--;
+    }
+    currentExpense.value = expenses.value[currentIndex.value] || {};
+
+    alert('금융 일정이 삭제되었습니다.');
+    editMode.value = false;
+  } catch (error) {
+    console.error('금융 일정 삭제 중 오류 발생:', error);
+    alert('금융 일정 삭제에 실패했습니다.');
   }
 };
 
@@ -394,6 +419,7 @@ input[type='number'] {
 .submit-button {
   margin-top: 2rem;
   text-align: left;
+  display: flex;
 }
 
 .submit-button button {
@@ -408,11 +434,31 @@ input[type='number'] {
   transition: background 0.2s ease;
   margin-bottom: 1rem;
 }
-
+.modify-button {
+  display: flex;
+  padding: 0.75rem 0;
+  gap: 1rem;
+  justify-content: center;
+  margin: 1rem 0;
+}
 .submit-button button:hover {
   background: #ffb3e6;
 }
+.modify-button button {
+  background-color: #ffc7ef;
+  width: 600px;
+  color: #1a1a1a;
+  border: none;
+  padding: 0.75rem;
+  font-size: 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
 
+.modify-button button:hover {
+  background-color: #ffb3e6;
+}
 /* 수정 모달 오버레이 */
 .edit-modal-overlay {
   position: fixed;
@@ -444,6 +490,22 @@ input[type='number'] {
   margin-top: 1rem;
 }
 
+/* 삭제버튼 */
+/*.delete-button {
+  background-color: #ffc7ef; 
+  color: #1a1a1a;
+  border: none;
+  padding: 0.75rem 1.25rem;
+  font-size: 0.875rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.delete-button:hover {
+  background-color: #ffb3e6; 
+} 
+*/
 /* 공통 버튼 스타일 */
 .edit-buttons button {
   background-color: #ffc7ef;
