@@ -11,7 +11,7 @@
       </h1>
       <div class="flex items-center gap-2 relative">
         <button @click="toggleDarkMode" class="darkModeButton">
-          {{ isDarkMode ? '☀️' : '🌙' }}
+          {{ isDarkMode ? "☀️" : "🌙" }}
         </button>
         <button class="mypageButton" @click="mypageClick">마이페이지</button>
         <button class="logout" @click="logout">로그아웃</button>
@@ -65,39 +65,39 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
-import Calendar from '@/components/Calendar.vue';
-import SummaryChart from '@/components/SummaryChart.vue';
-import FixedExpense from '@/components/FixedExpense.vue';
-import FixedModal from '@/components/FixedModal.vue';
-import axios from 'axios';
+import { ref, computed, onMounted } from "vue";
+import Calendar from "@/components/Calendar.vue";
+import SummaryChart from "@/components/SummaryChart.vue";
+import FixedExpense from "@/components/FixedExpense.vue";
+import FixedModal from "@/components/FixedModal.vue";
+import axios from "axios";
 // import Header from '@/components/Header.vue';
-import { useRouter } from 'vue-router';
+import { useRouter } from "vue-router";
 const isDarkMode = ref(false);
 const mypageClick = () => {
-  router.push('./myPage');
+  router.push("./myPage");
 };
 const toggleDarkMode = () => {
   isDarkMode.value = !isDarkMode.value;
-  document.documentElement.classList.toggle('dark', isDarkMode.value);
+  document.documentElement.classList.toggle("dark", isDarkMode.value);
 };
 const goToHome = () => {
-  router.push('./home');
+  router.push("./home");
 };
 const logout = () => {
-  alert('안녕히가세요!');
+  alert("안녕히가세요!");
 
-  localStorage.removeItem('loggedInUserId');
-  localStorage.removeItem('loggedInUserInfo');
+  localStorage.removeItem("loggedInUserId");
+  localStorage.removeItem("loggedInUserInfo");
 
-  router.push('/');
+  router.push("/");
 };
 // Calendar에서 관리하는 연도, 월 (Calendar에서는 0-indexed로 관리하므로 SummaryChart에 전달할 때는 +1)
 const currentYear = ref(2025);
 const currentMonth = ref(3); // 3이면 달력에서는 4월
 const router = useRouter();
 const transactions = ref([]);
-const UserId = localStorage.getItem('loggedInUserId');
+const UserId = localStorage.getItem("loggedInUserId");
 // 소비 패턴 데이터 (예시)
 const impulsiveCount = computed(() => {
   return transactions.value.filter((tx) => tx.tendencyid === 1).length;
@@ -120,8 +120,8 @@ const closeModal = () => {
   isModalOpen.value = false;
 };
 const expense = () => {
-  router.push('./expenseTendency');
-  alert('월간 수입/지출 페이지');
+  router.push("./expenseTendency");
+  alert("월간 수입/지출 페이지");
 };
 onMounted(async () => {
   try {
@@ -130,7 +130,7 @@ onMounted(async () => {
     );
     transactions.value = res.data;
   } catch (error) {
-    console.error('Failed to fetch transaction data:', error);
+    console.error("Failed to fetch transaction data:", error);
   }
 });
 </script>
