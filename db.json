@@ -245,7 +245,6 @@
       "categoryid": 2,
       "date": "2025-06-01",
       "amount": 500000,
-
       "tendencyid": 3,
       "payment": 4,
       "memo": "아부지 용돈"
@@ -389,7 +388,7 @@
       "categoryid": 7,
       "date": "2025-03-05",
       "amount": 140000,
-      "tendency": 2,
+      "tendencyid": 2,
       "payment": 1,
       "memo": "카페+쇼핑"
     },
