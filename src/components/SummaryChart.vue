@@ -82,7 +82,7 @@ const monthlyTransactions = computed(() => {
 const incomeCategoryIds = computed(() => Object.keys(categoryIncomes.value));
 const expenseCategoryIds = computed(() => Object.keys(categoryExpenses.value));
 const getCategoryName = (catId) => {
-  const cat = categoryData.value.find((c) => c.id === Number(catId));
+  const cat = categoryData.value.find((c) => c.id === catId.toString());
   return cat ? cat.name : '기타';
 };
 
