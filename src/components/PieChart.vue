@@ -37,10 +37,7 @@ const chartData = ref(null);
 
 const chartOptions = {
   responsive: true,
-  maintainAspectRatio: false,
-  animation: {
-    duration: 0, // 애니메이션 비활성화 (즉시 반영)
-  },
+
   plugins: {
     legend: {
       position: 'bottom',
