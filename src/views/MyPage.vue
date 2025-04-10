@@ -95,6 +95,7 @@ const cancelLogout = () => {
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
+/* 다크모드 버튼 */
 .darkModeButton {
   padding: 8px 12px;
   font-size: 1.2rem;
@@ -103,6 +104,18 @@ const cancelLogout = () => {
   cursor: pointer;
 }
 
+/* 마이페이지 버튼 */
+.mypageButton {
+  background-color: rgb(254, 235, 253);
+  border: 1px solid rgb(251, 209, 251);
+  border-radius: 0.5rem;
+  padding: 12px 24px;
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  font: var(--ng-reg-16);
+  color: #333;
+}
 .logout {
   background-color: rgb(254, 235, 253);
   border: 1px solid rgb(251, 209, 251);
@@ -111,10 +124,22 @@ const cancelLogout = () => {
   cursor: pointer;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
-  font-weight: 600;
+  font: var(--ng-reg-16);
   color: #333;
 }
 
+/* 새 거래추가 버튼 */
+.inputValue {
+  background-color: rgb(254, 235, 253);
+  border: 1px solid rgb(251, 209, 251);
+  border-radius: 0.5rem;
+  padding: 12px 24px;
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  font: var(--ng-reg-16);
+  color: #333;
+}
 .dashboardTitle {
   cursor: pointer;
 }
@@ -175,28 +200,6 @@ const cancelLogout = () => {
   display: flex;
   align-items: center;
   gap: 1rem;
-}
-
-.darkModeButton {
-  padding: 8px 12px;
-  font-size: 1.2rem;
-  border: 1px solid #ccc;
-  border-radius: 0.5rem;
-  cursor: pointer;
-  align-self: center;
-}
-
-.mypageButton,
-.logout {
-  background-color: rgb(254, 235, 253);
-  border: 1px solid rgb(251, 209, 251);
-  border-radius: 0.5rem;
-  padding: 12px 24px;
-  cursor: pointer;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
-  font-weight: 600;
-  color: #333;
 }
 
 .page-title {

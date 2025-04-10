@@ -282,7 +282,7 @@ onMounted(fetchMonthlyData);
 body {
   background-color: var(--background-color);
   color: var(--text-color);
-  margin: 0;
+  margin: 0 auto;
   padding: 0;
   min-height: 100vh;
   box-sizing: border-box;
@@ -305,7 +305,6 @@ body {
   gap: 10px;
   justify-content: space-around;
   margin-bottom: 10px;
-  /* flex-wrap: wrap; */
 }
 
 .summary-card {
@@ -451,7 +450,6 @@ body {
 }
 
 /* 헤더  */
-
 .dashboardHeader {
   display: flex;
   justify-content: space-between;
@@ -481,6 +479,16 @@ body {
   gap: 1rem;
 }
 
+/* 다크모드 버튼 */
+.darkModeButton {
+  padding: 8px 12px;
+  font-size: 1.2rem;
+  border: 1px solid #ccc;
+  border-radius: 0.5rem;
+  cursor: pointer;
+}
+
+/* 마이페이지 버튼 */
 .mypageButton {
   background-color: rgb(254, 235, 253);
   border: 1px solid rgb(251, 209, 251);
@@ -489,22 +497,9 @@ body {
   cursor: pointer;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
-  font-weight: 600;
+  font: var(--ng-reg-16);
   color: #333;
 }
-
-.inputValue {
-  background-color: rgb(254, 235, 253);
-  border: 1px solid rgb(251, 209, 251);
-  border-radius: 0.5rem;
-  padding: 12px 24px;
-  cursor: pointer;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
-  font-weight: 600;
-  color: #333;
-}
-
 .logout {
   background-color: rgb(254, 235, 253);
   border: 1px solid rgb(251, 209, 251);
@@ -513,49 +508,56 @@ body {
   cursor: pointer;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
-  font-weight: 600;
+  font: var(--ng-reg-16);
   color: #333;
 }
-/* 🌙 다크모드 전체 화면 적용 */
-.dark {
+
+/* 새 거래추가 버튼 */
+.inputValue {
+  background-color: rgb(254, 235, 253);
+  border: 1px solid rgb(251, 209, 251);
+  border-radius: 0.5rem;
+  padding: 12px 24px;
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  font: var(--ng-reg-16);
+  color: #333;
+}
+
+.dark body {
   background-color: #121212;
   color: #f5f5f5;
 }
 
-/* 다크모드 컨테이너 배경 통일 */
 .dark .monthly-analysis-container,
+.dark .total-expense-card {
+  background-color: #121212;
+  color: white;
+  box-shadow: 0 2px 4px rgba(255, 255, 255, 0.05);
+}
 .dark .summary-card,
 .dark .part-card,
 .dark .savings-card,
 .dark .total-expense-card {
-  background-color: #1e1e1e;
-  color: #f5f5f5;
-  box-shadow: 0 2px 4px rgba(255, 255, 255, 0.05);
+  background-color: #e7e5e4;
+  color: black;
 }
-
-/* 다크모드 헤더 */
 .dark .dashboardHeader {
   background-color: #fbcee8;
 }
 
-/* 헤더 버튼들 색상 */
-.dark .mypageButton,
-.dark .logout,
-.dark .inputValue {
-  background-color: #f9f5f9;
-  border: 1px solid #f3daf0;
-  color: #1a1a1a;
-}
-
-/* 다크모드에서 divider 색 */
 .dark .divider {
   background-color: #555;
 }
 
-/* 다크모드에서 세부 텍스트 색 */
 .dark .savings-label,
 .dark .goal-label,
 .dark .comparison {
   color: #cccccc;
+}
+
+.dark canvas {
+  background-color: transparent !important;
 }
 </style>

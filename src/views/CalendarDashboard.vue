@@ -12,7 +12,7 @@
       </h1>
       <div class="flex items-center gap-2 relative">
         <button @click="toggleDarkMode" class="darkModeButton">
-          {{ isDarkMode ? "☀️" : "🌙" }}
+          {{ isDarkMode ? '☀️' : '🌙' }}
         </button>
         <button class="mypageButton" @click="mypageClick">마이페이지</button>
         <button class="logout" @click="logout">로그아웃</button>
@@ -70,32 +70,32 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from "vue";
-import Calendar from "@/components/Calendar.vue";
-import SummaryChart from "@/components/SummaryChart.vue";
-import FixedExpense from "@/components/FixedExpense.vue";
-import FixedModal from "@/components/FixedModal.vue";
-import axios from "axios";
+import { ref, computed, onMounted } from 'vue';
+import Calendar from '@/components/Calendar.vue';
+import SummaryChart from '@/components/SummaryChart.vue';
+import FixedExpense from '@/components/FixedExpense.vue';
+import FixedModal from '@/components/FixedModal.vue';
+import axios from 'axios';
 // import Header from '@/components/Header.vue';
-import { useRouter } from "vue-router";
+import { useRouter } from 'vue-router';
 const isDarkMode = ref(false);
 const mypageClick = () => {
-  router.push("./myPage");
+  router.push('./myPage');
 };
 const toggleDarkMode = () => {
   isDarkMode.value = !isDarkMode.value;
-  document.documentElement.classList.toggle("dark", isDarkMode.value);
+  document.documentElement.classList.toggle('dark', isDarkMode.value);
 };
 const goToHome = () => {
-  router.push("./home");
+  router.push('./home');
 };
 const logout = () => {
-  alert("안녕히가세요!");
+  alert('안녕히가세요!');
 
-  localStorage.removeItem("loggedInUserId");
-  localStorage.removeItem("loggedInUserInfo");
+  localStorage.removeItem('loggedInUserId');
+  localStorage.removeItem('loggedInUserInfo');
 
-  router.push("/");
+  router.push('/');
 };
 // Calendar에서 관리하는 연도, 월 (Calendar에서는 0-indexed로 관리하므로 SummaryChart에 전달할 때는 +1)
 const currentYear = ref(2025);
@@ -104,7 +104,7 @@ const router = useRouter();
 const transactions = ref([]);
 const savingGoal = ref(null);
 
-const UserId = localStorage.getItem("loggedInUserId");
+const UserId = localStorage.getItem('loggedInUserId');
 
 // 소비 패턴 데이터 (예시)
 
@@ -138,9 +138,7 @@ const closeModal = () => {
   isModalOpen.value = false;
 };
 const expense = () => {
-
   router.push('./expenseTendency');
-
 };
 onMounted(async () => {
   try {
@@ -153,7 +151,7 @@ onMounted(async () => {
     const res = await axios.get('http://localhost:3000/money');
     transactions.value = res.data.filter((entry) => entry.userid == UserId);
   } catch (error) {
-    console.error("Failed to fetch transaction data:", error);
+    console.error('Failed to fetch transaction data:', error);
   }
 });
 </script>
@@ -200,7 +198,7 @@ onMounted(async () => {
   cursor: pointer;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
-  font-weight: 600;
+  font: var(--ng-reg-16);
   color: #333;
 }
 .logout {
@@ -211,7 +209,20 @@ onMounted(async () => {
   cursor: pointer;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
-  font-weight: 600;
+  font: var(--ng-reg-16);
+  color: #333;
+}
+
+/* 새 거래추가 버튼 */
+.inputValue {
+  background-color: rgb(254, 235, 253);
+  border: 1px solid rgb(251, 209, 251);
+  border-radius: 0.5rem;
+  padding: 12px 24px;
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  font: var(--ng-reg-16);
   color: #333;
 }
 .dark .calendar-dashboard {
