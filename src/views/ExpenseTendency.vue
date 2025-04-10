@@ -1,9 +1,9 @@
 <template>
   <div class="dashboard">
-    <Header />
+    <!-- <Header /> -->
     <SummaryCards />
     <MonthlyPatternChart />
-    <router-link to="/" class="home-button">홈으로 이동</router-link>
+    <router-link to="/Home" class="home-button">홈으로 이동</router-link>
   </div>
 </template>
 
@@ -14,6 +14,12 @@ import MonthlyPatternChart from "@/components/MonthlyTendencyChart.vue";
 </script>
 
 <style scoped>
+.dashboard {
+  background-color: #fff9fe;
+  min-height: 100vh;
+  padding: 1rem;
+}
+
 .home-button {
   display: block;
   text-align: center;
