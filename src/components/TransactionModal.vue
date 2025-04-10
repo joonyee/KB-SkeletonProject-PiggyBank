@@ -146,7 +146,7 @@ import axios from "axios";
 import CategoryModal from "./CategoryModal.vue";
 import "../assets/styles/global.css";
 
-// 외부에서 모달 열림 여부와 사용자 ID를 props로 전달받음
+// 외부에서 모달 열림 여부와 사용자 ID를 props로 전달받음(수정 필요)
 const props = defineProps({
   isOpen: {
     type: Boolean,
