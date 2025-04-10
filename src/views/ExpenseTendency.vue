@@ -8,7 +8,7 @@
       </div>
       <div class="flex">
         <button class="darkModeButton" @click="toggleDarkMode">
-          {{ isDarkMode ? "☀️" : "🌙" }}
+          {{ isDarkMode ? '☀️' : '🌙' }}
         </button>
         <button class="mypageButton" @click="goToMypage">마이페이지</button>
         <button class="logout" @click="logout">로그아웃</button>
@@ -23,39 +23,43 @@
 </template>
 
 <script setup>
-import SummaryCards from "@/components/TendencyCount.vue";
-import MonthlyPatternChart from "@/components/MonthlyTendencyChart.vue";
-import { useRouter } from "vue-router";
-import { ref, onMounted } from "vue";
+import SummaryCards from '@/components/TendencyCount.vue';
+import MonthlyPatternChart from '@/components/MonthlyTendencyChart.vue';
+import { useRouter } from 'vue-router';
+import { ref, onMounted } from 'vue';
 
 const router = useRouter();
 
 //#2e2e4d
 
-// ✅ 다크모드 상태 (localStorage 적용)
+// 다크모드 상태 (localStorage 적용)
 const isDarkMode = ref(false);
 
 onMounted(() => {
-  const savedMode = localStorage.getItem("darkMode");
-  if (savedMode === "true") {
+  const savedMode = localStorage.getItem('darkMode');
+  if (savedMode === 'true') {
     isDarkMode.value = true;
   }
 });
 
 const toggleDarkMode = () => {
   isDarkMode.value = !isDarkMode.value;
-  localStorage.setItem("darkMode", isDarkMode.value.toString());
+  localStorage.setItem('darkMode', isDarkMode.value.toString());
 };
 
 // 마이페이지 이동
 const goToMypage = () => {
-  router.push("/mypage");
+  router.push('/mypage');
 };
 
 // 로그아웃
 const logout = () => {
-  alert("안녕히가세요!");
-  router.push("/");
+  alert('안녕히가세요!');
+
+  localStorage.removeItem('loggedInUserId');
+  localStorage.removeItem('loggedInUserInfo');
+
+  router.push('/');
 };
 </script>
 

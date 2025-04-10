@@ -12,7 +12,6 @@
             v-model="email"
             @input="handleEmailInput"
           />
-
           <label>비밀번호</label>
           <input
             type="password"
@@ -20,7 +19,6 @@
             v-model="password"
             @input="handlePasswordInput"
           />
-
           <button type="submit" class="login-btn">로그인</button>
         </form>
         <p class="signup-text">
@@ -36,7 +34,6 @@
 import { ref } from 'vue';
 import Piggyface from '@/components/Piggyface.vue';
 import { useRouter } from 'vue-router';
-
 const router = useRouter();
 const isEyeClosed = ref(false);
 const eyeOffset = ref({ x: 0, y: 0 });
@@ -51,19 +48,19 @@ const handleLogin = async () => {
     const user = users.find((u) => u.userId === email.value);
 
     if (!user) {
-      alert('존재하지 않는 회원입니다. 회원가입을 해주세요.');
+      alert('아이디 혹은 비밀번호가 일치하지 않습니다!');
       return;
     }
 
     if (user.password !== password.value) {
-      alert('비밀번호가 일치하지 않습니다.');
+      alert('아이디 혹은 비밀번호가 일치하지 않습니다!');
       return;
     }
 
     console.log('로그인 성공:', user);
     alert(`${user.name}님 환영합니다!`);
 
-    // localStorage.setItem('loggedInUserId', user.userId);
+    localStorage.setItem('loggedInUserId', user.id);
     localStorage.setItem('loggedInUserInfo', JSON.stringify(user));
     router.push('/home');
   } catch (error) {
