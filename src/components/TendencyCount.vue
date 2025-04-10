@@ -45,24 +45,29 @@ const impulseAmount = ref(0);
 const now = new Date();
 const thisMonth = `${now.getMonth() + 1}월`;
 
-// 마운트 시 데이터 fetch 및 필터링
 onMounted(async () => {
   const res = await fetch("http://localhost:3000/money");
   const data = await res.json();
 
+  // tendency 또는 tendencyid 중 사용 가능한 값 가져오기
+  const normalizedData = data.map((item) => ({
+    ...item,
+    tendency: item.tendency ?? item.tendencyid ?? null,
+  }));
+
   // 현재 달 ("YYYY-MM") 추출
   const currentMonth = now.toISOString().slice(0, 7);
 
-  // 1. '수입' 제외 + 2. 이번 달 데이터만 필터링
-  const filtered = data.filter((item) => {
-    const isExpense = item.tendency && item.tendency !== "수입";
+  // 1. '수입'(id: 3) 제외 + 2. 이번 달 데이터만 필터링
+  const filtered = normalizedData.filter((item) => {
+    const isExpense = item.tendency !== null && item.tendency !== 3;
     const isCurrentMonth = item.date?.slice(0, 7) === currentMonth;
     return isExpense && isCurrentMonth;
   });
 
-  // '계획' 지출과 '충동' 지출로 분류
-  const planned = filtered.filter((item) => item.tendency.includes("계획"));
-  const impulse = filtered.filter((item) => item.tendency.includes("충동"));
+  // '계획'(1), '충동'(2) 지출로 분류
+  const planned = filtered.filter((item) => item.tendency === 1);
+  const impulse = filtered.filter((item) => item.tendency === 2);
 
   // 각 지출 유형의 건수 및 총액 계산
   plannedCount.value = planned.length;

@@ -46,22 +46,31 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import Calendar from '@/components/Calendar.vue';
 import SummaryChart from '@/components/SummaryChart.vue';
 import FixedExpense from '@/components/FixedExpense.vue';
 import FixedModal from '@/components/FixedModal.vue';
+import axios from 'axios';
 import { useRouter } from 'vue-router';
 
 // Calendar에서 관리하는 연도, 월 (Calendar에서는 0-indexed로 관리하므로 SummaryChart에 전달할 때는 +1)
 const currentYear = ref(2025);
 const currentMonth = ref(3); // 3이면 달력에서는 4월
 const router = useRouter();
-
+const transactions = ref([]);
 // 소비 패턴 데이터 (예시)
-const impulsiveCount = ref(3);
-const plannedCount = ref(8);
-const totalCount = computed(() => impulsiveCount.value + plannedCount.value);
+const impulsiveCount = computed(() => {
+  return transactions.value.filter((tx) => tx.tendency === 1).length;
+});
+
+const plannedCount = computed(() => {
+  return transactions.value.filter((tx) => tx.tendency === 2).length;
+});
+
+const totalCount = computed(() => {
+  return impulsiveCount.value + plannedCount.value;
+});
 
 // 모달 제어
 const isModalOpen = ref(false);
@@ -75,6 +84,14 @@ const expense = () => {
   router.push('./expenseTendency');
   alert('월간 수입/지출 페이지');
 };
+onMounted(async () => {
+  try {
+    const res = await axios.get('http://localhost:3000/money');
+    transactions.value = res.data;
+  } catch (error) {
+    console.error('Failed to fetch transaction data:', error);
+  }
+});
 </script>
 <style scoped>
 .calendar-dashboard {
