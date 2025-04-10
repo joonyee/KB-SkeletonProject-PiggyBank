@@ -18,7 +18,7 @@
 
         <TransactionModal
           :isOpen="isModalOpen"
-          :date="selec2tedDate"
+          :date="selectedDate"
           @close="closeModal"
         />
         <button class="logout" @click="logout">로그아웃</button>
@@ -61,7 +61,7 @@
         <PieChart :chartData="chartData" />
       </div>
       <div class="piggyAni">
-        <h2 class="sectionTitle">🐷저축률을 높여 돼지에게 먹이를 주세요!</h2>
+        <h2 class="sectionTitle">🐷저축률을 높여 돼지를 키워주세요!</h2>
         <svg
           xmlns="http://www.w3.org/2000/svg"
           :width="size"
@@ -189,6 +189,7 @@
         <h2 class="sectionTitle" @click="goToAgeExpenseAnalysis">
           📊 카테고리별 지출
         </h2>
+
         <CategoryPieChart :categorySpending="categorySpending" />
       </div>
     </div>
@@ -376,6 +377,7 @@ const logout = () => {
   alert('안녕히가세요!');
 
   localStorage.removeItem('loggedInUserId');
+  localStorage.removeItem('loggedInUserInfo');
 
   router.push('/');
 };
