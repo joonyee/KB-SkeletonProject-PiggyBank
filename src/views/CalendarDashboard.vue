@@ -82,7 +82,6 @@ const closeModal = () => {
 };
 const expense = () => {
   router.push('./expenseTendency');
-  alert('월간 수입/지출 페이지');
 };
 onMounted(async () => {
   try {
