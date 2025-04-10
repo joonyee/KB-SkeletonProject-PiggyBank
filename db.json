@@ -204,17 +204,6 @@
       "memo": "아부지 용돈"
     },
     {
-      "id": 1,
-      "userid": "1111",
-      "typeid": 1,
-      "categoryid": 2,
-      "date": "2025-06-01",
-      "amount": 100000000,
-      "tendency": 3,
-      "payment": 4,
-      "memo": "아부지 용돈"
-    },
-    {
       "id": 2,
       "userid": "1111",
       "typeid": 2,
@@ -334,6 +323,50 @@
       "tendency": 1,
       "payment": 1,
       "memo": "2월 생활비"
+    },
+    {
+      "id": 13,
+      "userid": "1111",
+      "typeid": 2,
+      "categoryid": 6,
+      "date": "2025-03-01",
+      "amount": 280000,
+      "tendency": 1,
+      "payment": 3,
+      "memo": "3월 학원비"
+    },
+    {
+      "id": 14,
+      "userid": "1111",
+      "typeid": 2,
+      "categoryid": 7,
+      "date": "2025-03-05",
+      "amount": 140000,
+      "tendency": 2,
+      "payment": 1,
+      "memo": "카페+쇼핑"
+    },
+    {
+      "id": 15,
+      "userid": "1111",
+      "typeid": 2,
+      "categoryid": 9,
+      "date": "2025-04-01",
+      "amount": 220000,
+      "tendency": 1,
+      "payment": 1,
+      "memo": "4월 등록비"
+    },
+    {
+      "id": 16,
+      "userid": "1111",
+      "typeid": 2,
+      "categoryid": 10,
+      "date": "2025-04-02",
+      "amount": 100000,
+      "tendency": 2,
+      "payment": 3,
+      "memo": "편의점+간식"
     }
   ],
   "tendency": [
