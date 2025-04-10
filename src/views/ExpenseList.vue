@@ -1,6 +1,6 @@
 <script setup>
 // ✅ 기본 Vue 및 라이브러리 임포트
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
 
@@ -9,6 +9,28 @@ import TransactionEditModal from '../components/TransactionEditModal.vue';
 import FilterModal from '../components/FilterModal.vue';
 import TransactionDetailModal from '../components/TransactionDetailModal.vue';
 import TransactionModal from '../components/TransactionModal.vue';
+
+// 페이지네이션
+const currentPage = ref(1);
+const itemsPerPage = 10;
+
+const paginatedTransactions = computed(() => {
+  if (!transactions.value || transactions.value.length === 0) return [];
+  const start = (currentPage.value - 1) * itemsPerPage;
+  return transactions.value.slice(start, start + itemsPerPage);
+});
+
+const totalPages = computed(() =>
+  transactions.value && transactions.value.length > 0
+    ? Math.ceil(transactions.value.length / itemsPerPage)
+    : 1
+);
+
+const goToPage = (page) => {
+  if (page >= 1 && page <= totalPages.value) {
+    currentPage.value = page;
+  }
+};
 
 // ✅ 라우터 이동 관련
 const router = useRouter();
@@ -231,6 +253,8 @@ onMounted(async () => {
   try {
     const res = await axios.get('http://localhost:3000/category');
     categories.value = res.data;
+
+    // 카테고리 다 받아오고 나서 호출
     await fetchTransactions();
   } catch (err) {
     console.error('카테고리 불러오기 실패:', err);
@@ -299,7 +323,7 @@ onMounted(async () => {
       </div>
 
       <!-- 거래 목록 -->
-      <table class="transaction-table">
+      <table class="transaction-table" v-if="paginatedTransactions.length">
         <thead>
           <tr>
             <th @click="sortBy('date')">
@@ -317,17 +341,22 @@ onMounted(async () => {
         </thead>
 
         <tbody>
-          <tr
+          <!-- <tr
             v-for="transaction in transactions"
             :key="transaction.id"
             @click="openDetailModal(transaction)"
+          > -->
+          <tr
+            v-for="transaction in paginatedTransactions"
+            :key="transaction.id"
+            @click="openDetailModal(transaction)"
           >
-            <td>{{ transaction.date }}</td>
-            <td>{{ transaction.category }}</td>
-            <td :class="['transaction-amount', transaction.type]">
-              {{ transaction.amount.toLocaleString() }}원
+            <td>{{ transaction?.date }}</td>
+            <td>{{ transaction?.category }}</td>
+            <td :class="['transaction-amount', transaction?.type]">
+              {{ transaction?.amount.toLocaleString() }}원
             </td>
-            <td>{{ transaction.description }}</td>
+            <td>{{ transaction?.description }}</td>
             <td class="action-icons">
               <i
                 class="fa-solid fa-pen-to-square edit-icon"
@@ -347,6 +376,34 @@ onMounted(async () => {
           </tr>
         </tbody>
       </table>
+
+      <!-- 페이지네이션 컨트롤 -->
+      <div class="pagination">
+        <button
+          class="pagination-btn"
+          @click="goToPage(currentPage - 1)"
+          :disabled="currentPage === 1"
+        >
+          이전
+        </button>
+
+        <button
+          v-for="page in totalPages"
+          :key="page"
+          :class="['pagination-btn', { active: page === currentPage }]"
+          @click="goToPage(page)"
+        >
+          {{ page }}
+        </button>
+
+        <button
+          class="pagination-btn"
+          @click="goToPage(currentPage + 1)"
+          :disabled="currentPage === totalPages"
+        >
+          다음
+        </button>
+      </div>
 
       <!-- 수정 모달 -->
       <TransactionEditModal
@@ -615,14 +672,6 @@ th i {
   gap: 1rem;
 }
 
-.darkModeButton {
-  padding: 8px 12px;
-  font-size: 1.2rem;
-  border: 1px solid #ccc;
-  border-radius: 0.5rem;
-  cursor: pointer;
-}
-
 .mypageButton,
 .logout,
 .inputValue {
@@ -635,5 +684,95 @@ th i {
   transition: all 0.3s ease;
   font-weight: 600;
   color: #333;
+}
+
+/* 다크모드 */
+/* 다크 모드 전체 적용 */
+.dark {
+  background-color: #121212;
+  color: #f5f5f5;
+}
+
+/* 다크 모드에서 컨테이너 배경 */
+.dark .container {
+  background-color: #1e1e1e;
+}
+
+/* 카드 및 표 요약 영역 */
+.dark .summary-card {
+  background-color: #2a2a2a;
+  color: #f5f5f5;
+}
+
+.dark .summary-header,
+.dark .summary-cards {
+  background-color: transparent;
+}
+
+/* 테이블 */
+.dark .transaction-table th,
+.dark .transaction-table td {
+  background-color: #1e1e1e;
+  color: #f5f5f5;
+  border-color: #444;
+}
+
+/* 페이지네이션 */
+.dark .pagination-btn {
+  background-color: #2a2a2a;
+  color: #f5f5f5;
+  border: 1px solid #fbcee8;
+}
+.dark .pagination-btn:hover {
+  background-color: #3a3a3a;
+}
+.dark .pagination-btn.active {
+  background-color: #fbcee8;
+  color: #1e1e1e;
+}
+
+/* 헤더 */
+
+/* 필터/초기화 버튼 */
+.dark .round-btn {
+  background-color: #2a2a2a;
+  color: #f5f5f5;
+  border: 1px solid #fbcee8;
+}
+
+/* 모달 버튼 */
+.dark .add-button {
+  background-color: #fbcee8;
+  color: #1e1e1e;
+}
+
+/* 아이콘 */
+.dark .edit-icon {
+  color: #ddd;
+}
+.dark .delete-icon {
+  color: #f87171;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 20px;
+}
+.pagination button {
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  background-color: white;
+  cursor: pointer;
+}
+.pagination button.active {
+  background-color: #fbcee8;
+  font: var(--ng-reg-14);
+}
+.pagination button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 </style>
