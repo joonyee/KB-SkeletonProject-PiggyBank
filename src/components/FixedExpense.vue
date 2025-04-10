@@ -29,12 +29,17 @@ const expenses = ref([]);
 
 // 총합 계산
 const totalAmount = ref(0);
-
+const savingGoal = ref(null);
 // 데이터 가져오기
 const fetchData = async () => {
   try {
+    const UserId = localStorage.getItem('loggedInUserId');
+    const responseGoal = await axios.get(
+      `http://localhost:3000/user/${UserId}`
+    );
+    savingGoal.value = responseGoal.data.goalSavings;
     const res = await axios.get('http://localhost:3000/fixedExpenses');
-    expenses.value = res.data;
+    expenses.value = res.data.filter((entry) => entry.userid == UserId);
 
     // 총합 계산
     totalAmount.value = expenses.value.reduce(
@@ -52,6 +57,18 @@ onMounted(() => {
 </script>
 
 <style scoped>
+.dark .fixed-expenses {
+  background-color: #374151; /* 어두운 배경 */
+  border: 1px solid #4b5563; /* 어두운 테두리 */
+  color: #e5e7eb;
+}
+.dark .expense-item,
+.dark .total-expenses {
+  color: #e5e7eb;
+}
+.dark .expense-header {
+  color: #83a4eb;
+}
 .fixed-expenses {
   border-radius: 8px;
   padding: 1rem;

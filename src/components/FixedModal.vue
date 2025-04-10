@@ -1,4 +1,5 @@
 <template>
+  <!-- 메인 모달 -->
   <div class="modal-overlay" @click.self="emit('close')">
     <div class="modal-content">
       <h2>금융 일정 관리</h2>
@@ -90,12 +91,47 @@
 
       <div v-if="activeTab === 'edit'" class="modify-button">
         <button @click="enableEditMode">수정하기</button>
-        <button @click="deleteFixedExpense" class="delete-button">
+        <!-- 삭제 버튼 클릭 시 삭제 옵션 모달을 띄움 -->
+        <button @click="triggerDeleteOptions" class="delete-button">
           삭제하기
         </button>
       </div>
 
       <button class="close-button" @click="emit('close')">닫기</button>
+    </div>
+  </div>
+
+  <!-- 삭제 옵션 모달 -->
+  <div
+    v-if="showDeleteOptions"
+    class="modal-overlay delete-modal-overlay"
+    @click.self="cancelDelete"
+  >
+    <div class="modal-content delete-modal-content">
+      <p class="title">❗ 삭제 옵션을 선택해주세요</p>
+      <div class="option-cards">
+        <div
+          :class="['option-card', deleteOption === 'future' ? 'selected' : '']"
+          @click="deleteOption = 'future'"
+        >
+          <p class="emoji">🗓️</p>
+          <p class="option-title">이번 달까지 유지</p>
+          <p class="option-desc">이번 달까지 반영, 이후부터 삭제됩니다.</p>
+        </div>
+        <div
+          :class="['option-card', deleteOption === 'all' ? 'selected' : '']"
+          @click="deleteOption = 'all'"
+        >
+          <p class="emoji">🚫</p>
+          <p class="option-title">즉시 완전 삭제</p>
+          <p class="option-desc">이전, 이후 모두에서 삭제됩니다.</p>
+        </div>
+      </div>
+
+      <div class="edit-buttons">
+        <button @click="cancelDelete">취소</button>
+        <button @click="confirmDelete">삭제 진행</button>
+      </div>
     </div>
   </div>
 
@@ -133,12 +169,20 @@
 import { ref, onMounted } from 'vue';
 import axios from 'axios';
 
+// 부모로부터 현재 달 정보를 prop으로 받음
+const props = defineProps({
+  currentMonth: {
+    type: String,
+    required: true,
+  },
+});
+
 const emit = defineEmits(['close']);
 
 const expenses = ref([]);
 const currentIndex = ref(0);
 const currentExpense = ref({});
-
+const savingGoal = ref(null);
 const activeTab = ref('add');
 const newExpense = ref({
   day: null,
@@ -151,7 +195,10 @@ const newExpense = ref({
 const editMode = ref(false);
 const editableExpense = ref({});
 
-// 데이터 가져오기
+// 삭제 옵션 관련 상태
+const showDeleteOptions = ref(false);
+const deleteOption = ref('future');
+
 const fetchData = async () => {
   try {
     const res = await axios.get('http://localhost:3000/fixedExpenses');
@@ -193,11 +240,17 @@ const addFixedExpense = async () => {
       alert('모든 필드를 입력해주세요.');
       return;
     }
+    const UserId = localStorage.getItem('loggedInUserId');
+    const responseGoal = await axios.get(
+      `http://localhost:3000/user/${UserId}`
+    );
+    savingGoal.value = responseGoal.data.goalSavings;
     await axios.post('http://localhost:3000/fixedExpenses', {
       day: newExpense.value.day,
       description: newExpense.value.description,
       amount: newExpense.value.amount,
       notify: newExpense.value.notify,
+      userid: UserId,
     });
     alert('금융 일정이 성공적으로 추가되었습니다.');
     newExpense.value = {
@@ -248,26 +301,35 @@ const updateFixedExpense = async () => {
     alert('금융 일정 수정에 실패했습니다.');
   }
 };
-const deleteFixedExpense = async () => {
+
+// 삭제 옵션 모달 관련 로직
+// 삭제 버튼 클릭 시 삭제 옵션 모달 표시
+const triggerDeleteOptions = () => {
+  showDeleteOptions.value = true;
+};
+
+// 삭제 옵션 취소
+const cancelDelete = () => {
+  showDeleteOptions.value = false;
+};
+
+// 삭제 진행 시 실제로 삭제 대신 deletedAt 필드를 업데이트 (부모로부터 받은 currentMonth 사용)
+const confirmDelete = async () => {
   try {
-    const confirmDelete = confirm('정말로 이 금융 일정을 삭제하시겠습니까?');
-    if (!confirmDelete) return;
-
-    const id = editableExpense.value.id ?? currentIndex.value;
-
-    // 서버에서 삭제 요청
-    await axios.delete(`http://localhost:3000/fixedExpenses/${id}`);
-
-    // 로컬 데이터에서 삭제
-    expenses.value.splice(currentIndex.value, 1);
-
-    // 현재 인덱스 업데이트
-    if (currentIndex.value > 0) {
-      currentIndex.value--;
+    // id가 올바르게 존재하는지 확인
+    const id = currentExpense.value.id;
+    if (!id) {
+      alert('해당 금융 일정의 id가 없습니다.');
+      return;
     }
-    currentExpense.value = expenses.value[currentIndex.value] || {};
-
+    // 삭제 대신 deletedAt 필드를 업데이트하여 현재 달을 저장
+    await axios.put(`http://localhost:3000/fixedExpenses/${id}`, {
+      deletedAt: props.currentMonth,
+    });
+    // 로컬 데이터에도 반영
+    expenses.value[currentIndex.value].deletedAt = props.currentMonth;
     alert('금융 일정이 삭제되었습니다.');
+    showDeleteOptions.value = false;
     editMode.value = false;
   } catch (error) {
     console.error('금융 일정 삭제 중 오류 발생:', error);
@@ -281,6 +343,77 @@ onMounted(() => {
 </script>
 
 <style scoped>
+.dark h2 {
+  color: #f9fafb;
+}
+
+.dark .modal-overlay {
+  background: rgba(0, 0, 0, 0.8);
+}
+
+.dark .modal-content {
+  background-color: #1f2937;
+  color: #f9fafb;
+  border: 1px solid #374151;
+}
+
+.dark .tabs button {
+  background-color: #374151;
+  color: #f9fafb;
+  border: 1px solid #4b5563;
+}
+
+.dark .tabs button.active {
+  background-color: #4b5563;
+  color: #ffffff;
+  border-color: #6b7280;
+}
+
+.dark input[type='text'],
+.dark input[type='number'] {
+  background-color: #374151;
+  color: #f9fafb;
+  border: 1px solid #4b5563;
+}
+
+.dark input[type='text']::placeholder,
+.dark input[type='number']::placeholder {
+  color: #9ca3af;
+}
+
+.dark .submit-button button,
+.dark .modify-button button,
+.dark .edit-buttons button,
+.dark .delete-button button {
+  background-color: #4b5563;
+  color: #f9fafb;
+  border: 1px solid #6b7280;
+  transition: background-color 0.3s ease;
+}
+
+.dark .submit-button button:hover,
+.dark .modify-button button:hover,
+.dark .edit-buttons button:hover,
+.dark .delete-button button:hover {
+  background-color: #6b7280;
+}
+
+.dark .delete-button {
+  background-color: #ef4444;
+  color: #ffffff;
+  border: 1px solid #b91c1c;
+}
+
+.dark .delete-button:hover {
+  background-color: #dc2626;
+}
+
+.dark .edit-modal-content {
+  background-color: #1f2937;
+  color: #f9fafb;
+  border: 1px solid #374151;
+}
+
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -434,6 +567,7 @@ input[type='number'] {
   transition: background 0.2s ease;
   margin-bottom: 1rem;
 }
+
 .modify-button {
   display: flex;
   padding: 0.75rem 0;
@@ -441,9 +575,11 @@ input[type='number'] {
   justify-content: center;
   margin: 1rem 0;
 }
+
 .submit-button button:hover {
   background: #ffb3e6;
 }
+
 .modify-button button {
   background-color: #ffc7ef;
   width: 600px;
@@ -459,7 +595,7 @@ input[type='number'] {
 .modify-button button:hover {
   background-color: #ffb3e6;
 }
-/* 수정 모달 오버레이 */
+
 .edit-modal-overlay {
   position: fixed;
   top: 0;
@@ -490,23 +626,47 @@ input[type='number'] {
   margin-top: 1rem;
 }
 
-/* 삭제버튼 */
-/*.delete-button {
-  background-color: #ffc7ef; 
-  color: #1a1a1a;
-  border: none;
-  padding: 0.75rem 1.25rem;
-  font-size: 0.875rem;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background 0.2s ease;
+.option-cards {
+  display: flex;
+  gap: 1rem;
+  margin: 1rem 0;
 }
 
-.delete-button:hover {
-  background-color: #ffb3e6; 
-} 
-*/
-/* 공통 버튼 스타일 */
+.option-card {
+  flex: 1;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 1rem;
+  cursor: pointer;
+  text-align: center;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.option-card:hover {
+  border-color: #aaa;
+}
+
+.option-card.selected {
+  border-color: #ef4444;
+  box-shadow: 0 0 8px rgba(239, 68, 68, 0.4);
+}
+
+.option-title {
+  font-weight: bold;
+  margin: 0.5rem 0;
+}
+
+.option-desc {
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+.actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 1.5rem;
+}
+
 .edit-buttons button {
   background-color: #ffc7ef;
   color: #1a1a1a;

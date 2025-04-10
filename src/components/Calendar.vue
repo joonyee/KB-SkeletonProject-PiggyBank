@@ -3,6 +3,10 @@
     <header class="calendar-header">
       <h2>{{ currentYear }}년 {{ currentMonth + 1 }}월</h2>
       <div class="right-section">
+        <div class="label-section">
+          <span class="label income-label">● 수입</span>
+          <span class="label expense-label">● 지출</span>
+        </div>
         <button class="arrow-button" @click="prevMonth">
           <img src="/arrow2.png" alt="Previous Month" />
         </button>
@@ -81,7 +85,6 @@ const currentMonth = computed(() => props.month);
 const calendarData = ref([]);
 const transactions = ref([]);
 const fixedExpenses = ref([]);
-const UserId = localStorage.getItem('loggedInUserId');
 
 const dayNames = ['일', '월', '화', '수', '목', '금', '토'];
 const isModalOpen = ref(false);
@@ -127,14 +130,22 @@ function updateCalendarData() {
 }
 
 const isDataLoaded = ref(false);
-
+const savingGoal = ref(null);
 onMounted(async () => {
   try {
+    const UserId = localStorage.getItem('loggedInUserId');
+    const responseGoal = await axios.get(
+      `http://localhost:3000/user/${UserId}`
+    );
+    savingGoal.value = responseGoal.data.goalSavings;
+
     const [moneyRes, fixedRes] = await Promise.all([
-      axios.get(`http://localhost:3000/fixedExpenses/${UserId}`),
+      axios.get('http://localhost:3000/money'),
       axios.get('http://localhost:3000/fixedExpenses'),
     ]);
-    transactions.value = moneyRes.data;
+    transactions.value = moneyRes.data.filter(
+      (entry) => entry.userid == UserId
+    );
     fixedExpenses.value = fixedRes.data;
     isDataLoaded.value = true;
     updateCalendarData(); // 최초 1회 수동 호출
@@ -189,6 +200,26 @@ function nextMonth() {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
+.label-section {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  font-size: 0.9rem;
+  margin-left: 2rem;
+}
+
+.label {
+  display: flex;
+  align-items: center;
+}
+
+.income-label {
+  color: #16a34a;
+}
+
+.expense-label {
+  color: #ef4444;
+}
 .calendar-header {
   display: flex;
   justify-content: space-between;

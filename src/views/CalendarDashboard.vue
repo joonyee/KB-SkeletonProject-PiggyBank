@@ -1,5 +1,6 @@
 <template>
   <!-- header -->
+
   <div class="dashboard">
     <header class="dashboardHeader">
       <h1 class="dashboardTitle">
@@ -17,68 +18,49 @@
         <button class="logout" @click="logout">로그아웃</button>
       </div>
     </header>
-    <!-- header -->
-    <div class="dashboard">
-      <header class="dashboardHeader">
-        <h1 class="dashboardTitle">
-          <img
-            src="/src/assets/icons/logo.png"
-            class="iconImage"
-            @click="goToHome"
-          />Piggy Bank
-        </h1>
-        <div class="flex items-center gap-2 relative">
-          <button @click="toggleDarkMode" class="darkModeButton">
-            {{ isDarkMode ? '☀️' : '🌙' }}
-          </button>
-          <button class="mypageButton" @click="mypageClick">마이페이지</button>
-          <button class="logout" @click="logout">로그아웃</button>
-        </div>
-      </header>
-      <div class="calendar-dashboard">
-        <!-- Calendar 컴포넌트는 연도와 월을 양방향 바인딩(v-model)을 통해 관리 -->
-        <Calendar v-model:year="currentYear" v-model:month="currentMonth" />
+    <div class="calendar-dashboard">
+      <!-- Calendar 컴포넌트는 연도와 월을 양방향 바인딩(v-model)을 통해 관리 -->
+      <Calendar v-model:year="currentYear" v-model:month="currentMonth" />
 
-        <!-- SummaryChart는 현재 연도와 월을 props로 받아 해당 달 분석 그래프를 그림 -->
-        <div class="summary-section">
-          <SummaryChart :year="currentYear" :month="currentMonth + 1" />
-        </div>
-
-        <!-- 추가 분석 영역: 소비 패턴 분석 카드, FixedExpense 버튼 등 -->
-        <div class="analysis-section">
-          <div class="analysis-card" @click="expense">
-            <h3>소비 패턴 분석</h3>
-            <div class="analysis-content">
-              <div>
-                <p>충동적 소비</p>
-                <h2 class="negative">{{ impulsiveCount }}회</h2>
-              </div>
-              <div>
-                <p>계획적 소비</p>
-                <h2 class="positive">{{ plannedCount }}회</h2>
-              </div>
-            </div>
-            <!-- 분할 진행 바 -->
-            <div class="segmented-progress-bar">
-              <div
-                class="segment segment-impulsive"
-                :style="{ width: (impulsiveCount / totalCount) * 100 + '%' }"
-              ></div>
-              <div
-                class="segment segment-planned"
-                :style="{ width: (plannedCount / totalCount) * 100 + '%' }"
-              ></div>
-            </div>
-            <p class="summary">총 지출 횟수 : {{ totalCount }}회</p>
-          </div>
-
-          <div class="analysis-card" @click="openModal">
-            <FixedExpense />
-          </div>
-        </div>
-
-        <FixedModal v-if="isModalOpen" @close="closeModal" />
+      <!-- SummaryChart는 현재 연도와 월을 props로 받아 해당 달 분석 그래프를 그림 -->
+      <div class="summary-section">
+        <SummaryChart :year="currentYear" :month="currentMonth + 1" />
       </div>
+
+      <!-- 추가 분석 영역: 소비 패턴 분석 카드, FixedExpense 버튼 등 -->
+      <div class="analysis-section">
+        <div class="analysis-card" @click="expense">
+          <h3>소비 패턴 분석</h3>
+          <div class="analysis-content">
+            <div>
+              <p>충동적 소비</p>
+              <h2 class="negative">{{ impulsiveCount }}회</h2>
+            </div>
+            <div>
+              <p>계획적 소비</p>
+              <h2 class="positive">{{ plannedCount }}회</h2>
+            </div>
+          </div>
+          <!-- 분할 진행 바 -->
+          <div class="segmented-progress-bar">
+            <div
+              class="segment segment-impulsive"
+              :style="{ width: (impulsiveCount / totalCount) * 100 + '%' }"
+            ></div>
+            <div
+              class="segment segment-planned"
+              :style="{ width: (plannedCount / totalCount) * 100 + '%' }"
+            ></div>
+          </div>
+          <p class="summary">총 지출 횟수 : {{ totalCount }}회</p>
+        </div>
+
+        <div class="analysis-card" @click="openModal">
+          <FixedExpense />
+        </div>
+      </div>
+
+      <FixedModal v-if="isModalOpen" @close="closeModal" />
     </div>
   </div>
 </template>
@@ -116,14 +98,24 @@ const currentYear = ref(2025);
 const currentMonth = ref(3); // 3이면 달력에서는 4월
 const router = useRouter();
 const transactions = ref([]);
-const UserId = localStorage.getItem('loggedInUserId');
+const savingGoal = ref(null);
 // 소비 패턴 데이터 (예시)
+
+const monthlyTransactions = computed(() => {
+  return transactions.value.filter((tx) => {
+    const [txYear, txMonth] = tx.date.split('-');
+    return (
+      Number(txYear) === currentYear.value &&
+      Number(txMonth) === currentMonth.value + 1
+    );
+  });
+});
 const impulsiveCount = computed(() => {
-  return transactions.value.filter((tx) => tx.tendencyid === 1).length;
+  return monthlyTransactions.value.filter((tx) => tx.tendencyid === 1).length;
 });
 
 const plannedCount = computed(() => {
-  return transactions.value.filter((tx) => tx.tendencyid === 2).length;
+  return monthlyTransactions.value.filter((tx) => tx.tendencyid === 2).length;
 });
 
 const totalCount = computed(() => {
@@ -140,14 +132,17 @@ const closeModal = () => {
 };
 const expense = () => {
   router.push('./expenseTendency');
-  alert('월간 수입/지출 페이지');
 };
 onMounted(async () => {
   try {
-    const res = await axios.get(
-      `http://localhost:3000/fixedExpenses/${UserId}`
+    const UserId = localStorage.getItem('loggedInUserId');
+    const responseGoal = await axios.get(
+      `http://localhost:3000/user/${UserId}`
     );
-    transactions.value = res.data;
+    savingGoal.value = responseGoal.data.goalSavings;
+
+    const res = await axios.get('http://localhost:3000/money');
+    transactions.value = res.data.filter((entry) => entry.userid == UserId);
   } catch (error) {
     console.error('Failed to fetch transaction data:', error);
   }
@@ -210,10 +205,7 @@ onMounted(async () => {
   font-weight: 600;
   color: #333;
 }
-.dark .calendar-dashboard,
-.dark .analysis-section,
-.dark .analysis-card,
-.dark .analysis-content {
+.dark .calendar-dashboard {
   background-color: #121212;
 }
 .dark .dashboard {
@@ -223,6 +215,12 @@ onMounted(async () => {
 .dark .dashboardHeader {
   background-color: #fbcee8;
 }
+.dark .analysis-card {
+  background: #1f2937;
+  color: #e5e7eb;
+  border: 1px solid #1f2937;
+}
+
 .dashboardHeader {
   display: flex;
   justify-content: space-between;
@@ -245,6 +243,7 @@ onMounted(async () => {
   display: flex;
   justify-content: space-between;
   margin-top: 2rem;
+  cursor: pointer;
 }
 
 .analysis-card {
