@@ -1,6 +1,19 @@
 <template>
   <div class="dashboard">
-    <!-- <Header /> -->
+    <!-- Header Section -->
+    <div class="dashboardHeader">
+      <div class="flex dashboardTitle">
+        <img src="@/assets/icons/logo.png" alt="로고" class="iconImage" />
+        <h1>Dashboard</h1>
+      </div>
+      <div class="flex">
+        <button class="darkModeButton">🌙</button>
+        <button class="mypageButton" @click="goToMypage">마이페이지</button>
+        <button class="logout">로그아웃</button>
+      </div>
+    </div>
+
+    <!-- Main Content -->
     <SummaryCards />
     <MonthlyPatternChart />
     <router-link to="/Home" class="home-button">홈으로 이동</router-link>
@@ -8,9 +21,14 @@
 </template>
 
 <script setup>
-import Header from "@/components/Header.vue";
 import SummaryCards from "@/components/TendencyCount.vue";
 import MonthlyPatternChart from "@/components/MonthlyTendencyChart.vue";
+import { useRouter } from "vue-router";
+
+const router = useRouter();
+const goToMypage = () => {
+  router.push("/mypage"); // alert 제거된 상태
+};
 </script>
 
 <style scoped>
@@ -20,6 +38,56 @@ import MonthlyPatternChart from "@/components/MonthlyTendencyChart.vue";
   padding: 1rem;
 }
 
+/* 헤더 스타일 */
+.dashboardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #fbcee8;
+  padding: 1rem;
+  border-radius: 1rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.iconImage {
+  width: 60px;
+  height: 60px;
+}
+
+.dashboardTitle {
+  gap: 10px;
+}
+
+.flex {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.darkModeButton {
+  padding: 8px 12px;
+  font-size: 1.2rem;
+  border: 1px solid #ccc;
+  border-radius: 0.5rem;
+  cursor: pointer;
+}
+
+.mypageButton,
+.inputValue,
+.logout {
+  background-color: rgb(254, 235, 253);
+  border: 1px solid rgb(251, 209, 251);
+  border-radius: 0.5rem;
+  padding: 12px 24px;
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  font-weight: 600;
+  color: #333;
+}
+
+/* 홈 버튼 */
 .home-button {
   display: block;
   text-align: center;
