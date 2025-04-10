@@ -457,6 +457,7 @@ const noseHoles = computed(() => ({
   },
 }));
 const piggyMessage = computed(() => {
+  if (savingsRate.value < 0) return '돼지가 집을 나가버렸어요 😰';
   if (savingsRate.value < 50) return '돼지가 배가 고파요 😢';
   if (savingsRate.value < 70) return '돼지가 괜찮아해요 🙂';
   if (savingsRate.value < 90) return '돼지가 행복해해요 😄';
