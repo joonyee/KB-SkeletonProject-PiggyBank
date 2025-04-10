@@ -128,6 +128,7 @@ const handleSignUp = async () => {
       name: name.value,
       age: ageId,
       gender: gender.value || '미선택',
+      goalSavings: 0,
     };
 
     await axios.post('http://localhost:3000/user', newUser);

@@ -1,6 +1,8 @@
 <script setup>
 import { ref } from 'vue';
 import Piggyface from './Piggyface.vue';
+const isEyeClosed = false;
+const eyeOffset = { x: 0, y: 0 };
 
 const fileInput = ref(null);
 const previewImage = ref(null);
@@ -26,10 +28,11 @@ const handleFileChange = (event) => {
 <template>
   <div class="info-container">
     <div class="photo-box">
-      <!-- <Piggyface /> -->
-      <img v-if="previewImage" :src="previewImage" class="profile-image" />
+      <Piggyface :eyeOffset="eyeOffset" :isEyeClosed="isEyeClosed" />
+
+      <!-- <img v-if="previewImage" :src="previewImage" class="profile-image" />
       <button class="edit-button" @click="triggerFileInput">+</button>
-      <input type="file" ref="fileInput" @change="handleFileChange" hidden />
+      <input type="file" ref="fileInput" @change="handleFileChange" hidden /> -->
     </div>
 
     <div class="userName">{{ userInfo.name }}님</div>

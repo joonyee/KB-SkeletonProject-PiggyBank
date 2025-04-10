@@ -19,9 +19,12 @@ const toggleDarkMode = () => {
 
 // 로그아웃 처리
 const logout = () => {
-  localStorage.removeItem('accessToken');
-  localStorage.removeItem('refreshToken');
-  router.push('/login');
+  alert('안녕히가세요!');
+
+  localStorage.removeItem('loggedInUserId');
+  localStorage.removeItem('loggedInUserInfo');
+
+  router.push('/');
 };
 
 const openLogoutModal = () => {

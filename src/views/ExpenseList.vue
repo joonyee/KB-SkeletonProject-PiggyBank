@@ -15,8 +15,11 @@ const router = useRouter();
 const goToHome = () => router.push('/home');
 const mypageClick = () => router.push('/myPage');
 const logout = () => {
-  alert('로그아웃되었습니다.');
+  alert('안녕히가세요!');
+
   localStorage.removeItem('loggedInUserId');
+  localStorage.removeItem('loggedInUserInfo');
+
   router.push('/');
 };
 
