@@ -37,6 +37,10 @@ const chartData = ref(null);
 
 const chartOptions = {
   responsive: true,
+  maintainAspectRatio: false,
+  animation: {
+    duration: 0, // 애니메이션 비활성화 (즉시 반영)
+  },
   plugins: {
     legend: {
       position: 'bottom',
@@ -116,7 +120,13 @@ onMounted(() => {
 });
 
 // 👀 props가 바뀔 때마다 차트 데이터 재계산
-watch(() => props.chartData, updateChartData);
+watch(
+  () => props.chartData,
+  (newData) => {
+    // 데이터 변경시 즉시 반영
+    updateChartData();
+  }
+);
 </script>
 
 <style scoped>
@@ -124,5 +134,6 @@ watch(() => props.chartData, updateChartData);
   position: relative;
   height: 400px;
   width: 100%;
+  /* transition: 0.3s; */
 }
 </style>
