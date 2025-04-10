@@ -12,7 +12,6 @@
             v-model="email"
             @input="handleEmailInput"
           />
-
           <label>비밀번호</label>
           <input
             type="password"
@@ -20,7 +19,6 @@
             v-model="password"
             @input="handlePasswordInput"
           />
-
           <button type="submit" class="login-btn">로그인</button>
         </form>
         <p class="signup-text">
@@ -36,7 +34,6 @@
 import { ref } from 'vue';
 import Piggyface from '@/components/Piggyface.vue';
 import { useRouter } from 'vue-router';
-
 const router = useRouter();
 const isEyeClosed = ref(false);
 const eyeOffset = ref({ x: 0, y: 0 });
