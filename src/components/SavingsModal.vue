@@ -1,5 +1,5 @@
 <script setup>
-import { ref, defineProps, defineEmits, watch } from 'vue';
+import { ref, defineProps, defineEmits, watch, onMounted } from 'vue';
 
 const props = defineProps({ show: Boolean });
 const emit = defineEmits(['close', 'update']);
@@ -13,29 +13,26 @@ const closeModal = () => {
 };
 
 const confirmSettings = async () => {
-  const currentUser = JSON.parse(localStorage.getItem('currentUser'));
-  if (!currentUser || !currentUser.id) {
-    console.error('로그인한 사용자 정보가 없습니다.');
-    return;
-  }
+  const currentUser = JSON.parse(localStorage.getItem('loggedInUserInfo'));
+  if (!currentUser || !currentUser.id) return;
 
   try {
-    // 사용자 정보 patch
     await fetch(`http://localhost:3000/user/${currentUser.id}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        savingsRate: savingsRate.value,
-        monthlyIncome: monthlyIncome.value,
-      }),
+      body: JSON.stringify({ goalSavings: savingsRate.value }),
     });
 
+    const updatedUser = {
+      ...currentUser,
+      goalSavings: savingsRate.value,
+    };
+    localStorage.setItem('loggedInUserInfo', JSON.stringify(updatedUser));
+
+    // ✅ 확인 후 update만 emit (닫기는 부모가 결정)
     emit('update', {
-      monthlyIncome: monthlyIncome.value,
       savingsRate: savingsRate.value,
     });
-
-    closeModal();
   } catch (error) {
     console.error('저축률 업데이트 실패:', error);
   }
@@ -46,23 +43,20 @@ watch([monthlyIncome, savingsRate], () => {
     (monthlyIncome.value * savingsRate.value) / 100
   );
 });
+
+onMounted(() => {
+  const currentUser = JSON.parse(localStorage.getItem('loggedInUserInfo'));
+  if (currentUser) {
+    monthlyIncome.value = currentUser.monthlyIncome || 0;
+    savingsRate.value = currentUser.goalSavings || 0;
+  }
+});
 </script>
 
 <template>
   <div v-if="show" class="modal-backdrop" @click="closeModal">
     <div class="modal-content" @click.stop>
       <h3 class="modal-title">목표 저축률 설정</h3>
-
-      <!-- 월 수입 입력 -->
-      <div class="modal-input">
-        <label for="income">월 수입</label>
-        <input
-          type="number"
-          id="income"
-          placeholder="월 수입을 입력하세요"
-          v-model="monthlyIncome"
-        />
-      </div>
 
       <!-- 슬라이더로 저축률 설정 -->
       <div class="slider-container">
@@ -80,12 +74,6 @@ watch([monthlyIncome, savingsRate], () => {
             <span>{{ savingsRate }}%</span>
           </div>
         </div>
-      </div>
-
-      <!-- 예상 월 저축액 -->
-      <div class="expected-savings">
-        <label>예상 월 저축액</label>
-        <p class="savings-amount">₩{{ expectedSavings.toLocaleString() }}</p>
       </div>
 
       <!-- 모달 버튼 -->
@@ -133,7 +121,6 @@ input[type='number'] {
   width: 90%;
   padding: 10px;
   margin-top: 15px;
-  /* border: 1px solid var(--text-secondary); */
   border-radius: 8px;
   font: var(--ng-reg-16);
 }

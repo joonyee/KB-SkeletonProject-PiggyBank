@@ -2,24 +2,20 @@
 import { ref, computed, onMounted } from 'vue';
 import axios from 'axios';
 import ExpenseChart from '../components/ExpenseChart.vue';
-import CategoryFilterModal from '../components/CategoryFilterModal.vue';
+import { useRouter } from 'vue-router';
 
-const allLabels = [
-  '식사/카페',
-  '배달/간식',
-  '쇼핑',
-  '교통/차량',
-  '주거/관리',
-  '건강/병원',
-  '취미/여가',
-  '구독서비스',
-  '여행/외출',
-  '기타지출',
-];
-
-//  필터 모달 제어
-const selectedCategories = ref([...allLabels]);
+// 상태 변수
+const selectedCategories = ref([]);
 const isFilterModalOpen = ref(false);
+const isTransactionModalOpen = ref(false);
+const currentUser = ref(null);
+const moneyData = ref([]);
+const userList = ref([]);
+const categoryList = ref([]);
+const mySpending = ref({});
+const avgSpending = ref({});
+
+// 모달 제어 함수
 const openFilterModal = () => (isFilterModalOpen.value = true);
 const closeFilterModal = () => (isFilterModalOpen.value = false);
 const applyFilter = (newSelection) => {
@@ -27,105 +23,9 @@ const applyFilter = (newSelection) => {
   closeFilterModal();
 };
 
-// 거래 추가 모달 제어
-const isTransactionModalOpen = ref(false);
-const openTransactionModal = () => (isTransactionModalOpen.value = true);
-const closeTransactionModal = () => (isTransactionModalOpen.value = false);
-
-//  로그인 유저 기반 데이터 로딩
-const currentUser = ref(null);
-const moneyData = ref([]);
-const userList = ref([]);
-const categoryList = ref([]);
-
-const mySpending = ref(Array(allLabels.length).fill(0));
-const avgSpending = ref(Array(allLabels.length).fill(0));
-
-const getCategoryNameById = (id) => {
-  const found = categoryList.value.find((cat) => cat.id === id);
-  return found ? found.name : '';
-};
-
-onMounted(async () => {
-  try {
-    const loggedInUserId = localStorage.getItem('loggedInUserId');
-    if (!loggedInUserId) {
-      alert('로그인이 필요합니다.');
-      return;
-    }
-
-    const [moneyRes, userRes, categoryRes] = await Promise.all([
-      axios.get('http://localhost:3000/money'),
-      axios.get('http://localhost:3000/user'),
-      axios.get('http://localhost:3000/category'),
-    ]);
-
-    moneyData.value = moneyRes.data;
-    userList.value = userRes.data;
-    categoryList.value = categoryRes.data;
-
-    currentUser.value = userList.value.find((u) => u.id === loggedInUserId);
-    if (!currentUser.value) return;
-
-    const ageGroup = currentUser.value.age;
-
-    const myExpenses = moneyData.value.filter(
-      (m) => m.userid === loggedInUserId && m.typeid === 2
-    );
-
-    const sameAgeUsers = userList.value
-      .filter((u) => u.age === ageGroup)
-      .map((u) => u.id);
-
-    const ageGroupExpenses = moneyData.value.filter(
-      (m) => sameAgeUsers.includes(m.userid) && m.typeid === 2
-    );
-
-    allLabels.forEach((label, index) => {
-      mySpending.value[index] = myExpenses
-        .filter((m) => getCategoryNameById(m.categoryid) === label)
-        .reduce((sum, cur) => sum + cur.amount, 0);
-
-      const groupValues = ageGroupExpenses
-        .filter((m) => getCategoryNameById(m.categoryid) === label)
-        .map((m) => m.amount);
-
-      avgSpending.value[index] =
-        groupValues.length > 0
-          ? Math.round(
-              groupValues.reduce((a, b) => a + b, 0) / groupValues.length
-            )
-          : 0;
-    });
-  } catch (err) {
-    console.error('데이터 불러오기 오류:', err);
-  }
-});
-
-// 필터링된 데이터 계산
-const filteredLabels = computed(() =>
-  allLabels.filter((label) => selectedCategories.value.includes(label))
-);
-const filteredMySpending = computed(() =>
-  allLabels
-    .map((label, i) =>
-      selectedCategories.value.includes(label) ? mySpending.value[i] : null
-    )
-    .filter((v) => v !== null)
-);
-const filteredAvgSpending = computed(() =>
-  allLabels
-    .map((label, i) =>
-      selectedCategories.value.includes(label) ? avgSpending.value[i] : null
-    )
-    .filter((v) => v !== null)
-);
-
-//  헤더
-import { useRouter } from 'vue-router';
+// 헤더 및 라우터 설정
 const router = useRouter();
 const isDarkMode = ref(false);
-
 const toggleDarkMode = () => {
   isDarkMode.value = !isDarkMode.value;
   document.documentElement.classList.toggle('dark', isDarkMode.value);
@@ -137,6 +37,95 @@ const logout = () => {
   localStorage.removeItem('loggedInUserId');
   router.push('/');
 };
+
+// 카테고리 이름 매핑 함수
+const getCategoryNameById = (id) => {
+  const category = categoryList.value.find((cat) => cat.id === id);
+  return category ? category.name : '';
+};
+
+// 데이터 로딩 및 계산
+onMounted(async () => {
+  try {
+    const loggedInUserId = localStorage.getItem('loggedInUserId');
+    if (!loggedInUserId) {
+      alert('로그인이 필요합니다.');
+      router.push('/login');
+      return;
+    }
+
+    const [moneyRes, userRes, categoryRes] = await Promise.all([
+      axios.get('http://localhost:3000/money'),
+      axios.get('http://localhost:3000/user'),
+      axios.get('http://localhost:3000/category'),
+    ]);
+
+    moneyData.value = moneyRes.data;
+    userList.value = userRes.data;
+    categoryList.value = categoryRes.data.filter((cat) => cat.id >= 6);
+
+    currentUser.value = userList.value.find((u) => u.id === loggedInUserId);
+    if (!currentUser.value) {
+      alert('사용자 정보를 찾을 수 없습니다.');
+      return;
+    }
+
+    const ageGroup = currentUser.value.age;
+    const categoryIds = categoryList.value.map((cat) => cat.id);
+
+    // 지출 데이터 초기화
+    mySpending.value = {};
+    avgSpending.value = {};
+    categoryIds.forEach((id) => {
+      mySpending.value[id] = 0;
+      avgSpending.value[id] = 0;
+    });
+
+    selectedCategories.value = [...categoryIds];
+
+    const myExpenses = moneyData.value.filter(
+      (m) => m.userid === loggedInUserId && m.typeid === 2
+    );
+
+    const sameAgeUserIds = userList.value
+      .filter((user) => user.age === ageGroup)
+      .map((user) => user.id);
+
+    const sameAgeExpenses = moneyData.value.filter(
+      (m) => sameAgeUserIds.includes(m.userid) && m.typeid === 2
+    );
+
+    categoryIds.forEach((id) => {
+      mySpending.value[id] = myExpenses
+        .filter((m) => m.categoryid === id)
+        .reduce((sum, cur) => sum + cur.amount, 0);
+
+      const groupAmounts = sameAgeExpenses
+        .filter((m) => m.categoryid === id)
+        .map((m) => m.amount);
+
+      avgSpending.value[id] = groupAmounts.length
+        ? Math.round(
+            groupAmounts.reduce((a, b) => a + b, 0) / groupAmounts.length
+          )
+        : 0;
+    });
+  } catch (err) {
+    console.error('데이터 불러오기 오류:', err);
+    alert('데이터를 불러오는 중 오류가 발생했습니다.');
+  }
+});
+
+// 필터링된 데이터 계산
+const filteredLabels = computed(() =>
+  selectedCategories.value.map((id) => getCategoryNameById(id))
+);
+const filteredMySpending = computed(() =>
+  selectedCategories.value.map((id) => mySpending.value[id] || 0)
+);
+const filteredAvgSpending = computed(() =>
+  selectedCategories.value.map((id) => avgSpending.value[id] || 0)
+);
 </script>
 
 <template>
@@ -161,14 +150,13 @@ const logout = () => {
   </header>
 
   <div class="age-expense-analysis">
-    <div class="header">
-      <button @click="openFilterModal" class="filter-button">카테고리</button>
-    </div>
+    <div class="header"></div>
 
     <ExpenseChart
       :labels="filteredLabels"
       :my-data="filteredMySpending"
       :avg-data="filteredAvgSpending"
+      :isDarkMode="isDarkMode"
     />
 
     <CategoryFilterModal
@@ -211,6 +199,17 @@ const logout = () => {
 }
 
 /* 헤더  */
+.body {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  background-color: var(--background-color);
+}
+
+.dark body {
+  background-color: #121212;
+  color: #f5f5f5;
+}
 .dashboard {
   padding: 2rem;
   margin: 0;
@@ -219,10 +218,7 @@ const logout = () => {
   box-sizing: border-box;
   color: black;
 }
-.dark .dashboard {
-  background: linear-gradient(to bottom, #121212, #121212);
-  color: #f1f1f1;
-}
+
 .dashboardHeader {
   display: flex;
   justify-content: space-between;
@@ -252,14 +248,6 @@ const logout = () => {
   gap: 1rem;
 }
 
-.darkModeButton {
-  padding: 8px 12px;
-  font-size: 1.2rem;
-  border: 1px solid #ccc;
-  border-radius: 0.5rem;
-  cursor: pointer;
-}
-
 .mypageButton,
 .logout,
 .inputValue {
@@ -272,5 +260,31 @@ const logout = () => {
   transition: all 0.3s ease;
   font-weight: 600;
   color: #333;
+}
+.dark .age-expense-analysis {
+  background: linear-gradient(to bottom, #1a1a1a, #121212);
+  color: #f5f5f5;
+}
+
+.dark .filter-button {
+  background-color: #2c2c2c;
+  border: 1px solid #f3daf0;
+  color: #f9a8d4;
+}
+
+.dark .chart-title {
+  color: #f9a8d4;
+}
+
+/* 차트 배경이 흰색이라면 다크모드용으로 투명 또는 어두운 배경 처리 */
+.dark canvas {
+  background-color: transparent !important;
+}
+
+/* 모달 스타일에 다크 테마 적용 시 필요한 예시 */
+.dark .modal {
+  background-color: #222;
+  color: #fff;
+  border: 1px solid #444;
 }
 </style>

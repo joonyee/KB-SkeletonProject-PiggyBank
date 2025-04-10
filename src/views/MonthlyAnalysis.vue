@@ -56,19 +56,24 @@ const goalRate = ref(0);
 
 const savingsModalVisible = ref(false);
 
+const openSavingsModal = () => {
+  savingsModalVisible.value = true;
+};
+
+const closeSavingsModal = () => {
+  savingsModalVisible.value = false;
+};
+
 // 모달 토글
 const toggleSavingsModal = () => {
   savingsModalVisible.value = !savingsModalVisible.value;
 };
 
-// 저축률 설정 업데이트 → user 데이터 패치
 const updateSavingsSettings = async ({
   monthlyIncome,
   savingsRate: newRate,
 }) => {
-  income.value = monthlyIncome;
-  savingsRate.value = newRate;
-
+  console.log('?');
   const userId = localStorage.getItem('loggedInUserId');
   if (userId) {
     await axios.patch(`http://localhost:3000/user/${userId}`, {
@@ -76,6 +81,9 @@ const updateSavingsSettings = async ({
     });
     goalRate.value = newRate;
   }
+  console.log('!');
+  // closeSavingsModal();
+  savingsModalVisible.value = false;
 };
 
 // DB에서 월간 데이터 fetch
@@ -192,7 +200,7 @@ onMounted(fetchMonthlyData);
       <SavingsModal
         v-if="savingsModalVisible"
         :show="savingsModalVisible"
-        @close="toggleSavingsModal"
+        @close="closeSavingsModal"
         @update="updateSavingsSettings"
       />
     </div>
@@ -219,7 +227,7 @@ onMounted(fetchMonthlyData);
 
       <!-- 월별 비교 -->
       <div class="part-card">
-        <h2>월별 비교</h2>
+        <h2>월별 수입/지출 비교</h2>
         <ChartCard
           chartType="bar"
           :chartData="{
@@ -251,7 +259,7 @@ onMounted(fetchMonthlyData);
 
       <!-- 예산 대비 -->
       <div class="part-card">
-        <h2>예산 대비</h2>
+        <h2>예산 대비 지출</h2>
         <ChartCard
           chartType="doughnut"
           :chartData="{
@@ -274,17 +282,22 @@ onMounted(fetchMonthlyData);
 body {
   background-color: var(--background-color);
   color: var(--text-color);
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  box-sizing: border-box;
 }
 
 .monthly-analysis-container {
   max-width: 1200px;
   background-color: var(--background-color);
-  margin: auto;
+  margin: 0 auto;
   padding: 20px;
   display: flex;
   justify-content: center;
   flex-direction: column;
   gap: 10px;
+  width: 100%;
 }
 
 .summary-cards {
@@ -468,28 +481,6 @@ body {
   gap: 1rem;
 }
 
-.darkModeButton {
-  padding: 8px 12px;
-  font-size: 1.2rem;
-  border: 1px solid #ccc;
-  border-radius: 0.5rem;
-  cursor: pointer;
-}
-
-/* .mypageButton,
-.logout,
-.inputValue {
-  background-color: rgb(254, 235, 253);
-  border: 1px solid rgb(251, 209, 251);
-  border-radius: 0.5rem;
-  padding: 12px 24px;
-  cursor: pointer;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
-  font-weight: 600;
-  color: #333;
-} */
-
 .mypageButton {
   background-color: rgb(254, 235, 253);
   border: 1px solid rgb(251, 209, 251);
@@ -524,5 +515,47 @@ body {
   transition: all 0.3s ease;
   font-weight: 600;
   color: #333;
+}
+/* 🌙 다크모드 전체 화면 적용 */
+.dark {
+  background-color: #121212;
+  color: #f5f5f5;
+}
+
+/* 다크모드 컨테이너 배경 통일 */
+.dark .monthly-analysis-container,
+.dark .summary-card,
+.dark .part-card,
+.dark .savings-card,
+.dark .total-expense-card {
+  background-color: #1e1e1e;
+  color: #f5f5f5;
+  box-shadow: 0 2px 4px rgba(255, 255, 255, 0.05);
+}
+
+/* 다크모드 헤더 */
+.dark .dashboardHeader {
+  background-color: #fbcee8;
+}
+
+/* 헤더 버튼들 색상 */
+.dark .mypageButton,
+.dark .logout,
+.dark .inputValue {
+  background-color: #f9f5f9;
+  border: 1px solid #f3daf0;
+  color: #1a1a1a;
+}
+
+/* 다크모드에서 divider 색 */
+.dark .divider {
+  background-color: #555;
+}
+
+/* 다크모드에서 세부 텍스트 색 */
+.dark .savings-label,
+.dark .goal-label,
+.dark .comparison {
+  color: #cccccc;
 }
 </style>
