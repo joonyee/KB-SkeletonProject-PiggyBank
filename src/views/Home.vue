@@ -47,7 +47,7 @@
         </div>
         <div class="goalSavings">
           <div class="cardLabel" @click="goToMonthlyAnalysis">목표 저축률</div>
-          <div class="cardValue">{{ savingsRate }}%</div>
+          <div class="cardValue">{{ savingGoal }}%</div>
         </div>
       </div>
     </div>
@@ -159,6 +159,9 @@
             fill="#000"
           />
         </svg>
+        <p class="piggyMessage">
+          {{ piggyMessage }}
+        </p>
       </div>
     </div>
 
@@ -228,6 +231,7 @@ const toggleDarkMode = () => {
 const chartData = ref([]);
 const categorySpending = ref([]);
 const transactions = ref([]);
+const savingGoal = ref(null);
 const loading = ref(true); // 로딩 상태 추가
 
 const fetchData = async () => {
@@ -238,6 +242,10 @@ const fetchData = async () => {
     } else {
       console.log('현재 로그인한 유저 ID:', userId);
     }
+    const responseGoal = await axios.get(
+      `http://localhost:3000/user/${userId}`
+    );
+    savingGoal.value = responseGoal.data.goalSavings;
 
     const response = await axios.get('http://localhost:3000/money');
     const moneyData = response.data.filter((entry) => entry.userid == userId); // 👈 유저별 필터
@@ -364,7 +372,6 @@ console.log(savingsRate);
 
 const mypageClick = () => {
   router.push('./myPage');
-  alert('mypage page');
 };
 const logout = () => {
   alert('안녕히가세요!');
@@ -372,11 +379,6 @@ const logout = () => {
   localStorage.removeItem('loggedInUserId');
 
   router.push('/');
-};
-
-const inputClick = () => {
-  //router.push('./inputValue');
-  alert('money input');
 };
 
 const isModalOpen = ref(false);
@@ -387,32 +389,12 @@ const closeModal = () => {
   isModalOpen.value = false;
 };
 
-const savingClick = () => {
-  //router.push('./savings-card');
-  alert('저축률 페이지');
-};
 const goToHome = () => {
   router.push('./home');
 };
 
 const monthlyClick = () => {
   router.push('./calendar');
-  alert('월간 수입/지출 페이지');
-};
-
-const categoryClick = () => {
-  //router.push('./categorypage');
-  alert('카테고리 페이지 이동');
-};
-
-const transactionsClick = () => {
-  //   router.push('/transaction'); 페이지 만들어서 라우팅 하면 끝
-  alert('최근 거래내역 페이지 이동');
-};
-
-const monthAmount = () => {
-  //router.push('./monthAmount');
-  alert('이번달 요약이동');
 };
 
 const goToExpenseList = () => {
@@ -474,6 +456,12 @@ const noseHoles = computed(() => ({
     cy: nosePosition.value.cy,
   },
 }));
+const piggyMessage = computed(() => {
+  if (savingsRate.value < 50) return '돼지가 배가 고파요 😢';
+  if (savingsRate.value < 70) return '돼지가 괜찮아해요 🙂';
+  if (savingsRate.value < 90) return '돼지가 행복해해요 😄';
+  return '돼지가 완전 포동포동해요 🐷💖';
+});
 
 // const sizeRatio = savingsRate.value / 100 + 0.2; // 크기 비율 (0~1 사이) + 기본값 0.2
 // const size = baseSize * (0.6 + sizeRatio * 0.4); // 결과 60% ~ 100% 크기
@@ -542,6 +530,15 @@ const noseHoles = computed(() => ({
   97% {
     transform: scaleY(0.1);
   }
+}
+.piggyMessage {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 16px;
+  display: flex;
+  justify-content: center; /* 가운데 정렬 */
+  align-items: center; /* 아이콘과 텍스트 수직 정렬 */
+  gap: 8px;
 }
 .iconImage {
   width: 60px;
