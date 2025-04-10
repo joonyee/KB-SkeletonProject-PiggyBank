@@ -5,6 +5,15 @@ import axios from 'axios';
 import TransactionEditModal from '../components/TransactionEditModal.vue';
 import FilterModal from '../components/FilterModal.vue';
 import TransactionDetailModal from '../components/TransactionDetailModal.vue';
+import TransactionModal from '../components/TransactionModal.vue';
+
+const isModalOpen = ref(false);
+const openModal = () => {
+  isModalOpen.value = true;
+};
+const closeModal = () => {
+  isModalOpen.value = false;
+};
 
 const isDetailModalOpen = ref(false);
 const selectedDetailTransaction = ref(null);
@@ -256,9 +265,14 @@ onMounted(() => {
       />
 
       <!-- 거래 추가 버튼 -->
-      <button class="add-button" @click="goToAddTransaction">
+      <button class="add-button" @click="openModal">
         <i class="fa-solid fa-plus"></i>
       </button>
+      <TransactionModal
+        :isOpen="isModalOpen"
+        :date="selectedDate"
+        @close="closeModal"
+      />
     </div>
   </div>
 </template>

@@ -30,7 +30,7 @@ const handleFileChange = (event) => {
       <input type="file" ref="fileInput" @change="handleFileChange" hidden />
     </div>
 
-    <div class="userName">{{ userInfo.name }}</div>
+    <div class="userName">{{ userInfo.name }}님</div>
 
     <div class="info-item">
       <!-- <span class="label">ID</span> -->

@@ -12,9 +12,31 @@ import { ref, computed, onMounted } from 'vue';
 const form = ref({});
 const initialForm = ref({});
 
+onMounted(() => {
+  const userInfo = JSON.parse(localStorage.getItem('loggedInUserInfo'));
+  const ageGroup = getAgeGroup(userInfo.age); // 숫자 나이를 연령대로 변환
+
+  form.value = {
+    ...userInfo,
+    age: ageGroup,
+    confirmPassword: userInfo.password,
+  };
+
+  initialForm.value = { ...form.value };
+});
+
 // 비밀번호 보기/숨기기
 const showPassword = ref(false);
 const showConfirmPassword = ref(false);
+
+const getAgeGroup = (age) => {
+  if (age >= 10 && age < 20) return '10대';
+  if (age >= 20 && age < 30) return '20대';
+  if (age >= 30 && age < 40) return '30대';
+  if (age >= 40 && age < 50) return '40대';
+  if (age >= 50) return '50대 이상';
+  return '10대'; // 기본값 (10세 미만 등)
+};
 
 // 비밀번호 일치 확인
 const passwordMatchMessage = computed(() => {
@@ -29,16 +51,6 @@ const passwordMatchMessage = computed(() => {
 const isPasswordMatch = computed(
   () => form.value.password === form.value.confirmPassword
 );
-
-onMounted(() => {
-  const userInfo = JSON.parse(localStorage.getItem('loggedInUserInfo'));
-
-  form.value = { ...userInfo };
-  initialForm.value = { ...userInfo };
-
-  form.value.confirmPassword = userInfo.password; // 비밀번호 일치 확인
-  form.value.alarm = true; // 알람 설정(기본 true)
-});
 
 // 초기화 버튼 클릭 이벤트
 const initInfo = () => {
@@ -60,7 +72,7 @@ const toggleShowPassword = (field) => {
   }
 };
 
-// input 요소 수정 사항 있는지 체크
+// 정보 수정 사항 있는지 체크
 const isFormChanged = computed(() => {
   return Object.keys(form.value).some(
     (key) => form.value[key] !== initialForm.value[key]
@@ -80,11 +92,11 @@ const toggleAlarm = () => {
     <label class="label-wrapper">연령</label>
 
     <select v-model="form.age">
-      <option>10대</option>
-      <option>20대</option>
-      <option>30대</option>
-      <option>40대</option>
-      <option>50대 이상</option>
+      <option value="10대">10대</option>
+      <option value="20대">20대</option>
+      <option value="30대">30대</option>
+      <option value="40대">40대</option>
+      <option value="50대">50대 이상</option>
     </select>
 
     <label class="label-wrapper">성별</label>
@@ -217,14 +229,14 @@ select {
 }
 
 .gender-buttons button:hover {
-  background-color: #ffc7ef;
+  background-color: #fbcee8;
   color: black;
 }
 
 .gender-buttons button.selected {
-  background-color: #ffc7ef;
+  background-color: #fbcee8;
   color: black;
-  border: 1px solid #ffc7ef;
+  border: 1px solid #fbcee8;
 }
 
 /* 비밀번호 input (비밀번호 보기) */
@@ -312,6 +324,6 @@ select {
 
 .modify-button {
   margin-left: 5px;
-  background-color: #ffe4e6;
+  background-color: #fbcee8;
 }
 </style>

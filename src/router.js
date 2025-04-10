@@ -4,11 +4,12 @@ import Login from '@/views/Login.vue';
 import SignUp from '@/views/SignUp.vue';
 import AgeExpenseAnalysis from '@/views/AgeExpenseAnalysis.vue';
 import ExpenseList from '@/views/ExpenseList.vue';
-import MonthlyAnalysis from './views/MonthlyAnalysis.vue';
+import MonthlyAnalysis from '@/views/MonthlyAnalysis.vue';
 import ExpenseTendency from '@/views/ExpenseTendency.vue';
-
+import calendar from '@/views/CalendarDashboard.vue';
 import Home from '@/views/Home.vue';
-import MyPage from './views/MyPage.vue';
+import MyPage from '@/views/MyPage.vue';
+// import PigIntro from '@/views/PigIntro.vue';
 
 const routes = [
   { path: '/', component: PigIntro },
@@ -19,7 +20,13 @@ const routes = [
   { path: '/expenseList', component: ExpenseList },
   { path: '/monthlyAnalysis', component: MonthlyAnalysis },
   { path: '/expenseTendency', component: ExpenseTendency },
+  { path: '/calendar', name: 'Calendar', component: calendar },
   { path: '/myPage', component: MyPage },
+  // {
+  //   path: '/PigIntro',
+  //   name: 'PigIntro',
+  //   component: PigIntro,
+  // },
 ];
 
 const router = createRouter({
