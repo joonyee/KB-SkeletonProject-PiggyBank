@@ -1,7 +1,7 @@
 <template>
   <div class="tendencyCountWrapper">
     <!-- 계획 지출 카드 -->
-    <div class="tendencyCard" v-if="plannedCount > 0">
+    <div class="tendencyCard">
       <p class="cardTitle">{{ thisMonth }} 계획 지출</p>
       <div class="cardCount green">
         {{ plannedCount }}회
@@ -16,7 +16,7 @@
     </div>
 
     <!-- 충동 지출 카드 -->
-    <div class="tendencyCard" v-if="impulseCount > 0">
+    <div class="tendencyCard">
       <p class="cardTitle">{{ thisMonth }} 충동 지출</p>
       <div class="cardCount red">
         {{ impulseCount }}회
@@ -41,45 +41,53 @@ const impulseCount = ref(0);
 const plannedAmount = ref(0);
 const impulseAmount = ref(0);
 
-// 현재 월 ("4월" 등)을 텍스트로 생성
+// 현재 월
 const now = new Date();
 const thisMonth = `${now.getMonth() + 1}월`;
 
 onMounted(async () => {
+  // 로그인된 유저 ID 추출
+  const userInfo = JSON.parse(localStorage.getItem("loggedInUserInfo") || "{}");
+  const userId = userInfo.id;
+
+  // 거래 내역 가져오기
   const res = await fetch("http://localhost:3000/money");
   const data = await res.json();
 
-  // tendency 또는 tendencyid 중 사용 가능한 값 가져오기
-  const normalizedData = data.map((item) => ({
+  // 로그인된 유저의 데이터만 필터링
+  const userData = data.filter((item) => item.userid === userId);
+
+  // tendency 또는 tendencyid 중 사용 가능한 값 사용
+  const normalizedData = userData.map((item) => ({
     ...item,
     tendency: item.tendency ?? item.tendencyid ?? null,
   }));
 
-  // 현재 달 ("YYYY-MM") 추출
+  // 현재 달 ("YYYY-MM")
   const currentMonth = now.toISOString().slice(0, 7);
 
-  // 1. '수입'(id: 3) 제외 + 2. 이번 달 데이터만 필터링
+  // 이번 달 + 지출(수입 제외) 필터링
   const filtered = normalizedData.filter((item) => {
     const isExpense = item.tendency !== null && item.tendency !== 3;
     const isCurrentMonth = item.date?.slice(0, 7) === currentMonth;
     return isExpense && isCurrentMonth;
   });
 
-  // '계획'(1), '충동'(2) 지출로 분류
+  // 계획/충동 분류
   const planned = filtered.filter((item) => item.tendency === 1);
   const impulse = filtered.filter((item) => item.tendency === 2);
 
-  // 각 지출 유형의 건수 및 총액 계산
+  // 개수 및 금액 계산
   plannedCount.value = planned.length;
   impulseCount.value = impulse.length;
   plannedAmount.value = planned.reduce((sum, cur) => sum + cur.amount, 0);
   impulseAmount.value = impulse.reduce((sum, cur) => sum + cur.amount, 0);
 });
 
-// 총 지출 금액 (계획 + 충동)
+// 총 지출 금액
 const totalAmount = computed(() => plannedAmount.value + impulseAmount.value);
 
-// 각 지출 유형의 비율 (%)
+// 지출 유형별 비율
 const plannedPercent = computed(() =>
   totalAmount.value > 0 ? (plannedAmount.value / totalAmount.value) * 100 : 0
 );
