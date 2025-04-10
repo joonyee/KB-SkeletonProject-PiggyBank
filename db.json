@@ -33,9 +33,9 @@
     {
       "id": "a487",
       "userId": "asdf@naver.com",
-      "password": "new123",
+      "password": "aaaaaaaa",
       "name": "aaaaa",
-      "age": "2",
+      "age": 4,
       "gender": "남성",
       "userImg": "",
       "goalSavings": 10
@@ -198,7 +198,7 @@
       "typeid": 1,
       "categoryid": 2,
       "date": "2025-06-01",
-      "amount": 100000,
+      "amount": 1000000,
       "tendency": 3,
       "payment": 4,
       "memo": "아부지 용돈"
@@ -367,16 +367,6 @@
       "tendency": 2,
       "payment": 3,
       "memo": "편의점+간식"
-    },
-    {
-      "id": "6445",
-      "typeid": 1,
-      "categoryid": 1,
-      "date": "2025-06-04",
-      "amount": 1000000,
-      "tendencyid": 3,
-      "payment": 4,
-      "memo": "알바비"
     }
   ],
   "tendency": [
