@@ -8,7 +8,7 @@
       "age": 2,
       "gender": "남성",
       "userImg": "",
-      "goalSavings": 10
+      "goalSavings": 50
     },
     {
       "id": "fb5c",
@@ -33,9 +33,9 @@
     {
       "id": "a487",
       "userId": "asdf@naver.com",
-      "password": "new123",
+      "password": "aaaaaaaa",
       "name": "aaaaa",
-      "age": "2",
+      "age": 4,
       "gender": "남성",
       "userImg": "",
       "goalSavings": 10
@@ -47,8 +47,23 @@
       "name": "ddd",
       "age": 4,
       "gender": "여성",
-      "userImg": "",
-      "goalSavings": 10
+      "goalSavings": 0
+    },
+    {
+      "id": "acaf",
+      "userId": "ww@naver.com",
+      "password": "wwwwwwww",
+      "name": "ww",
+      "age": 3,
+      "gender": "남성"
+    },
+    {
+      "id": "700d",
+      "userId": "ss@naver.com",
+      "password": "ssssssss",
+      "name": "ss",
+      "age": "3",
+      "gender": "남성"
     }
   ],
   "ageArea": [
@@ -197,10 +212,10 @@
   ],
   "fixedExpenses": [
     {
-      "id": "1",
       "day": 7,
       "description": "보험료(롯데)",
-      "amount": 45450
+      "amount": 30000,
+      "id": "1"
     },
     {
       "id": "2",
@@ -225,6 +240,13 @@
       "day": 25,
       "description": "헬스장 3개월 결제",
       "amount": 150000
+    },
+    {
+      "id": "5fac",
+      "day": 10,
+      "description": "넷플릭스",
+      "amount": 20000,
+      "notify": false
     }
   ],
   "money": [
@@ -234,11 +256,10 @@
       "typeid": 1,
       "categoryid": 2,
       "date": "2025-06-01",
-      "amount": 500000,
+      "amount": 2000000,
       "tendencyid": 3,
       "payment": 4,
-      "memo": "아부지 용돈",
-      "ageid": 1
+      "memo": "아부지 용돈"
     },
     {
       "id": "2",
@@ -249,8 +270,7 @@
       "amount": 200000,
       "tendencyid": 1,
       "payment": 1,
-      "memo": "학원 등록비",
-      "ageid": 2
+      "memo": "학원 등록비"
     },
     {
       "id": "3",
@@ -261,8 +281,7 @@
       "amount": 200000,
       "tendencyid": 1,
       "payment": 2,
-      "memo": "학원 등록비",
-      "ageid": 1
+      "memo": "학원 등록비"
     },
     {
       "id": "4",
@@ -273,8 +292,7 @@
       "amount": 200000,
       "tendencyid": 1,
       "payment": 3,
-      "memo": "학원 등록비",
-      "ageid": 4
+      "memo": "학원 등록비"
     },
     {
       "id": "5",
@@ -285,8 +303,7 @@
       "amount": 200000,
       "tendencyid": 1,
       "payment": 1,
-      "memo": "학원 등록비",
-      "ageid": 5
+      "memo": "학원 등록비"
     },
     {
       "id": "6",
@@ -297,8 +314,7 @@
       "amount": 200000,
       "tendencyid": 2,
       "payment": 1,
-      "memo": "인형 뽑기",
-      "ageid": 1
+      "memo": "인형 뽑기"
     },
     {
       "id": "7",
@@ -309,8 +325,7 @@
       "amount": 200000,
       "tendencyid": 2,
       "payment": 1,
-      "memo": "인형 뽑기",
-      "ageid": 2
+      "memo": "인형 뽑기"
     },
     {
       "id": "8",
@@ -321,8 +336,7 @@
       "amount": 200000,
       "tendencyid": 1,
       "payment": 1,
-      "memo": "1월 첫째주 정기 지출",
-      "ageid": 3
+      "memo": "1월 첫째주 정기 지출"
     },
     {
       "id": "9",
@@ -333,8 +347,7 @@
       "amount": 300000,
       "tendencyid": 1,
       "payment": 3,
-      "memo": "1월 중순 교육비",
-      "ageid": 4
+      "memo": "1월 중순 교육비"
     },
     {
       "id": "10",
@@ -345,8 +358,7 @@
       "amount": 150000,
       "tendencyid": 2,
       "payment": 1,
-      "memo": "갑작스런 외식",
-      "ageid": 5
+      "memo": "갑작스런 외식"
     },
     {
       "id": "11",
@@ -357,8 +369,7 @@
       "amount": 250000,
       "tendencyid": 1,
       "payment": 1,
-      "memo": "2월 생활비",
-      "ageid": 3
+      "memo": "2월 생활비"
     },
     {
       "id": "12",
@@ -369,8 +380,7 @@
       "amount": 250000,
       "tendencyid": 1,
       "payment": 1,
-      "memo": "2월 생활비",
-      "ageid": 2
+      "memo": "2월 생활비"
     },
     {
       "id": "13",
@@ -381,8 +391,7 @@
       "amount": 280000,
       "tendencyid": 1,
       "payment": 3,
-      "memo": "3월 학원비",
-      "ageid": 3
+      "memo": "3월 학원비"
     },
     {
       "id": "14",
@@ -393,8 +402,7 @@
       "amount": 140000,
       "tendencyid": 2,
       "payment": 1,
-      "memo": "카페+쇼핑",
-      "ageid": 4
+      "memo": "카페+쇼핑"
     },
     {
       "id": "15",
@@ -405,8 +413,7 @@
       "amount": 220000,
       "tendencyid": 1,
       "payment": 1,
-      "memo": "4월 등록비",
-      "ageid": 5
+      "memo": "4월 등록비"
     },
     {
       "id": "16",
@@ -417,8 +424,17 @@
       "amount": 100000,
       "tendencyid": 2,
       "payment": 3,
-      "memo": "편의점+간식",
-      "ageid": 1
+      "memo": "편의점+간식"
+    },
+    {
+      "id": "d32b",
+      "typeid": 2,
+      "categoryid": 6,
+      "date": "2025-04-21",
+      "amount": 100000,
+      "tendencyid": 1,
+      "payment": 1,
+      "memo": "택시"
     }
   ],
   "tendency": [
