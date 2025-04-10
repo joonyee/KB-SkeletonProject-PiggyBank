@@ -99,10 +99,9 @@ const totalExpense = computed(() => {
     .filter((tx) => tx.typeid === 2) // 지출만 필터링
     .reduce((sum, tx) => sum + tx.amount, 0);
 
-  const fixedExpensesTotal = fixedExpenses.value.reduce(
-    (sum, expense) => sum + expense.amount,
-    0
-  );
+  const fixedExpensesTotal = fixedExpenses.value
+    .filter((expense) => !expense.deletedAt || expense.deletedAt > props.month) // deletedAt이 null이거나 현재 달보다 큰 경우만 포함
+    .reduce((sum, expense) => sum + expense.amount, 0);
 
   return transactionExpenses + fixedExpensesTotal;
 });
@@ -110,17 +109,6 @@ const totalExpense = computed(() => {
 // 잔액: 수입 - 지출
 const balance = computed(() => totalIncome.value - totalExpense.value);
 
-// 카테고리별 지출 합산 (typeid === 2만 포함)
-// const categoryExpenses = computed(() => {
-//   const result = {};
-//   monthlyTransactions.value.forEach((tx) => {
-//     if (tx.typeid === 2) {
-//       if (!result[tx.categoryid]) result[tx.categoryid] = 0;
-//       result[tx.categoryid] += tx.amount;
-//     }
-//   });
-//   return result;
-// });
 const categoryExpenses = computed(() => {
   const result = {};
 
@@ -133,10 +121,12 @@ const categoryExpenses = computed(() => {
   });
 
   // 고정 지출 데이터에서 지출 합산
-  fixedExpenses.value.forEach((expense) => {
-    if (!result[expense.categoryid]) result[expense.categoryid] = 0;
-    result[expense.categoryid] += expense.amount;
-  });
+  fixedExpenses.value
+    .filter((expense) => !expense.deletedAt || expense.deletedAt > props.month) // deletedAt이 null이거나 현재 달보다 큰 경우만 포함
+    .forEach((expense) => {
+      if (!result[expense.categoryid]) result[expense.categoryid] = 0;
+      result[expense.categoryid] += expense.amount;
+    });
 
   return result;
 });
@@ -151,15 +141,6 @@ const categoryIncomes = computed(() => {
   });
   return result;
 });
-// // 모든 카테고리 ID를 중복 없이 추출하여 병합
-// const allCategoryIds = computed(() => {
-//   return Array.from(
-//     new Set([
-//       ...Object.keys(categoryExpenses.value),
-//       ...Object.keys(categoryIncomes.value),
-//     ])
-//   );
-// });
 
 const maxExpense = computed(() =>
   Math.max(...Object.values(categoryExpenses.value), 1)

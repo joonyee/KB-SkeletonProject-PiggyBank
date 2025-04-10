@@ -108,9 +108,20 @@ function updateCalendarData() {
   days.forEach((day) => {
     const formatted = day.date.toISOString().split('T')[0];
     const dayTx = transactions.value.filter((tx) => tx.date === formatted);
-    const fixedTx = fixedExpenses.value.filter(
-      (fx) => fx.day === day.date.getDate()
-    );
+    // 현재 달(1-indexed) 계산
+    const currentDisplayedMonth = currentMonth.value + 1;
+
+    // 고정 결제 예정액 필터링: 해당 날짜(day.date.getDate())와 일치하고,
+    // 만약 fx.deletedAt가 있다면 현재 달보다 작은 경우만 포함한다.
+    const fixedTx = fixedExpenses.value.filter((fx) => {
+      if (fx.day !== day.date.getDate()) return false;
+      if (fx.deletedAt !== null && fx.deletedAt !== undefined) {
+        // fx.deletedAt이 있다면, 현재 달이 deletedAt 미만이어야 표시 (즉, 삭제 효과가 아직 적용되지 않은 경우)
+        return currentDisplayedMonth < fx.deletedAt;
+      }
+      return true; // 삭제되지 않은 경우
+    });
+
     let incomeSum = 0,
       expenseSum = 0;
     dayTx.forEach((tx) => {
@@ -121,7 +132,7 @@ function updateCalendarData() {
       }
     });
     fixedTx.forEach((tx) => {
-      expenseSum += tx.amount; // 수입
+      expenseSum += tx.amount; // 고정 지출은 지출에 포함
     });
     day.income = incomeSum || null;
     day.expense = expenseSum || null;

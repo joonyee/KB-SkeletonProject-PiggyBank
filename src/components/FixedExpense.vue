@@ -39,7 +39,9 @@ const fetchData = async () => {
     );
     savingGoal.value = responseGoal.data.goalSavings;
     const res = await axios.get('http://localhost:3000/fixedExpenses');
-    expenses.value = res.data.filter((entry) => entry.userid == UserId);
+    expenses.value = res.data.filter(
+      (entry) => entry.userid == UserId && entry.deletedAt === null
+    );
 
     // 총합 계산
     totalAmount.value = expenses.value.reduce(

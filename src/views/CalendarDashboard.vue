@@ -60,7 +60,11 @@
         </div>
       </div>
 
-      <FixedModal v-if="isModalOpen" @close="closeModal" />
+      <FixedModal
+        v-if="isModalOpen"
+        :month="currentMonth + 1"
+        @close="closeModal"
+      />
     </div>
   </div>
 </template>

@@ -124,7 +124,7 @@
         >
           <p class="emoji">🚫</p>
           <p class="option-title">즉시 완전 삭제</p>
-          <p class="option-desc">이전, 이후 모두에서 삭제됩니다.</p>
+          <p class="option-desc">이번 달부터 삭제됩니다.</p>
         </div>
       </div>
 
@@ -171,10 +171,7 @@ import axios from 'axios';
 
 // 부모로부터 현재 달 정보를 prop으로 받음
 const props = defineProps({
-  currentMonth: {
-    type: String,
-    required: true,
-  },
+  month: Number,
 });
 
 const emit = defineEmits(['close']);
@@ -202,7 +199,10 @@ const deleteOption = ref('future');
 const fetchData = async () => {
   try {
     const res = await axios.get('http://localhost:3000/fixedExpenses');
-    expenses.value = Array.isArray(res.data) ? res.data : [];
+    // deletedAt이 null인 데이터만 필터링
+    expenses.value = Array.isArray(res.data)
+      ? res.data.filter((entry) => entry.deletedAt === null)
+      : [];
     if (expenses.value.length > 0) {
       currentExpense.value = expenses.value[currentIndex.value];
     }
@@ -210,7 +210,6 @@ const fetchData = async () => {
     console.error('데이터 로딩 실패:', error);
   }
 };
-
 const prevExpense = () => {
   if (currentIndex.value > 0) {
     currentIndex.value--;
@@ -251,6 +250,8 @@ const addFixedExpense = async () => {
       amount: newExpense.value.amount,
       notify: newExpense.value.notify,
       userid: UserId,
+      categoryid: 13,
+      deletedAt: null,
     });
     alert('금융 일정이 성공적으로 추가되었습니다.');
     newExpense.value = {
@@ -285,8 +286,8 @@ const updateFixedExpense = async () => {
       alert('모든 필드를 입력해주세요.');
       return;
     }
-    const id = editableExpense.value.id ?? currentIndex.value;
-    await axios.put(`http://localhost:3000/fixedExpenses/${id}`, {
+    const id = editableExpense.value.id;
+    await axios.patch(`http://localhost:3000/fixedExpenses/${id}`, {
       day: editableExpense.value.day,
       description: editableExpense.value.description,
       amount: editableExpense.value.amount,
@@ -318,16 +319,17 @@ const confirmDelete = async () => {
   try {
     // id가 올바르게 존재하는지 확인
     const id = currentExpense.value.id;
-    if (!id) {
-      alert('해당 금융 일정의 id가 없습니다.');
-      return;
-    }
-    // 삭제 대신 deletedAt 필드를 업데이트하여 현재 달을 저장
-    await axios.put(`http://localhost:3000/fixedExpenses/${id}`, {
-      deletedAt: props.currentMonth,
+    // if (!id) {
+    //   alert('해당 금융 일정의 id가 없습니다.');
+    //   return;
+    // }
+    const newDeletedAt =
+      deleteOption.value === 'future' ? props.month + 1 : props.month;
+    await axios.patch(`http://localhost:3000/fixedExpenses/${id}`, {
+      deletedAt: newDeletedAt,
     });
     // 로컬 데이터에도 반영
-    expenses.value[currentIndex.value].deletedAt = props.currentMonth;
+    // expenses.value[currentIndex.value].deletedAt = props.month;
     alert('금융 일정이 삭제되었습니다.');
     showDeleteOptions.value = false;
     editMode.value = false;
