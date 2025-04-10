@@ -52,15 +52,17 @@ const props = defineProps({
   categories: {
     type: Object,
     default: () => ({
-      income: ["급여", "용돈", "부수입", "기타수입"],
+      income: ["급여", "용돈", "부수입", "환급/지원금", "기타수입"],
       expense: [
-        "식비",
-        "교통비",
-        "주거비",
-        "의류비",
-        "의료비",
-        "여가비",
-        "교육비",
+        "식사/카페",
+        "배달/간식",
+        "쇼핑",
+        "교통/차량",
+        "주거/관리",
+        "건강/병원",
+        "취미/여가",
+        "구독서비스",
+        "여행/외출",
         "기타지출",
       ],
     }),
@@ -135,7 +137,7 @@ onBeforeUnmount(() => {
 
 .categoryModalContent {
   position: relative;
-  background-color: var(--background-color);
+  background-color: white;
   border-radius: 12px;
   width: 400px;
   max-width: 90%;
@@ -164,7 +166,7 @@ onBeforeUnmount(() => {
 .modalHeader h2 {
   margin: 0;
   font: var(--neo-bold-16);
-  color: var(--text-color);
+  color: #333333;
 }
 
 .closeButton {
@@ -172,7 +174,7 @@ onBeforeUnmount(() => {
   border: none;
   font-size: 24px;
   cursor: pointer;
-  color: var(--text-secondary);
+  color: #969696;
 }
 
 .tabContainer {
@@ -194,8 +196,8 @@ onBeforeUnmount(() => {
 }
 
 .tabButton.active {
-  background-color: var(--primary-color);
-  color: var(--text-color);
+  background-color: #ffc7ef;
+  color: #333333;
   font: var(--ng-bold-14);
 }
 
@@ -210,7 +212,7 @@ onBeforeUnmount(() => {
   padding: 12px;
   border: 1px solid #eee;
   border-radius: 6px;
-  background-color: var(--background-color);
+  background-color: white;
   text-align: center;
   cursor: pointer;
   font: var(--ng-reg-14);
@@ -218,6 +220,6 @@ onBeforeUnmount(() => {
 }
 
 .categoryItem:hover {
-  background-color: var(--secondary-color);
+  background-color: #ffe8fc;
 }
 </style>

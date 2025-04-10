@@ -43,7 +43,7 @@
             }"
             @click="openCategoryModal"
           >
-            {{ selectedCategory || "선택해주세요" }}
+            {{ selectedCategory || '선택해주세요' }}
           </div>
           <div v-if="showCategoryError" class="errorMessage">
             카테고리를 선택해주세요
@@ -114,8 +114,8 @@
               </button>
               <button
                 class="tendencyButton"
-                :class="{ active: tendency === '충동적 지출' }"
-                @click="tendency = '충동적 지출'"
+                :class="{ active: tendency === 'impulsive' }"
+                @click="tendency = 'impulsive'"
               >
                 충동적 지출
               </button>
@@ -141,84 +141,92 @@
 </template>
 
 <script setup>
-import { ref, watch, onMounted, onBeforeUnmount } from "vue";
-import axios from "axios";
-import CategoryModal from "./CategoryModal.vue";
-import "../assets/styles/global.css";
+import { ref, watch, onMounted, onBeforeUnmount } from 'vue';
+import axios from 'axios';
+import CategoryModal from './CategoryModal.vue';
+import { useRouter } from 'vue-router';
+import '../assets/styles/global.css';
 
-// 외부에서 모달 열림 여부와 사용자 ID를 props로 전달받음(수정 필요)
+// 외부에서 전달받은 모달 열림 상태
 const props = defineProps({
   isOpen: {
     type: Boolean,
     default: false,
   },
-  userId: {
-    type: Number,
-    required: true,
-  },
 });
 
-const emit = defineEmits(["save", "close"]);
+const emit = defineEmits(['save', 'close']);
+const router = useRouter();
 
 // 상태 변수 정의
 const isModalOpen = ref(props.isOpen);
 const isCategoryModalOpen = ref(false);
-const activeTab = ref("expense");
+const activeTab = ref('expense');
 const selectedDate = ref(formatDate(new Date()));
-const selectedCategory = ref("");
-const amount = ref("");
-const description = ref("");
-const paymentMethod = ref("account");
-const tendency = ref("planned");
+const selectedCategory = ref('');
+const amount = ref('');
+const description = ref('');
+const paymentMethod = ref('account');
+const tendency = ref('planned');
 const showCategoryError = ref(false);
 const isMobile = ref(false);
 
-// 카테고리 이름 목록
+// 로그인된 유저 정보
+const userInfo = JSON.parse(localStorage.getItem('loggedInUserInfo') || '{}');
+const userId = ref(userInfo.id || ''); // 유저 고유ID
+const userAgeId = ref(userInfo.age || null); // 연령대 ID
+
+// 카테고리 정의
 const categories = {
-  income: ["급여", "용돈", "부수입", "기타수입"],
+  income: ['급여', '용돈', '부수입', '환급/지원금', '기타수입'],
   expense: [
-    "식비",
-    "교통비",
-    "주거비",
-    "의류비",
-    "의료비",
-    "여가비",
-    "교육비",
-    "기타지출",
+    '식사/카페',
+    '배달/간식',
+    '쇼핑',
+    '교통/차량',
+    '주거/관리',
+    '건강/병원',
+    '취미/여가',
+    '구독서비스',
+    '여행/외출',
+    '기타지출',
   ],
 };
 
-// 카테고리명 → ID 매핑 객체
+// 카테고리명 → ID 매핑
 const categoryMap = {
   급여: 1,
   용돈: 2,
   부수입: 3,
-  기타수입: 4,
-  식비: 5,
-  교통비: 6,
-  주거비: 7,
-  의료비: 8,
-  교육비: 9,
-  의류비: 10,
-  여가비: 11,
-  기타지출: 12,
+  '환급/지원금': 4,
+  기타수입: 5,
+  '식사/카페': 6,
+  '배달/간식': 7,
+  쇼핑: 8,
+  '교통/차량': 9,
+  '주거/관리': 10,
+  '건강/병원': 11,
+  '취미/여가': 12,
+  구독서비스: 13,
+  '여행/외출': 14,
+  기타지출: 15,
 };
 
 // 소비 성향 → ID 매핑
 const tendencyMap = {
   planned: 1,
-  "충동적 지출": 2,
+  impulsive: 2,
   수입: 3,
 };
 
-// 결제 방식 → ID 매핑
+// 결제 수단 → ID 매핑
 const paymentMap = {
   account: 1,
   negative: 2,
   neutral: 3,
 };
 
-// props로 전달된 isOpen 변경 감지하여 내부 상태 동기화
+// 모달 열림 상태 감지
 watch(
   () => props.isOpen,
   (newVal) => {
@@ -226,26 +234,26 @@ watch(
   }
 );
 
-// 탭 변경 시 카테고리 초기화
+// 탭 전환 시 카테고리 초기화
 watch(activeTab, () => {
-  selectedCategory.value = "";
+  selectedCategory.value = '';
 });
 
-// 날짜 포맷을 yyyy-mm-dd 형식으로 변환
+// 날짜 포맷
 function formatDate(date) {
   const d = new Date(date);
   const year = d.getFullYear();
-  const month = ("0" + (d.getMonth() + 1)).slice(-2);
-  const day = ("0" + d.getDate()).slice(-2);
+  const month = ('0' + (d.getMonth() + 1)).slice(-2);
+  const day = ('0' + d.getDate()).slice(-2);
   return `${year}-${month}-${day}`;
 }
 
-// 화면 크기 체크
+// 모바일 감지
 function checkScreenSize() {
   isMobile.value = window.innerWidth < 768;
 }
 
-// 카테고리 모달 열기/닫기/선택
+// 카테고리 모달 핸들링
 function openCategoryModal() {
   isCategoryModalOpen.value = true;
   showCategoryError.value = false;
@@ -260,25 +268,36 @@ function handleCategoryTabChange(tab) {
   activeTab.value = tab;
 }
 
-// 거래 저장 함수
+// 거래 저장
 async function saveTransaction() {
+  if (!userId.value) {
+    alert('로그인이 필요합니다.');
+    router.push('/login');
+    return;
+  }
+
+  if (!userAgeId.value) {
+    alert('회원 정보에 연령대가 없습니다.');
+    return;
+  }
+
   if (!selectedCategory.value) {
     showCategoryError.value = true;
     return;
   }
 
-  const isIncome = activeTab.value === "income";
+  const isIncome = activeTab.value === 'income';
   const typeId = isIncome ? 1 : 2;
   const categoryId = categoryMap[selectedCategory.value];
 
   if (!categoryId) {
-    alert("유효하지 않은 카테고리입니다.");
-    console.error("카테고리 매핑 오류:", selectedCategory.value);
+    alert('유효하지 않은 카테고리입니다.');
+    console.error('카테고리 매핑 오류:', selectedCategory.value);
     return;
   }
 
   const transaction = {
-    userid: props.userId,
+    userid: String(userId.value),
     typeid: typeId,
     categoryid: categoryId,
     date: selectedDate.value,
@@ -286,50 +305,56 @@ async function saveTransaction() {
     tendencyid: isIncome ? 3 : tendencyMap[tendency.value],
     payment: isIncome ? 4 : paymentMap[paymentMethod.value],
     memo: description.value,
+    ageid: userAgeId.value,
   };
 
   try {
     const response = await axios.post(
-      "http://localhost:3000/money",
+      'http://localhost:3000/money',
       transaction
     );
-    console.log("저장 성공:", response.data);
-    alert("거래가 저장되었습니다");
-    emit("save", response.data);
+    console.log('저장 성공:', response.data);
+    alert('거래가 저장되었습니다');
+
+    emit('save', response.data);
     resetForm();
     closeModal();
   } catch (error) {
-    console.error("저장 실패:", error);
-    alert("저장 중 오류가 발생했습니다.");
+    console.error('저장 실패:', error);
+    alert('저장 중 오류가 발생했습니다.');
   }
 }
 
-// 입력값 초기화
+// 초기화 및 모달 닫기
 function resetForm() {
-  selectedCategory.value = "";
-  amount.value = "";
-  description.value = "";
-  paymentMethod.value = "account";
-  tendency.value = "planned";
+  selectedCategory.value = '';
+  amount.value = '';
+  description.value = '';
+  paymentMethod.value = 'account';
+  tendency.value = 'planned';
   selectedDate.value = formatDate(new Date());
   showCategoryError.value = false;
 }
 
-// 모달 닫기
 function closeModal() {
   resetForm();
   isModalOpen.value = false;
-  emit("close");
+  emit('close');
 }
 
-// 마운트/언마운트 시 화면 크기 이벤트 등록/해제
+// 화면 크기 감지 및 로그인 체크
 onMounted(() => {
   checkScreenSize();
-  window.addEventListener("resize", checkScreenSize);
+  window.addEventListener('resize', checkScreenSize);
+
+  if (!userId.value) {
+    alert('로그인이 필요합니다.');
+    router.push('/login');
+  }
 });
 
 onBeforeUnmount(() => {
-  window.removeEventListener("resize", checkScreenSize);
+  window.removeEventListener('resize', checkScreenSize);
 });
 </script>
 
@@ -357,7 +382,7 @@ onBeforeUnmount(() => {
 
 .modal {
   position: relative;
-  background-color: var(--background-color);
+  background-color: white;
   border-radius: 12px;
   width: 500px;
   max-width: 90%;
@@ -367,7 +392,7 @@ onBeforeUnmount(() => {
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
   z-index: 1001;
   font-family: var(--font-nanum-gothic);
-  color: var(--text-color);
+  color: #333333;
 }
 
 .modal.mobile {
@@ -388,7 +413,7 @@ onBeforeUnmount(() => {
 .modalHeader h2 {
   margin: 0;
   font: var(--neo-bold-16);
-  color: var(--text-color);
+  color: #333333;
 }
 
 .closeButton {
@@ -396,7 +421,7 @@ onBeforeUnmount(() => {
   border: none;
   font-size: 24px;
   cursor: pointer;
-  color: var(--text-secondary);
+  color: #969696;
 }
 
 .tabContainer {
@@ -418,8 +443,8 @@ onBeforeUnmount(() => {
 }
 
 .tabButton.active {
-  background-color: var(--primary-color);
-  color: var(--text-color);
+  background-color: #ffc7ef;
+  color: #333333;
 }
 
 .tabButton:first-child {
@@ -446,7 +471,7 @@ onBeforeUnmount(() => {
 
 .formGroup label {
   font: var(--ng-reg-13);
-  color: var(--text-secondary);
+  color: #969696;
 }
 
 .formInput {
@@ -455,12 +480,12 @@ onBeforeUnmount(() => {
   border: 1px solid #ddd;
   border-radius: 6px;
   font: var(--ng-reg-14);
-  color: var(--text-color);
+  color: #333333;
   box-sizing: border-box;
 }
 
 .formInput::placeholder {
-  color: var(--text-secondary);
+  color: #969696;
 }
 
 .categorySelect {
@@ -468,23 +493,23 @@ onBeforeUnmount(() => {
   padding: 10px 12px;
   border: 1px solid #ddd;
   border-radius: 6px;
-  background-color: var(--background-color);
+  background-color: white;
   cursor: pointer;
-  color: var(--text-color);
+  color: #333333;
   font: var(--ng-reg-14);
   box-sizing: border-box;
 }
 
 .categorySelect.placeholder {
-  color: var(--text-secondary);
+  color: #969696;
 }
 
 .categorySelect.error {
-  border-color: var(--text-error);
+  border-color: #e60000;
 }
 
 .errorMessage {
-  color: var(--text-error);
+  color: #e60000;
   font: var(--ng-reg-12);
   margin-top: 4px;
 }
@@ -500,17 +525,17 @@ onBeforeUnmount(() => {
   padding: 10px;
   border: 1px solid #ddd;
   border-radius: 6px;
-  background-color: var(--background-color);
+  background-color: white;
   cursor: pointer;
-  color: var(--text-secondary);
+  color: #969696;
   font: var(--ng-reg-14);
   transition: all 0.2s;
 }
 
 .paymentMethodButton.active {
-  background-color: var(--primary-color);
-  color: var(--text-color);
-  border-color: var(--primary-color);
+  background-color: #ffc7ef;
+  color: #333333;
+  border-color: #ffc7ef;
 }
 
 .tendencyContainer {
@@ -525,21 +550,21 @@ onBeforeUnmount(() => {
   border: 1px solid #ddd;
   border-radius: 6px;
   background-color: #fff;
-  color: var(--text-secondary);
+  color: #969696;
   font: var(--ng-reg-14);
   cursor: pointer;
   transition: background-color 0.2s, color 0.2s;
 }
 
 .tendencyButton.active {
-  background-color: var(--primary-color);
-  color: var(--text-color);
-  border-color: var(--primary-color);
+  background-color: #ffc7ef;
+  color: #333333;
+  border-color: #ffc7ef;
 }
 
 .modalFooter {
   padding: 0 20px 20px;
-  background: var(--background-color);
+  background: white;
   padding: 20px 20px;
   border-radius: 0 0 12px 12px;
 }
@@ -547,10 +572,10 @@ onBeforeUnmount(() => {
 .saveButton {
   width: 100%;
   padding: 14px;
-  background-color: var(--secondary-color);
+  background-color: #ffe8fc;
   border: none;
   border-radius: 6px;
-  color: var(--text-color);
+  color: #333333;
   font: var(--neo-bold-15);
   cursor: pointer;
   transition: background-color 0.2s;
@@ -560,13 +585,13 @@ onBeforeUnmount(() => {
   background-color: #ffa6d8;
 }
 
-input[type="number"]::-webkit-outer-spin-button,
-input[type="number"]::-webkit-inner-spin-button {
+input[type='number']::-webkit-outer-spin-button,
+input[type='number']::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
 
-input[type="number"] {
+input[type='number'] {
   appearance: textfield;
   -moz-appearance: textfield;
 }

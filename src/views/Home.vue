@@ -197,7 +197,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, watch } from 'vue';
 import axios from 'axios';
 import CategoryPieChart from '@/components/CategoryPieChart.vue';
 import PieChart from '@/components/PieChart.vue';
@@ -221,11 +221,21 @@ const toggleDropdown = () => {
   dropdownOpen.value = !dropdownOpen.value;
 };
 
-const isDarkMode = ref(false);
+const isDarkMode = ref(localStorage.getItem('darkMode') === 'true');
+
 const toggleDarkMode = () => {
   isDarkMode.value = !isDarkMode.value;
   document.documentElement.classList.toggle('dark', isDarkMode.value);
+  // 다크 모드 상태를 로컬 스토리지에 저장
+  localStorage.setItem('darkMode', isDarkMode.value);
 };
+
+// 페이지가 처음 로드될 때 로컬 스토리지에서 다크 모드 상태를 읽어와서 적용
+onMounted(() => {
+  if (isDarkMode.value) {
+    document.documentElement.classList.add('dark');
+  }
+});
 
 //여기서 부터 pinia로 옮겨서 다른 컴포넌트도 사용할 수 있게 바꿉니다.
 const chartData = ref([]);
@@ -242,17 +252,18 @@ const fetchData = async () => {
     } else {
       console.log('현재 로그인한 유저 ID:', userId);
     }
+
     const responseGoal = await axios.get(
       `http://localhost:3000/user/${userId}`
     );
     savingGoal.value = responseGoal.data.goalSavings;
 
     const response = await axios.get('http://localhost:3000/money');
-    const moneyData = response.data.filter((entry) => entry.userid == userId); // 👈 유저별 필터
+    const moneyData = response.data.filter((entry) => entry.userid == userId);
 
     const monthlyTotals = {};
     moneyData.forEach((entry) => {
-      const month = entry.date.slice(0, 7);
+      const month = entry.date.slice(0, 7); // YYYY-MM
       if (!monthlyTotals[month]) {
         monthlyTotals[month] = { income: 0, expense: 0 };
       }
@@ -271,30 +282,15 @@ const fetchData = async () => {
       })
     );
 
-    const sorted = moneyData.sort(
-      (a, b) => new Date(b.date) - new Date(a.date)
-    );
-
-    const latestMonth =
-      sorted.length > 0
-        ? new Date(sorted[0].date).toISOString().slice(0, 7)
-        : null;
+    const now = new Date();
+    const currentMonth = now.toISOString().slice(0, 7);
 
     const recentMonthData = moneyData.filter((entry) => {
-      const entryMonth = new Date(entry.date).toISOString().slice(0, 7);
+      const entryMonth = entry.date.slice(0, 7);
       return (
         entry.typeid === 2 &&
-        entry.categoryid >= 5 &&
-        entryMonth === latestMonth
-      );
-    });
-
-    const recentMonthInData = moneyData.filter((entry) => {
-      const entryMonth = new Date(entry.date).toISOString().slice(0, 7);
-      return (
-        entry.typeid === 1 &&
-        entry.categoryid <= 4 &&
-        entryMonth === latestMonth
+        entry.categoryid >= 6 &&
+        entryMonth === currentMonth
       );
     });
 
@@ -313,11 +309,9 @@ const fetchData = async () => {
       return map;
     }, {});
 
-    const recentTransactions = sorted
-      .filter((entry) => {
-        const entryMonth = new Date(entry.date).toISOString().slice(0, 7);
-        return entryMonth === latestMonth;
-      })
+    const recentTransactions = moneyData
+      .filter((entry) => entry.date.slice(0, 7) === currentMonth)
+      .sort((a, b) => new Date(b.date) - new Date(a.date))
       .map((entry) => ({
         date: entry.date,
         category: categoryMap[entry.categoryid] || '기타',
@@ -339,7 +333,16 @@ const fetchData = async () => {
   }
 };
 
-//여기까지
+// watch를 사용하여 transactions나 categorySpending 데이터 변경 시 자동으로 fetchData를 호출
+// watch(
+//   [transactions, categorySpending],
+//   () => {
+//     console.log('데이터가 변경되어 다시 fetchData를 호출합니다.');
+//     fetchData();
+//   },
+//   { deep: true, immediate: true }
+// );
+
 onMounted(() => {
   fetchData();
 });
@@ -355,7 +358,6 @@ const totalIncome = computed(() =>
     .filter((tx) => tx.amount > 0)
     .reduce((sum, tx) => sum + tx.amount, 0)
 );
-
 const totalExpense = computed(() =>
   transactions.value
     .filter((tx) => tx.amount < 0)
@@ -386,8 +388,9 @@ const isModalOpen = ref(false);
 const openModal = () => {
   isModalOpen.value = true;
 };
-const closeModal = () => {
+const closeModal = async () => {
   isModalOpen.value = false;
+  await fetchData();
 };
 
 const goToHome = () => {
@@ -464,56 +467,6 @@ const piggyMessage = computed(() => {
   if (savingsRate.value < 90) return '돼지가 행복해해요 😄';
   return '돼지가 완전 포동포동해요 🐷💖';
 });
-
-// const sizeRatio = savingsRate.value / 100 + 0.2; // 크기 비율 (0~1 사이) + 기본값 0.2
-// const size = baseSize * (0.6 + sizeRatio * 0.4); // 결과 60% ~ 100% 크기
-// console.log(savingsRate.value);
-// console.log(size);
-
-// // 얼굴 크기
-// const faceRadius = 80 * sizeRatio; // 얼굴 반지름
-
-// // 귀 크기와 위치 계산
-// const earSize = 15 * sizeRatio; // 귀 크기
-// const earLeft = { cx: 100 - faceRadius * 0.55, cy: 100 - faceRadius * 0.7 }; // 왼쪽 귀 중심
-// const earRight = { cx: 100 + faceRadius * 0.55, cy: 100 - faceRadius * 0.7 }; // 오른쪽 귀 중심
-
-// // 눈 크기와 위치 계산
-// const eyeSize = {
-//   width: 10 * sizeRatio, // 눈 너비
-//   height: 25 * sizeRatio, // 눈 높이
-// };
-// const eyeHighlightSize = 2 * sizeRatio; // 눈 하이라이트 크기
-// const eyeLeft = {
-//   x: 100 - faceRadius * 0.3 - eyeSize.width / 2,
-//   y: 100 - faceRadius * 0.1 - eyeSize.height / 2,
-// };
-// const eyeRight = {
-//   x: 100 + faceRadius * 0.3 - eyeSize.width / 2,
-//   y: 100 - faceRadius * 0.1 - eyeSize.height / 2,
-// };
-
-// // 코 크기와 위치 계산
-// const noseSize = {
-//   rx: 30 * sizeRatio, // 코 타원의 x 반지름
-//   ry: 20 * sizeRatio, // 코 타원의 y 반지름
-// };
-// const nosePosition = {
-//   cy: 100 + faceRadius * 0.3, // 얼굴 크기에 따라 코의 y 위치를 조정
-// };
-
-// // 코 구멍 크기와 위치
-// const noseHoleSize = 5 * sizeRatio; // 코 구멍 크기
-// const noseHoles = {
-//   left: {
-//     cx: 100 - noseSize.rx * 0.4, // 코 타원의 중심에서 좌측 위치
-//     cy: nosePosition.cy, // 코 위치와 동일
-//   },
-//   right: {
-//     cx: 100 + noseSize.rx * 0.4, // 코 타원의 중심에서 우측 위치
-//     cy: nosePosition.cy, // 코 위치와 동일
-//   },
-// };
 </script>
 
 <style scoped>
@@ -641,20 +594,12 @@ const piggyMessage = computed(() => {
   gap: 2rem;
   margin-bottom: 2rem;
 }
-/* .piggyAni {
-  background-color: white;
-  padding: 1.5rem;
-  border-radius: 1rem;
-  width: 100%;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-  flex: 7;
-} */
+
 .dark .incomeCard,
 .dark .expenseCard,
 .dark .balanceCard,
 .dark .savingsCard {
-  background-color: #2e2e4d;
-  /* opacity: 0.8; */
+  background-color: #e7e5e4;
 }
 .incomeCard,
 .expenseCard,
@@ -712,8 +657,8 @@ const piggyMessage = computed(() => {
 .dark .transactionHistory,
 .dark .categorySummary,
 .dark .piggyAni {
-  background-color: #2e2e4d;
-  opacity: 0.8;
+  background-color: #e7e5e4;
+  /* opacity: 0.8; */
 }
 
 .monthlyChart,
@@ -755,7 +700,9 @@ const piggyMessage = computed(() => {
   align-items: center; /* 아이콘과 텍스트 수직 정렬 */
   gap: 8px;
 }
-
+.dark .transactionItem {
+  background-color: #e5e7eb;
+}
 .transactionItem {
   display: flex;
   flex-direction: column;
@@ -824,9 +771,9 @@ const piggyMessage = computed(() => {
   justify-content: space-between;
   flex-wrap: wrap;
 }
-.dark .transactionItem {
+/* .dark .transactionItem {
   background-color: #e8e8e8;
-}
+} */
 .summaryCard {
   flex: 1 1 30%;
   padding: 16px;

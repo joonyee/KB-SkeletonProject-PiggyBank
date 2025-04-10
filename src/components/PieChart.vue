@@ -61,12 +61,32 @@ const chartOptions = {
   },
 };
 
-// 🔁 차트 데이터 가공 함수
+// ✅ 최근 6개월을 기준으로 데이터 가공
 const updateChartData = () => {
   if (props.chartData && props.chartData.length > 0) {
-    const labels = props.chartData.map((item) => item.month);
-    const incomeData = props.chartData.map((item) => item.income);
-    const expenseData = props.chartData.map((item) => item.expense);
+    const now = new Date();
+    const recentSixMonths = [];
+
+    for (let i = 5; i >= 0; i--) {
+      const date = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      const year = date.getFullYear();
+      const month = (date.getMonth() + 1).toString().padStart(2, '0');
+      recentSixMonths.push(`${year}-${month}`);
+    }
+
+    // recentSixMonths 배열 기준으로 데이터 정렬 및 누락 채우기
+    const filtered = recentSixMonths.map((monthStr) => {
+      const found = props.chartData.find((item) => item.month === monthStr);
+      return {
+        month: `${parseInt(monthStr.split('-')[1])}월`,
+        income: found?.income || 0,
+        expense: found?.expense || 0,
+      };
+    });
+
+    const labels = filtered.map((item) => item.month);
+    const incomeData = filtered.map((item) => item.income);
+    const expenseData = filtered.map((item) => item.expense);
 
     chartData.value = {
       labels,
@@ -96,7 +116,13 @@ onMounted(() => {
 });
 
 // 👀 props가 바뀔 때마다 차트 데이터 재계산
-watch(() => props.chartData, updateChartData);
+watch(
+  () => props.chartData,
+  (newData) => {
+    // 데이터 변경시 즉시 반영
+    updateChartData();
+  }
+);
 </script>
 
 <style scoped>
@@ -104,5 +130,6 @@ watch(() => props.chartData, updateChartData);
   position: relative;
   height: 400px;
   width: 100%;
+  /* transition: 0.3s; */
 }
 </style>
