@@ -44,7 +44,7 @@
 </template>
 
 <script setup>
-import { ref, watch, onMounted } from 'vue';
+import { ref, watch, onMounted, computed } from 'vue';
 import TransactionModal from './TransactionModal.vue';
 import axios from 'axios';
 
@@ -73,10 +73,11 @@ const props = defineProps({
   year: Number,
   month: Number,
 });
+
 const emit = defineEmits(['update:year', 'update:month']);
 
-const currentYear = ref(props.year);
-const currentMonth = ref(props.month);
+const currentYear = computed(() => props.year);
+const currentMonth = computed(() => props.month);
 const calendarData = ref([]);
 const transactions = ref([]);
 const fixedExpenses = ref([]);
@@ -92,6 +93,10 @@ function openModal(day) {
 
 function closeModal() {
   isModalOpen.value = false;
+}
+function formatNumber(num) {
+  if (!num) return '';
+  return num.toLocaleString('ko-KR');
 }
 
 function updateCalendarData() {
@@ -146,25 +151,20 @@ watch([currentYear, currentMonth], () => {
 
 function prevMonth() {
   if (currentMonth.value === 0) {
-    currentMonth.value = 11;
-    currentYear.value--;
+    emit('update:year', currentYear.value - 1);
+    emit('update:month', 11);
   } else {
-    currentMonth.value--;
+    emit('update:month', currentMonth.value - 1);
   }
 }
 
 function nextMonth() {
   if (currentMonth.value === 11) {
-    currentMonth.value = 0;
-    currentYear.value++;
+    emit('update:year', currentYear.value + 1);
+    emit('update:month', 0);
   } else {
-    currentMonth.value++;
+    emit('update:month', currentMonth.value + 1);
   }
-}
-
-function formatNumber(num) {
-  if (!num) return '';
-  return num.toLocaleString('ko-KR');
 }
 </script>
 
