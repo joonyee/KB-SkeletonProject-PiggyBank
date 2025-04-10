@@ -37,7 +37,6 @@ const chartData = ref(null);
 
 const chartOptions = {
   responsive: true,
-
   plugins: {
     legend: {
       position: 'bottom',

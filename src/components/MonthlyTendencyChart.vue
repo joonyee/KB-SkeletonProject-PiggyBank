@@ -152,6 +152,9 @@ onMounted(async () => {
   max-width: 1300px;
   margin: 0 auto 2rem auto; /* 가운데 정렬 및 하단 여백 */
 }
+.dark .card {
+  background: #e7e5e4;
+}
 
 .chart-header {
   display: flex;

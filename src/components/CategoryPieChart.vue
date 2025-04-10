@@ -22,8 +22,6 @@ const chartData = ref(null);
 
 const chartOptions = {
   responsive: true,
-  maintainAspectRatio: false,
-
   plugins: {
     legend: {
       position: 'bottom',
