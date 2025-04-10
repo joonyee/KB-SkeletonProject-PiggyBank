@@ -114,8 +114,8 @@
               </button>
               <button
                 class="tendencyButton"
-                :class="{ active: tendency === '충동적 지출' }"
-                @click="tendency = '충동적 지출'"
+                :class="{ active: tendency === 'impulsive' }"
+                @click="tendency = 'impulsive'"
               >
                 충동적 지출
               </button>
@@ -147,6 +147,7 @@ import CategoryModal from "./CategoryModal.vue";
 import { useRouter } from "vue-router";
 import "../assets/styles/global.css";
 
+// 외부에서 전달받은 모달 열림 상태
 const props = defineProps({
   isOpen: {
     type: Boolean,
@@ -170,10 +171,12 @@ const tendency = ref("planned");
 const showCategoryError = ref(false);
 const isMobile = ref(false);
 
-// 로컬스토리지에서 로그인한 사용자 ID 가져오기
-const userId = ref(Number(localStorage.getItem("loggedInUserId")));
+// 로그인된 유저 정보
+const userInfo = JSON.parse(localStorage.getItem("loggedInUserInfo") || "{}");
+const userId = ref(userInfo.id || ""); // 유저 고유ID
+const userAgeId = ref(userInfo.age || null); // 연령대 ID
 
-// 카테고리 이름 목록
+// 카테고리 정의
 const categories = {
   income: ["급여", "용돈", "부수입", "환급/지원금", "기타수입"],
   expense: [
@@ -190,6 +193,7 @@ const categories = {
   ],
 };
 
+// 카테고리명 → ID 매핑
 const categoryMap = {
   급여: 1,
   용돈: 2,
@@ -211,18 +215,18 @@ const categoryMap = {
 // 소비 성향 → ID 매핑
 const tendencyMap = {
   planned: 1,
-  "충동적 지출": 2,
+  impulsive: 2,
   수입: 3,
 };
 
-// 결제 방식 → ID 매핑
+// 결제 수단 → ID 매핑
 const paymentMap = {
   account: 1,
   negative: 2,
   neutral: 3,
 };
 
-// props.isOpen 변화 감지
+// 모달 열림 상태 감지
 watch(
   () => props.isOpen,
   (newVal) => {
@@ -230,7 +234,7 @@ watch(
   }
 );
 
-// 탭 변경 시 카테고리 초기화
+// 탭 전환 시 카테고리 초기화
 watch(activeTab, () => {
   selectedCategory.value = "";
 });
@@ -244,12 +248,12 @@ function formatDate(date) {
   return `${year}-${month}-${day}`;
 }
 
-// 화면 크기 확인
+// 모바일 감지
 function checkScreenSize() {
   isMobile.value = window.innerWidth < 768;
 }
 
-// 카테고리 모달
+// 카테고리 모달 핸들링
 function openCategoryModal() {
   isCategoryModalOpen.value = true;
   showCategoryError.value = false;
@@ -272,6 +276,11 @@ async function saveTransaction() {
     return;
   }
 
+  if (!userAgeId.value) {
+    alert("회원 정보에 연령대가 없습니다.");
+    return;
+  }
+
   if (!selectedCategory.value) {
     showCategoryError.value = true;
     return;
@@ -287,7 +296,6 @@ async function saveTransaction() {
     return;
   }
 
-  // 🔽 userid를 문자열(String)로 저장
   const transaction = {
     userid: String(userId.value),
     typeid: typeId,
@@ -297,6 +305,7 @@ async function saveTransaction() {
     tendencyid: isIncome ? 3 : tendencyMap[tendency.value],
     payment: isIncome ? 4 : paymentMap[paymentMethod.value],
     memo: description.value,
+    ageid: userAgeId.value,
   };
 
   try {
@@ -306,6 +315,7 @@ async function saveTransaction() {
     );
     console.log("저장 성공:", response.data);
     alert("거래가 저장되었습니다");
+
     emit("save", response.data);
     resetForm();
     closeModal();
@@ -315,7 +325,7 @@ async function saveTransaction() {
   }
 }
 
-// 폼 초기화
+// 초기화 및 모달 닫기
 function resetForm() {
   selectedCategory.value = "";
   amount.value = "";
@@ -326,19 +336,17 @@ function resetForm() {
   showCategoryError.value = false;
 }
 
-// 모달 닫기
 function closeModal() {
   resetForm();
   isModalOpen.value = false;
   emit("close");
 }
 
-// 마운트/언마운트 시 사이즈 체크
+// 화면 크기 감지 및 로그인 체크
 onMounted(() => {
   checkScreenSize();
   window.addEventListener("resize", checkScreenSize);
 
-  // 로그인 여부 체크
   if (!userId.value) {
     alert("로그인이 필요합니다.");
     router.push("/login");
