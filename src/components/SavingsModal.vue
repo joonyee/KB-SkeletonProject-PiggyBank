@@ -12,12 +12,33 @@ const closeModal = () => {
   emit('close');
 };
 
-const confirmSettings = () => {
-  emit('update', {
-    monthlyIncome: monthlyIncome.value,
-    savingsRate: savingsRate.value,
-  });
-  closeModal();
+const confirmSettings = async () => {
+  const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+  if (!currentUser || !currentUser.id) {
+    console.error('로그인한 사용자 정보가 없습니다.');
+    return;
+  }
+
+  try {
+    // 사용자 정보 patch
+    await fetch(`http://localhost:3000/user/${currentUser.id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        savingsRate: savingsRate.value,
+        monthlyIncome: monthlyIncome.value,
+      }),
+    });
+
+    emit('update', {
+      monthlyIncome: monthlyIncome.value,
+      savingsRate: savingsRate.value,
+    });
+
+    closeModal();
+  } catch (error) {
+    console.error('저축률 업데이트 실패:', error);
+  }
 };
 
 watch([monthlyIncome, savingsRate], () => {
