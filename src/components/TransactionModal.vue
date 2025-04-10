@@ -390,7 +390,7 @@ onBeforeUnmount(() => {
 
 .modal {
   position: relative;
-  background-color: var(--background-color);
+  background-color: white;
   border-radius: 12px;
   width: 500px;
   max-width: 90%;
@@ -400,7 +400,7 @@ onBeforeUnmount(() => {
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
   z-index: 1001;
   font-family: var(--font-nanum-gothic);
-  color: var(--text-color);
+  color: #333333;
 }
 
 .modal.mobile {
@@ -421,7 +421,7 @@ onBeforeUnmount(() => {
 .modalHeader h2 {
   margin: 0;
   font: var(--neo-bold-16);
-  color: var(--text-color);
+  color: #333333;
 }
 
 .closeButton {
@@ -429,7 +429,7 @@ onBeforeUnmount(() => {
   border: none;
   font-size: 24px;
   cursor: pointer;
-  color: var(--text-secondary);
+  color: #969696;
 }
 
 .tabContainer {
@@ -451,8 +451,8 @@ onBeforeUnmount(() => {
 }
 
 .tabButton.active {
-  background-color: var(--primary-color);
-  color: var(--text-color);
+  background-color: #ffc7ef;
+  color: #333333;
 }
 
 .tabButton:first-child {
@@ -479,7 +479,7 @@ onBeforeUnmount(() => {
 
 .formGroup label {
   font: var(--ng-reg-13);
-  color: var(--text-secondary);
+  color: #969696;
 }
 
 .formInput {
@@ -488,12 +488,12 @@ onBeforeUnmount(() => {
   border: 1px solid #ddd;
   border-radius: 6px;
   font: var(--ng-reg-14);
-  color: var(--text-color);
+  color: #333333;
   box-sizing: border-box;
 }
 
 .formInput::placeholder {
-  color: var(--text-secondary);
+  color: #969696;
 }
 
 .categorySelect {
@@ -501,23 +501,23 @@ onBeforeUnmount(() => {
   padding: 10px 12px;
   border: 1px solid #ddd;
   border-radius: 6px;
-  background-color: var(--background-color);
+  background-color: white;
   cursor: pointer;
-  color: var(--text-color);
+  color: #333333;
   font: var(--ng-reg-14);
   box-sizing: border-box;
 }
 
 .categorySelect.placeholder {
-  color: var(--text-secondary);
+  color: #969696;
 }
 
 .categorySelect.error {
-  border-color: var(--text-error);
+  border-color: #e60000;
 }
 
 .errorMessage {
-  color: var(--text-error);
+  color: #e60000;
   font: var(--ng-reg-12);
   margin-top: 4px;
 }
@@ -533,17 +533,17 @@ onBeforeUnmount(() => {
   padding: 10px;
   border: 1px solid #ddd;
   border-radius: 6px;
-  background-color: var(--background-color);
+  background-color: white;
   cursor: pointer;
-  color: var(--text-secondary);
+  color: #969696;
   font: var(--ng-reg-14);
   transition: all 0.2s;
 }
 
 .paymentMethodButton.active {
-  background-color: var(--primary-color);
-  color: var(--text-color);
-  border-color: var(--primary-color);
+  background-color: #ffc7ef;
+  color: #333333;
+  border-color: #ffc7ef;
 }
 
 .tendencyContainer {
@@ -558,21 +558,21 @@ onBeforeUnmount(() => {
   border: 1px solid #ddd;
   border-radius: 6px;
   background-color: #fff;
-  color: var(--text-secondary);
+  color: #969696;
   font: var(--ng-reg-14);
   cursor: pointer;
   transition: background-color 0.2s, color 0.2s;
 }
 
 .tendencyButton.active {
-  background-color: var(--primary-color);
-  color: var(--text-color);
-  border-color: var(--primary-color);
+  background-color: #ffc7ef;
+  color: #333333;
+  border-color: #ffc7ef;
 }
 
 .modalFooter {
   padding: 0 20px 20px;
-  background: var(--background-color);
+  background: white;
   padding: 20px 20px;
   border-radius: 0 0 12px 12px;
 }
@@ -580,10 +580,10 @@ onBeforeUnmount(() => {
 .saveButton {
   width: 100%;
   padding: 14px;
-  background-color: var(--secondary-color);
+  background-color: #ffe8fc;
   border: none;
   border-radius: 6px;
-  color: var(--text-color);
+  color: #333333;
   font: var(--neo-bold-15);
   cursor: pointer;
   transition: background-color 0.2s;
