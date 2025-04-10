@@ -197,7 +197,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, watch } from 'vue';
 import axios from 'axios';
 import CategoryPieChart from '@/components/CategoryPieChart.vue';
 import PieChart from '@/components/PieChart.vue';
@@ -221,11 +221,21 @@ const toggleDropdown = () => {
   dropdownOpen.value = !dropdownOpen.value;
 };
 
-const isDarkMode = ref(false);
+const isDarkMode = ref(localStorage.getItem('darkMode') === 'true');
+
 const toggleDarkMode = () => {
   isDarkMode.value = !isDarkMode.value;
   document.documentElement.classList.toggle('dark', isDarkMode.value);
+  // 다크 모드 상태를 로컬 스토리지에 저장
+  localStorage.setItem('darkMode', isDarkMode.value);
 };
+
+// 페이지가 처음 로드될 때 로컬 스토리지에서 다크 모드 상태를 읽어와서 적용
+onMounted(() => {
+  if (isDarkMode.value) {
+    document.documentElement.classList.add('dark');
+  }
+});
 
 //여기서 부터 pinia로 옮겨서 다른 컴포넌트도 사용할 수 있게 바꿉니다.
 const chartData = ref([]);
@@ -249,7 +259,7 @@ const fetchData = async () => {
     savingGoal.value = responseGoal.data.goalSavings;
 
     const response = await axios.get('http://localhost:3000/money');
-    const moneyData = response.data.filter((entry) => entry.userid == userId); // 👈 유저별 필터
+    const moneyData = response.data.filter((entry) => entry.userid == userId);
 
     const monthlyTotals = {};
     moneyData.forEach((entry) => {
@@ -272,24 +282,14 @@ const fetchData = async () => {
       })
     );
 
-    // ✅ 현재 달 기준 계산
     const now = new Date();
-    const currentMonth = now.toISOString().slice(0, 7); // 'YYYY-MM'
+    const currentMonth = now.toISOString().slice(0, 7);
 
     const recentMonthData = moneyData.filter((entry) => {
       const entryMonth = entry.date.slice(0, 7);
       return (
         entry.typeid === 2 &&
         entry.categoryid >= 6 &&
-        entryMonth === currentMonth
-      );
-    });
-
-    const recentMonthInData = moneyData.filter((entry) => {
-      const entryMonth = entry.date.slice(0, 7);
-      return (
-        entry.typeid === 1 &&
-        entry.categoryid <= 5 &&
         entryMonth === currentMonth
       );
     });
@@ -333,7 +333,16 @@ const fetchData = async () => {
   }
 };
 
-//여기까지
+// watch를 사용하여 transactions나 categorySpending 데이터 변경 시 자동으로 fetchData를 호출
+// watch(
+//   [transactions, categorySpending],
+//   () => {
+//     console.log('데이터가 변경되어 다시 fetchData를 호출합니다.');
+//     fetchData();
+//   },
+//   { deep: true, immediate: true }
+// );
+
 onMounted(() => {
   fetchData();
 });
@@ -349,7 +358,6 @@ const totalIncome = computed(() =>
     .filter((tx) => tx.amount > 0)
     .reduce((sum, tx) => sum + tx.amount, 0)
 );
-
 const totalExpense = computed(() =>
   transactions.value
     .filter((tx) => tx.amount < 0)
@@ -380,8 +388,9 @@ const isModalOpen = ref(false);
 const openModal = () => {
   isModalOpen.value = true;
 };
-const closeModal = () => {
+const closeModal = async () => {
   isModalOpen.value = false;
+  await fetchData();
 };
 
 const goToHome = () => {
