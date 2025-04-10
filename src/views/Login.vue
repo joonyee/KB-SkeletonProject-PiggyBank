@@ -51,12 +51,12 @@ const handleLogin = async () => {
     const user = users.find((u) => u.userId === email.value);
 
     if (!user) {
-      alert('존재하지 않는 회원입니다. 회원가입을 해주세요.');
+      alert('아이디 혹은 비밀번호가 일치하지 않습니다!');
       return;
     }
 
     if (user.password !== password.value) {
-      alert('비밀번호가 일치하지 않습니다.');
+      alert('아이디 혹은 비밀번호가 일치하지 않습니다!');
       return;
     }
 
