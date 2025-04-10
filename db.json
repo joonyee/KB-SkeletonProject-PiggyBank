@@ -38,7 +38,7 @@
       "age": 4,
       "gender": "남성",
       "userImg": "",
-      "goalSavings": 10
+      "goalSavings": 0
     },
     {
       "id": "be50",
@@ -98,38 +98,7 @@
       "name": "지출"
     }
   ],
-  "chartData": [
-    {
-      "month": 1,
-      "income": 110000,
-      "expense": 40000,
-      "id": "74fa"
-    },
-    {
-      "month": 2,
-      "income": 120000,
-      "expense": 45000,
-      "id": "5086"
-    },
-    {
-      "month": 3,
-      "income": 130000,
-      "expense": 42000,
-      "id": "9c38"
-    },
-    {
-      "month": 4,
-      "income": 125000,
-      "expense": 48000,
-      "id": "50eb"
-    },
-    {
-      "month": 5,
-      "income": 125000,
-      "expense": 48000,
-      "id": "fd50"
-    }
-  ],
+
   "category": [
     {
       "id": "1",
@@ -255,7 +224,7 @@
       "userid": "1111",
       "typeid": 1,
       "categoryid": 2,
-      "date": "2025-06-01",
+      "date": "2025-04-01",
       "amount": 2000000,
       "tendencyid": 3,
       "payment": 4,
@@ -266,7 +235,7 @@
       "userid": "1111",
       "typeid": 2,
       "categoryid": 10,
-      "date": "2025-06-01",
+      "date": "2025-04-01",
       "amount": 200000,
       "tendencyid": 1,
       "payment": 1,
@@ -428,7 +397,7 @@
     },
     {
       "id": "d32b",
-      "typeid": 2,
+      "typeid": 1,
       "categoryid": 6,
       "date": "2025-04-21",
       "amount": 100000,

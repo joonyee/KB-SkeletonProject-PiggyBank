@@ -26,12 +26,16 @@ const chartData = computed(() => {
       {
         data: props.categorySpending.map((item) => item.amount),
         backgroundColor: [
-          '#f87171',
-          '#60a5fa',
-          '#34d399',
-          '#facc15',
-          '#a78bfa',
-          '#f472b6',
+          '#FF6384', // 연한 빨강
+          '#36A2EB', // 파랑
+          '#FFCE56', // 노랑
+          '#4BC0C0', // 청록
+          '#9966FF', // 보라
+          '#FF9F40', // 주황
+          '#C9CBCF', // 회색
+          '#8DD17E', // 연두
+          '#FF6F91', // 핑크
+          '#00C49F',
         ],
         borderColor: 'white',
         borderWidth: 2,
