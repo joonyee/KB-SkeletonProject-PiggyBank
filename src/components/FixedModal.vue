@@ -172,6 +172,7 @@ import axios from 'axios';
 // 부모로부터 현재 달 정보를 prop으로 받음
 const props = defineProps({
   month: Number,
+  UserId: String,
 });
 
 const emit = defineEmits(['close']);
@@ -198,10 +199,13 @@ const deleteOption = ref('future');
 
 const fetchData = async () => {
   try {
+    const UserId = localStorage.getItem('loggedInUserId');
     const res = await axios.get('http://localhost:3000/fixedExpenses');
     // deletedAt이 null인 데이터만 필터링
     expenses.value = Array.isArray(res.data)
-      ? res.data.filter((entry) => entry.deletedAt === null)
+      ? res.data.filter(
+          (entry) => entry.deletedAt === null && entry.userid === UserId
+        )
       : [];
     if (expenses.value.length > 0) {
       currentExpense.value = expenses.value[currentIndex.value];

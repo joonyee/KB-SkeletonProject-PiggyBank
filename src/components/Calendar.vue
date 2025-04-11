@@ -36,6 +36,9 @@
           <p v-if="day.expense" class="expense">
             {{ formatNumber(day.expense) }}
           </p>
+          <p v-if="day.fixedExpense" class="fixed-expense">
+            {{ formatNumber(day.fixedExpense) }}
+          </p>
         </div>
       </div>
     </div>
@@ -108,22 +111,20 @@ function updateCalendarData() {
   days.forEach((day) => {
     const formatted = day.date.toISOString().split('T')[0];
     const dayTx = transactions.value.filter((tx) => tx.date === formatted);
-    // 현재 달(1-indexed) 계산
     const currentDisplayedMonth = currentMonth.value + 1;
 
-    // 고정 결제 예정액 필터링: 해당 날짜(day.date.getDate())와 일치하고,
-    // 만약 fx.deletedAt가 있다면 현재 달보다 작은 경우만 포함한다.
     const fixedTx = fixedExpenses.value.filter((fx) => {
       if (fx.day !== day.date.getDate()) return false;
       if (fx.deletedAt !== null && fx.deletedAt !== undefined) {
-        // fx.deletedAt이 있다면, 현재 달이 deletedAt 미만이어야 표시 (즉, 삭제 효과가 아직 적용되지 않은 경우)
         return currentDisplayedMonth < fx.deletedAt;
       }
-      return true; // 삭제되지 않은 경우
+      return true;
     });
 
     let incomeSum = 0,
-      expenseSum = 0;
+      expenseSum = 0,
+      fixedExpenseSum = 0;
+
     dayTx.forEach((tx) => {
       if (tx.typeid === 1) {
         incomeSum += tx.amount; // 수입
@@ -131,11 +132,14 @@ function updateCalendarData() {
         expenseSum += tx.amount; // 지출
       }
     });
+
     fixedTx.forEach((tx) => {
-      expenseSum += tx.amount; // 고정 지출은 지출에 포함
+      fixedExpenseSum += tx.amount; // 고정 지출
     });
+
     day.income = incomeSum || null;
     day.expense = expenseSum || null;
+    day.fixedExpense = fixedExpenseSum || null; // 고정 지출 추가
   });
   calendarData.value = days;
 }
@@ -157,7 +161,9 @@ onMounted(async () => {
     transactions.value = moneyRes.data.filter(
       (entry) => entry.userid == UserId
     );
-    fixedExpenses.value = fixedRes.data;
+    fixedExpenses.value = fixedRes.data.filter(
+      (entry) => entry.userid == UserId
+    );
     isDataLoaded.value = true;
     updateCalendarData(); // 최초 1회 수동 호출
   } catch (error) {
@@ -227,7 +233,10 @@ function nextMonth() {
 .income-label {
   color: #16a34a;
 }
-
+.fixed-expense {
+  color: #facc15; /* 노란색 */
+  font-weight: bold;
+}
 .expense-label {
   color: #ef4444;
 }

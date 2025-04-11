@@ -63,6 +63,7 @@
       <FixedModal
         v-if="isModalOpen"
         :month="currentMonth + 1"
+        :UserId="UserId"
         @close="closeModal"
       />
     </div>
