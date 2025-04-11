@@ -49,15 +49,6 @@
       "gender": "여성",
       "userImg": "",
       "goalSavings": 10
-    },
-    {
-      "id": "ff81",
-      "userId": "ee@naver.com",
-      "password": "eeeeeeee",
-      "name": "ee",
-      "age": "2",
-      "gender": "남성",
-      "goalSavings": "81"
     }
   ],
   "ageArea": [

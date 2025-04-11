@@ -8,17 +8,11 @@ const isModifyModalOpen = ref(false);
 
 onBeforeMount(() => {
   const userInfo = JSON.parse(localStorage.getItem('loggedInUserInfo'));
-  // const ageGroup = getAgeGroup(userInfo.age); // 숫자 나이를 연령대로 변환
 
-  console.log('userInfo');
-  console.log(userInfo.value);
   form.value = {
     ...userInfo,
-    // age: ageGroup,
     confirmPassword: userInfo.password,
   };
-  console.log('form Info');
-  console.log(form.value);
   initialForm.value = { ...form.value };
 });
 
@@ -42,7 +36,6 @@ const isPasswordMatch = computed(
 
 // 초기화 버튼 클릭 이벤트
 const initInfo = () => {
-  // alert('초기화');
   showPassword.value = false;
   showConfirmPassword.value = false;
   form.value = { ...initialForm.value };
@@ -103,11 +96,6 @@ const confirmModify = async () => {
     console.error('서버 업데이트 실패:', error);
     alert('정보를 수정하는 데 실패했어요.');
   }
-};
-
-// 알람 버튼 on/off
-const toggleAlarm = () => {
-  form.value.alarm = !form.value.alarm;
 };
 </script>
 
@@ -176,20 +164,6 @@ const toggleAlarm = () => {
     >
       {{ passwordMatchMessage }}
     </label>
-    <!-- <div class="alarm-box">
-      <div class="alarm-text-wrapper">
-        <label class="alarm-label">알림 설정🔔</label>
-        <label class="sub-alarm-label">푸시 알림을 설정합니다</label>
-      </div>
-      <button
-        class="alarm-button"
-        :class="{ off: !form.alarm }"
-        @click="toggleAlarm"
-      >
-        {{ form.alarm ? 'ON' : 'OFF' }}
-      </button>
-    </div> -->
-
     <div class="button-box">
       <button class="init-button" @click="initInfo" :disabled="!isFormChanged">
         초기화
@@ -293,6 +267,7 @@ select {
   margin-top: 10px;
   font-size: 15px;
 }
+
 /* 비밀번호 비교 (일치 -> grey) (불일치 -> red) */
 .error-text {
   color: red;
@@ -300,44 +275,6 @@ select {
 .success-text {
   color: grey;
 }
-
-/* 알람 label 및 on/off 버튼 */
-/* .alarm-box {
-  margin-top: 20px;
-  display: flex;
-  flex-direction: row;
-}
-
-.alarm-text-wrapper {
-  display: flex;
-  flex-direction: column;
-  width: 79%;
-}
-
-.alarm-label {
-  font-size: 16px;
-  font-weight: bold;
-}
-
-.sub-alarm-label {
-  margin: 5px 0;
-  font-size: 13px;
-  color: gray;
-}
-
-.alarm-button {
-  background-color: #ffe4e6;
-  border: none;
-  border-radius: 10px;
-  font-weight: bold;
-  cursor: pointer;
-  height: 40px;
-  width: 60px;
-  transition: background-color 0.3s ease;
-}
-.alarm-button.off {
-  background-color: #d3d3d3;
-} */
 
 /* 수정, 초기화 버튼 */
 .modify-button,
