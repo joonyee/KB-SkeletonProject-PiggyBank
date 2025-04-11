@@ -171,7 +171,7 @@
       "day": 7,
       "description": "보험료(롯데)",
       "amount": 45450,
-      "deletedAt": null
+      "deletedAt": 4
     },
     {
       "id": "2",
@@ -206,37 +206,11 @@
       "day": 25,
       "categoryid": 13,
       "description": "헬스장 3개월 결제",
-
       "amount": 150000,
       "deletedAt": null
-
     }
   ],
   "money": [
-    {
-      "id": "1",
-      "userid": "1111",
-      "typeid": 1,
-      "categoryid": 2,
-      "date": "2025-06-01",
-      "amount": 500000,
-      "tendencyid": 3,
-      "payment": 4,
-      "memo": "아부지 용돈",
-      "ageid": 1
-    },
-    {
-      "id": "2",
-      "userid": "1111",
-      "typeid": 2,
-      "categoryid": 10,
-      "date": "2025-04-01",
-      "amount": 200000,
-      "tendencyid": 1,
-      "payment": 1,
-      "memo": "학원 등록비",
-      "ageid": 2
-    },
     {
       "id": "3",
       "userid": "1111",
@@ -308,18 +282,6 @@
       "payment": 1,
       "memo": "인형 뽑기",
       "ageid": 2
-    },
-    {
-      "id": "8",
-      "userid": "1111",
-      "typeid": 2,
-      "categoryid": 1,
-      "date": "2025-01-10",
-      "amount": 200000,
-      "tendencyid": 1,
-      "payment": 1,
-      "memo": "1월 첫째주 정기 지출",
-      "ageid": 3
     },
     {
       "id": "9",
