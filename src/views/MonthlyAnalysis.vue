@@ -51,7 +51,7 @@ const expense = ref(0);
 const balance = ref(0);
 const savingsRate = ref(0);
 const previousExpense = ref(0);
-const budget = ref(700000);
+const budget = ref(0);
 const goalRate = ref(0);
 
 const savingsModalVisible = ref(false);
@@ -138,6 +138,10 @@ const fetchMonthlyData = async () => {
     previousExpense.value = prevExpense;
     savingsRate.value =
       totalIncome > 0 ? ((balance.value / totalIncome) * 100).toFixed(1) : 0;
+    budget.value =
+      totalIncome > 0
+        ? Math.floor(totalIncome * (1 - goalRate.value / 100))
+        : 0;
   } catch (err) {
     console.error('데이터 불러오기 실패:', err);
   }
@@ -264,12 +268,12 @@ onMounted(fetchMonthlyData);
           <ChartCard
             chartType="doughnut"
             :chartData="{
-              labels: ['예산', '실제 지출'],
+              labels: ['지출', '남은 예산'],
               datasets: [
                 {
-                  label: '비율',
-                  data: [budget - expense, expense],
-                  backgroundColor: ['#ffe8fc', '#ffc7ef'],
+                  label: '수입 대비 지출',
+                  data: income > 0 ? [expense, income - expense] : [0, 0],
+                  backgroundColor: ['#ffc7ef', '#ffe8fc'],
                 },
               ],
             }"
