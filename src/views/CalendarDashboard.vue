@@ -189,8 +189,6 @@ onMounted(async () => {
   border-radius: 0.5rem;
   cursor: pointer;
 }
-
-/* 마이페이지 버튼 */
 .mypageButton {
   background-color: rgb(254, 235, 253);
   border: 1px solid rgb(251, 209, 251);
@@ -199,7 +197,7 @@ onMounted(async () => {
   cursor: pointer;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
-  font: var(--ng-reg-16);
+  font: var(--ng-reg-18);
   color: #333;
 }
 .logout {
@@ -210,8 +208,9 @@ onMounted(async () => {
   cursor: pointer;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
-  font: var(--ng-reg-16);
+  font: var(--ng-reg-18);
   color: #333;
+  margin-right: 20px;
 }
 
 /* 새 거래추가 버튼 */
@@ -223,7 +222,7 @@ onMounted(async () => {
   cursor: pointer;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
-  font: var(--ng-reg-16);
+  font: var(--ng-reg-18);
   color: #333;
 }
 .dark .calendar-dashboard {
