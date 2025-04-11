@@ -114,8 +114,8 @@
               </button>
               <button
                 class="tendencyButton"
-                :class="{ active: tendency === '충동적 지출' }"
-                @click="tendency = '충동적 지출'"
+                :class="{ active: tendency === 'impulsive' }"
+                @click="tendency = 'impulsive'"
               >
                 충동적 지출
               </button>
@@ -147,19 +147,15 @@ import CategoryModal from './CategoryModal.vue';
 import { useRouter } from 'vue-router';
 import '../assets/styles/global.css';
 
-// 외부에서 모달 열림 여부와 사용자 ID를 props로 전달받음(수정 필요)
+// 외부에서 전달받은 모달 열림 상태
 const props = defineProps({
   isOpen: {
     type: Boolean,
     default: false,
   },
-  // userId: {
-  //   type: Number,
-  //   required: true,
-  // },
 });
 
-const emit = defineEmits(['add', 'close']);
+const emit = defineEmits(['save', 'close']);
 const router = useRouter();
 
 // 상태 변수 정의
@@ -217,16 +213,20 @@ const categoryMap = {
 };
 
 // 소비 성향 → ID 매핑
-const tendencyMap = { planned: 1, impulsive: 2, 수입: 3 };
+const tendencyMap = {
+  planned: 1,
+  impulsive: 2,
+  수입: 3,
+};
 
-// 결제 방식 → ID 매핑
+// 결제 수단 → ID 매핑
 const paymentMap = {
   account: 1,
   negative: 2,
   neutral: 3,
 };
 
-// props로 전달된 isOpen 변경 감지하여 내부 상태 동기화
+// 모달 열림 상태 감지
 watch(
   () => props.isOpen,
   (newVal) => {
@@ -234,12 +234,12 @@ watch(
   }
 );
 
-// 탭 변경 시 카테고리 초기화
+// 탭 전환 시 카테고리 초기화
 watch(activeTab, () => {
   selectedCategory.value = '';
 });
 
-// 날짜 포맷을 yyyy-mm-dd 형식으로 변환
+// 날짜 포맷
 function formatDate(date) {
   const d = new Date(date);
   const year = d.getFullYear();
@@ -248,12 +248,12 @@ function formatDate(date) {
   return `${year}-${month}-${day}`;
 }
 
-// 화면 크기 체크
+// 모바일 감지
 function checkScreenSize() {
   isMobile.value = window.innerWidth < 768;
 }
 
-// 카테고리 모달 열기/닫기/선택
+// 카테고리 모달 핸들링
 function openCategoryModal() {
   isCategoryModalOpen.value = true;
   showCategoryError.value = false;
@@ -268,7 +268,7 @@ function handleCategoryTabChange(tab) {
   activeTab.value = tab;
 }
 
-// 거래 저장 함수
+// 거래 저장
 async function saveTransaction() {
   if (!userId.value) {
     alert('로그인이 필요합니다.');
@@ -297,7 +297,7 @@ async function saveTransaction() {
   }
 
   const transaction = {
-    userid: props.userId,
+    userid: String(userId.value),
     typeid: typeId,
     categoryid: categoryId,
     date: selectedDate.value,
@@ -316,7 +316,7 @@ async function saveTransaction() {
     console.log('저장 성공:', response.data);
     alert('거래가 저장되었습니다');
 
-    emit('add', response.data);
+    emit('save', response.data);
     resetForm();
     closeModal();
   } catch (error) {
@@ -325,7 +325,7 @@ async function saveTransaction() {
   }
 }
 
-// 입력값 초기화
+// 초기화 및 모달 닫기
 function resetForm() {
   selectedCategory.value = '';
   amount.value = '';
@@ -336,17 +336,21 @@ function resetForm() {
   showCategoryError.value = false;
 }
 
-// 모달 닫기
 function closeModal() {
   resetForm();
   isModalOpen.value = false;
   emit('close');
 }
 
-// 마운트/언마운트 시 화면 크기 이벤트 등록/해제
+// 화면 크기 감지 및 로그인 체크
 onMounted(() => {
   checkScreenSize();
   window.addEventListener('resize', checkScreenSize);
+
+  if (!userId.value) {
+    alert('로그인이 필요합니다.');
+    router.push('/login');
+  }
 });
 
 onBeforeUnmount(() => {
