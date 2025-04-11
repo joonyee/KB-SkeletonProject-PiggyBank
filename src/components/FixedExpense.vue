@@ -38,10 +38,13 @@ const fetchData = async () => {
       `http://localhost:3000/user/${UserId}`
     );
     savingGoal.value = responseGoal.data.goalSavings;
+
     const res = await axios.get('http://localhost:3000/fixedExpenses');
-    expenses.value = res.data.filter(
-      (entry) => entry.userid == UserId && entry.deletedAt === null
-    );
+    expenses.value = Array.isArray(res.data)
+      ? res.data
+          .filter((entry) => entry.userid == UserId && entry.deletedAt === null)
+          .sort((a, b) => a.day - b.day) // day 값을 기준으로 오름차순 정렬
+      : [];
 
     // 총합 계산
     totalAmount.value = expenses.value.reduce(
