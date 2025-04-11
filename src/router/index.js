@@ -30,7 +30,7 @@ const routes = [
 ];
 
 const router = createRouter({
-  history: createWebHistory('/KB-SkeletonProject-PiggyBank/'),
+  history: createWebHistory('/kb-piggybank/'),
   routes,
 });
 
