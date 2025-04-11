@@ -55,9 +55,9 @@
       "userId": "ee@naver.com",
       "password": "eeeeeeee",
       "name": "ee",
-      "age": "3",
+      "age": "2",
       "gender": "남성",
-      "goalSavings": "58"
+      "goalSavings": "81"
     }
   ],
   "ageArea": [
@@ -223,6 +223,16 @@
       "day": 5,
       "description": "ㅇㅇ",
       "amount": 100,
+      "notify": false,
+      "userid": "ff81",
+      "categoryid": 13,
+      "deletedAt": null
+    },
+    {
+      "id": "4da4",
+      "day": 12,
+      "description": "11",
+      "amount": 11,
       "notify": false,
       "userid": "ff81",
       "categoryid": 13,
@@ -1093,6 +1103,90 @@
       "payment": 4,
       "memo": "1",
       "ageid": 2
+    },
+    {
+      "id": "7cd5",
+      "userid": "ff81",
+      "typeid": 1,
+      "categoryid": 1,
+      "date": "2025-04-11",
+      "amount": 100000000,
+      "tendencyid": 3,
+      "payment": 4,
+      "memo": "ㅇㅇ",
+      "ageid": "3"
+    },
+    {
+      "id": "ec28",
+      "userid": "ff81",
+      "typeid": 2,
+      "categoryid": 7,
+      "date": "2025-04-11",
+      "amount": 10000000,
+      "tendencyid": 1,
+      "payment": 3,
+      "memo": "",
+      "ageid": "3"
+    },
+    {
+      "id": "bf1f",
+      "userid": "ff81",
+      "typeid": 2,
+      "categoryid": 6,
+      "date": "2025-04-11",
+      "amount": 900000000,
+      "tendencyid": 1,
+      "payment": 1,
+      "memo": "ㅇㅇ",
+      "ageid": "3"
+    },
+    {
+      "id": "2951",
+      "userid": "ff81",
+      "typeid": 1,
+      "categoryid": 1,
+      "date": "2025-04-11",
+      "amount": 9,
+      "tendencyid": 3,
+      "payment": 4,
+      "memo": "",
+      "ageid": "3"
+    },
+    {
+      "id": "cda4",
+      "userid": "ff81",
+      "typeid": 1,
+      "categoryid": 1,
+      "date": "2025-04-11",
+      "amount": 900000000,
+      "tendencyid": 3,
+      "payment": 4,
+      "memo": "ㅇㅇ",
+      "ageid": "3"
+    },
+    {
+      "id": "5a6e",
+      "userid": "ff81",
+      "typeid": 1,
+      "categoryid": 1,
+      "date": "2025-04-11",
+      "amount": 50000000,
+      "tendencyid": 3,
+      "payment": 4,
+      "memo": "ㅇㅇ",
+      "ageid": "3"
+    },
+    {
+      "id": "ff7d",
+      "userid": "ff81",
+      "typeid": 1,
+      "categoryid": 1,
+      "date": "2025-04-11",
+      "amount": 800000000,
+      "tendencyid": 3,
+      "payment": 4,
+      "memo": "ㅇㅇ",
+      "ageid": "3"
     }
   ],
   "tendency": [
