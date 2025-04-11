@@ -1,6 +1,6 @@
 <script setup>
 // ✅ 기본 Vue 및 라이브러리 임포트
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
 
@@ -9,6 +9,28 @@ import TransactionEditModal from '../components/TransactionEditModal.vue';
 import FilterModal from '../components/FilterModal.vue';
 import TransactionDetailModal from '../components/TransactionDetailModal.vue';
 import TransactionModal from '../components/TransactionModal.vue';
+
+// 페이지네이션
+const currentPage = ref(1);
+const itemsPerPage = 10;
+
+const paginatedTransactions = computed(() => {
+  if (!transactions.value || transactions.value.length === 0) return [];
+  const start = (currentPage.value - 1) * itemsPerPage;
+  return transactions.value.slice(start, start + itemsPerPage);
+});
+
+const totalPages = computed(() =>
+  transactions.value && transactions.value.length > 0
+    ? Math.ceil(transactions.value.length / itemsPerPage)
+    : 1
+);
+
+const goToPage = (page) => {
+  if (page >= 1 && page <= totalPages.value) {
+    currentPage.value = page;
+  }
+};
 
 // ✅ 라우터 이동 관련
 const router = useRouter();
@@ -54,11 +76,10 @@ const openDetailModal = (transaction) => {
 };
 const closeDetailModal = () => (isDetailModalOpen.value = false);
 
-const showEditModal = ref(false); // 새로운 모달 오픈 변수
-const editTarget = ref(null); // 선택된 거래
+const showEditModal = ref(false);
+const editTarget = ref(null);
 
 const handleEditClick = (transaction) => {
-  console.log('[수정 클릭]', transaction);
   editTarget.value = { ...transaction };
   showEditModal.value = true;
 };
@@ -66,16 +87,24 @@ const closeEdit = () => {
   showEditModal.value = false;
   editTarget.value = null;
 };
-// const applyEdit = (updated) => {
-//   const index = transactions.value.findIndex((t) => t.id === updated.id);
-//   if (index !== -1) transactions.value[index] = { ...updated };
-//   closeEdit();
-// };
+
 const applyEdit = async (updated) => {
   try {
     await axios.patch(`http://localhost:3000/money/${updated.id}`, updated);
+
+    const categoryName = getCategoryName(updated.categoryid);
+    const updatedDisplayData = {
+      id: updated.id,
+      date: updated.date,
+      category: categoryName,
+      amount: updated.amount,
+      description: updated.memo,
+      type: updated.typeid === 1 ? 'income' : 'expense',
+    };
+
     const index = transactions.value.findIndex((t) => t.id === updated.id);
-    if (index !== -1) transactions.value[index] = { ...updated };
+    if (index !== -1) transactions.value[index] = { ...updatedDisplayData };
+
     closeEdit();
     calculateTotals();
   } catch (err) {
@@ -84,14 +113,6 @@ const applyEdit = async (updated) => {
   }
 };
 
-// ✅ 거래 삭제
-// const deleteTransaction = (id) => {
-//   if (confirm('정말 삭제하시겠습니까?')) {
-//     const index = transactions.value.findIndex((t) => t.id === id);
-//     if (index !== -1) transactions.value.splice(index, 1);
-//     if (selectedTransaction.value?.id === id) closeEditModal();
-//   }
-// };
 const deleteTransaction = async (id) => {
   if (confirm('정말 삭제하시겠습니까?')) {
     try {
@@ -105,7 +126,6 @@ const deleteTransaction = async (id) => {
   }
 };
 
-// ✅ 정렬 기능
 const sortKey = ref('');
 const sortOrder = ref('asc');
 const sortBy = (key) => {
@@ -129,27 +149,27 @@ const sortBy = (key) => {
   });
 };
 
-// ✅ 카테고리 이름 조회
 const getCategoryName = (id) => {
   const cat = categories.value.find((c) => c.id === id);
   return cat ? cat.name : '기타';
 };
 
-// ✅ 통계 계산
 const totalIncome = ref(0);
 const totalExpense = ref(0);
 const allAccount = ref(0);
+
 const calculateTotals = () => {
   totalIncome.value = transactions.value
     .filter((item) => item.type === 'income')
-    .reduce((acc, item) => acc + item.amount, 0);
+    .reduce((acc, item) => acc + Number(item.amount), 0);
+
   totalExpense.value = transactions.value
     .filter((item) => item.type === 'expense')
-    .reduce((acc, item) => acc + item.amount, 0);
+    .reduce((acc, item) => acc + Number(item.amount), 0);
+
   allAccount.value = totalIncome.value - totalExpense.value;
 };
 
-// ✅ 거래 불러오기
 const fetchTransactions = async () => {
   try {
     const userId = localStorage.getItem('loggedInUserId');
@@ -161,7 +181,7 @@ const fetchTransactions = async () => {
       id: item.id,
       date: item.date,
       category: getCategoryName(item.categoryid),
-      amount: item.amount,
+      amount: Number(item.amount),
       description: item.memo,
       type: item.typeid === 1 ? 'income' : 'expense',
     }));
@@ -173,7 +193,6 @@ const fetchTransactions = async () => {
   }
 };
 
-// ✅ 필터 적용
 const applyFilter = (filterData) => {
   const { startDate, endDate, type, categories } = filterData;
   let filtered = [...originalTransactions.value];
@@ -187,13 +206,41 @@ const applyFilter = (filterData) => {
   transactions.value = filtered;
   calculateTotals();
 };
-
-// TransactionModal.vue에서 emits('add', 새거래객체) 하도록 만든 다음
-
 const handleAddTransaction = async (newTransaction) => {
   try {
-    const res = await axios.post(`http://localhost:3000/money`, newTransaction);
-    transactions.value.push(res.data);
+    const userId = localStorage.getItem('loggedInUserId');
+    if (!userId) {
+      alert('로그인이 필요합니다.');
+      return;
+    }
+
+    // 사용자 ID 포함한 payload 생성
+    const payload = {
+      ...newTransaction,
+      userid: userId,
+    };
+
+    // POST 요청 → DB 저장
+    const res = await axios.post(`http://localhost:3000/money`, payload);
+
+    // 응답값 기반으로 프론트에 표시할 데이터 생성
+    const newItem = {
+      id: res.data.id,
+      date: res.data.date,
+      category: getCategoryName(res.data.categoryid),
+      amount: Number(res.data.amount),
+      description: res.data.memo,
+      type: res.data.typeid === 1 ? 'income' : 'expense',
+    };
+
+    // 중복 방지 후 추가
+    const exists = transactions.value.some((t) => t.id === newItem.id);
+    if (!exists) {
+      transactions.value.unshift(newItem);
+      // originalTransactions.value.unshift(newItem);
+    }
+
+    // 모달 닫기 및 합계 계산
     closeTransactionModal();
     calculateTotals();
   } catch (err) {
@@ -202,11 +249,12 @@ const handleAddTransaction = async (newTransaction) => {
   }
 };
 
-// ✅ 초기 실행 시 카테고리 및 거래 정보 불러오기
 onMounted(async () => {
   try {
     const res = await axios.get('http://localhost:3000/category');
     categories.value = res.data;
+
+    // 카테고리 다 받아오고 나서 호출
     await fetchTransactions();
   } catch (err) {
     console.error('카테고리 불러오기 실패:', err);
@@ -239,27 +287,43 @@ onMounted(async () => {
       <div class="summary-header">
         <div class="summary-cards">
           <div class="summary-card">
-            <span>이번 달 수입</span>
+            <span>총 수입</span>
             <span class="income">{{ totalIncome.toLocaleString() }}원</span>
           </div>
           <div class="summary-card">
-            <span>이번 달 지출</span>
+            <span>총 지출</span>
             <span class="expense">{{ totalExpense.toLocaleString() }}원</span>
           </div>
           <div class="summary-card">
-            <span>이번 달 잔액</span>
+            <span>총 자산</span>
             <span class="balance">{{ allAccount.toLocaleString() }}원</span>
           </div>
         </div>
       </div>
       <!-- 필터 버튼 상단 우측 -->
       <div class="table-toolbar">
-        <button class="filter-btn" @click="openFilterModal">
-          <i class="fa-solid fa-filter"></i> 필터
+        <button class="round-btn" @click="openFilterModal">
+          <i class="fa-solid fa-filter"></i>
+          <span>필터</span>
+        </button>
+        <button
+          class="round-btn"
+          @click="
+            applyFilter({
+              startDate: '',
+              endDate: '',
+              type: 'all',
+              categories: [],
+            })
+          "
+        >
+          <i class="fa-solid fa-arrow-rotate-left"></i>
+          <span>초기화</span>
         </button>
       </div>
+
       <!-- 거래 목록 -->
-      <table class="transaction-table">
+      <table class="transaction-table" v-if="paginatedTransactions.length">
         <thead>
           <tr>
             <th @click="sortBy('date')">
@@ -277,17 +341,22 @@ onMounted(async () => {
         </thead>
 
         <tbody>
-          <tr
+          <!-- <tr
             v-for="transaction in transactions"
             :key="transaction.id"
             @click="openDetailModal(transaction)"
+          > -->
+          <tr
+            v-for="transaction in paginatedTransactions"
+            :key="transaction.id"
+            @click="openDetailModal(transaction)"
           >
-            <td>{{ transaction.date }}</td>
-            <td>{{ transaction.category }}</td>
-            <td :class="['transaction-amount', transaction.type]">
-              {{ transaction.amount.toLocaleString() }}원
+            <td>{{ transaction?.date }}</td>
+            <td>{{ transaction?.category }}</td>
+            <td :class="['transaction-amount', transaction?.type]">
+              {{ transaction?.amount.toLocaleString() }}원
             </td>
-            <td>{{ transaction.description }}</td>
+            <td>{{ transaction?.description }}</td>
             <td class="action-icons">
               <i
                 class="fa-solid fa-pen-to-square edit-icon"
@@ -307,6 +376,34 @@ onMounted(async () => {
           </tr>
         </tbody>
       </table>
+
+      <!-- 페이지네이션 컨트롤 -->
+      <div class="pagination">
+        <button
+          class="pagination-btn"
+          @click="goToPage(currentPage - 1)"
+          :disabled="currentPage === 1"
+        >
+          이전
+        </button>
+
+        <button
+          v-for="page in totalPages"
+          :key="page"
+          :class="['pagination-btn', { active: page === currentPage }]"
+          @click="goToPage(page)"
+        >
+          {{ page }}
+        </button>
+
+        <button
+          class="pagination-btn"
+          @click="goToPage(currentPage + 1)"
+          :disabled="currentPage === totalPages"
+        >
+          다음
+        </button>
+      </div>
 
       <!-- 수정 모달 -->
       <TransactionEditModal
@@ -511,6 +608,39 @@ th i {
   height: 40px;
   margin-left: auto;
 }
+.reset-btn {
+  background-color: var(--background-color);
+  border: none;
+  border-radius: 8px;
+  padding: 10px 16px;
+  margin-left: 10px;
+  font: var(--ng-reg-16);
+  color: var(--hot-pink);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 40px;
+  cursor: pointer;
+}
+.table-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin: 10px 0;
+}
+
+.round-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid #fbcee8;
+  border-radius: 999px;
+  background-color: white;
+  color: black;
+  padding: 6px 14px;
+  font: var(--ng-reg-14);
+  cursor: pointer;
+}
 
 /* 헤더  */
 .dashboardHeader {
@@ -542,6 +672,7 @@ th i {
   gap: 1rem;
 }
 
+/* 다크모드 버튼 */
 .darkModeButton {
   padding: 8px 12px;
   font-size: 1.2rem;
@@ -550,8 +681,31 @@ th i {
   cursor: pointer;
 }
 
-.mypageButton,
-.logout,
+/* 마이페이지 버튼 */
+.mypageButton {
+  background-color: rgb(254, 235, 253);
+  border: 1px solid rgb(251, 209, 251);
+  border-radius: 0.5rem;
+  padding: 12px 24px;
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  font: var(--ng-reg-16);
+  color: #333;
+}
+.logout {
+  background-color: rgb(254, 235, 253);
+  border: 1px solid rgb(251, 209, 251);
+  border-radius: 0.5rem;
+  padding: 12px 24px;
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  font: var(--ng-reg-16);
+  color: #333;
+}
+
+/* 새 거래추가 버튼 */
 .inputValue {
   background-color: rgb(254, 235, 253);
   border: 1px solid rgb(251, 209, 251);
@@ -560,7 +714,97 @@ th i {
   cursor: pointer;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
-  font-weight: 600;
+  font: var(--ng-reg-16);
   color: #333;
+}
+
+/* 다크모드 */
+/* 다크 모드 전체 적용 */
+.dark {
+  background-color: #121212;
+  color: #f5f5f5;
+}
+
+/* 다크 모드에서 컨테이너 배경 */
+.dark .container {
+  background-color: #1e1e1e;
+}
+
+/* 카드 및 표 요약 영역 */
+.dark .summary-card {
+  background-color: #2a2a2a;
+  color: #f5f5f5;
+}
+
+.dark .summary-header,
+.dark .summary-cards {
+  background-color: transparent;
+}
+
+/* 테이블 */
+.dark .transaction-table th,
+.dark .transaction-table td {
+  background-color: #1e1e1e;
+  color: #f5f5f5;
+  border-color: #444;
+}
+
+/* 페이지네이션 */
+.dark .pagination-btn {
+  background-color: #2a2a2a;
+  color: #f5f5f5;
+  border: 1px solid #fbcee8;
+}
+.dark .pagination-btn:hover {
+  background-color: #3a3a3a;
+}
+.dark .pagination-btn.active {
+  background-color: #fbcee8;
+  color: #1e1e1e;
+}
+
+/* 헤더 */
+
+/* 필터/초기화 버튼 */
+.dark .round-btn {
+  background-color: #2a2a2a;
+  color: #f5f5f5;
+  border: 1px solid #fbcee8;
+}
+
+/* 모달 버튼 */
+.dark .add-button {
+  background-color: #fbcee8;
+  color: #1e1e1e;
+}
+
+/* 아이콘 */
+.dark .edit-icon {
+  color: #ddd;
+}
+.dark .delete-icon {
+  color: #f87171;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 20px;
+}
+.pagination button {
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  background-color: white;
+  cursor: pointer;
+}
+.pagination button.active {
+  background-color: #fbcee8;
+  font: var(--ng-reg-14);
+}
+.pagination button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 </style>

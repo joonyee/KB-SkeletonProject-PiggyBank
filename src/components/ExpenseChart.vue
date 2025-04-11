@@ -6,6 +6,7 @@ const props = defineProps({
   labels: Array,
   myData: Array,
   avgData: Array,
+  isDarkMode: Boolean,
 });
 
 const barChartRef = ref(null);
@@ -25,9 +26,10 @@ const barChartHeight = computed(() => {
   const calculated = categoryCount * 60;
   return (calculated < 400 ? 400 : calculated) + 'px';
 });
-
 const initBarChart = () => {
   if (barChart) barChart.destroy();
+
+  const tickColor = props.isDarkMode ? '#f5f5f5' : '#333';
 
   barChart = new Chart(barChartRef.value, {
     type: 'bar',
@@ -39,9 +41,9 @@ const initBarChart = () => {
           data: props.myData,
           backgroundColor: primaryColor,
           borderRadius: 5,
-          barThickness: 22, // 막대 두께 조금 줄임
-          categoryPercentage: 0.8, // 각 카테고리 공간을 60%만 채움
-          barPercentage: 0.9, // 각 막대의 공간도 약간 줄임
+          barThickness: 22,
+          categoryPercentage: 0.8,
+          barPercentage: 0.9,
         },
         {
           label: '평균 소비',
@@ -59,7 +61,12 @@ const initBarChart = () => {
       responsive: true,
       maintainAspectRatio: false,
       plugins: {
-        legend: { position: 'top' },
+        legend: {
+          position: 'top',
+          labels: {
+            color: tickColor, // ✅ 범례 글자 색상
+          },
+        },
         tooltip: {
           callbacks: {
             label: (ctx) =>
@@ -72,21 +79,28 @@ const initBarChart = () => {
           beginAtZero: true,
           ticks: {
             callback: (v) => `₩${v.toLocaleString()}`,
-            color: '#333',
+            color: tickColor, // ✅ X축 글자 색상
+          },
+          grid: {
+            color: props.isDarkMode ? '#444' : '#ccc', // ✅ 격자선 색상
           },
         },
         y: {
           ticks: {
-            color: '#333',
+            color: tickColor, // ✅ Y축 글자 색상
+          },
+          grid: {
+            color: props.isDarkMode ? '#444' : '#ccc',
           },
         },
       },
     },
   });
 };
-
 const initDonutChart = () => {
   if (donutChart) donutChart.destroy();
+
+  const textColor = props.isDarkMode ? '#f5f5f5' : '#333';
 
   donutChart = new Chart(donutChartRef.value, {
     type: 'doughnut',
@@ -103,7 +117,12 @@ const initDonutChart = () => {
       responsive: true,
       maintainAspectRatio: false,
       plugins: {
-        legend: { position: 'bottom' },
+        legend: {
+          position: 'bottom',
+          labels: {
+            color: textColor, // ✅ 범례 텍스트 색상
+          },
+        },
         tooltip: {
           callbacks: {
             label: (ctx) => `${ctx.label}: ₩${ctx.raw.toLocaleString()}`,
@@ -221,5 +240,44 @@ watch(
 .good-msg {
   color: var(--text-success);
   font: var(--ng-reg-20);
+}
+
+.dark .chart-title {
+  color: #f9a8d4;
+}
+
+.dark .summary-section {
+  background-color: #1e1e1e;
+  color: #f5f5f5;
+  border-radius: 1rem;
+  padding: 1.5rem;
+  box-shadow: 0 2px 6px rgba(255, 255, 255, 0.05);
+}
+
+.dark .summary-text {
+  color: #f5f5f5;
+}
+
+.dark .result-text {
+  color: #f5f5f5;
+}
+
+.dark .good-msg {
+  color: #4ade80; /* 초록 */
+}
+
+.dark .over-msg {
+  color: #f87171; /* 빨강 */
+}
+
+.dark .chart-section {
+  background-color: #1a1a1a;
+  border-radius: 1rem;
+  padding: 1rem;
+  box-shadow: 0 2px 6px rgba(255, 255, 255, 0.05);
+}
+
+.dark canvas {
+  background-color: transparent !important;
 }
 </style>
