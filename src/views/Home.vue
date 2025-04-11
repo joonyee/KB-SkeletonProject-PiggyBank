@@ -11,7 +11,7 @@
       </h1>
       <div class="flex items-center gap-2 relative">
         <button @click="toggleDarkMode" class="darkModeButton">
-          {{ isDarkMode ? '☀️' : '🌙' }}
+          {{ isDarkMode ? "☀️" : "🌙" }}
         </button>
         <button class="mypageButton" @click="mypageClick">마이페이지</button>
         <button class="inputValue" @click="openModal">새 거래추가</button>
@@ -197,18 +197,18 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, watch } from 'vue';
-import axios from 'axios';
-import CategoryPieChart from '@/components/CategoryPieChart.vue';
-import PieChart from '@/components/PieChart.vue';
-import { RouterLink } from 'vue-router';
-import IndividualPig from '@/components/IndividualPig.vue';
-import PiggyFace from '@/components/Piggyface.vue';
-import PiggyfaceDefault from '@/components/PiggyfaceDefault.vue';
-import FinalPig from '@/components/FinalPig.vue';
-import { useDashboardStore } from '@/stores/store.js';
-import { useRouter } from 'vue-router';
-import TransactionModal from '@/components/TransactionModal.vue';
+import { ref, computed, onMounted, watch } from "vue";
+import axios from "axios";
+import CategoryPieChart from "@/components/CategoryPieChart.vue";
+import PieChart from "@/components/PieChart.vue";
+import { RouterLink } from "vue-router";
+import IndividualPig from "@/components/IndividualPig.vue";
+import PiggyFace from "@/components/Piggyface.vue";
+import PiggyfaceDefault from "@/components/PiggyfaceDefault.vue";
+import FinalPig from "@/components/FinalPig.vue";
+import { useDashboardStore } from "@/stores/store.js";
+import { useRouter } from "vue-router";
+import TransactionModal from "@/components/TransactionModal.vue";
 // import { PigIntro } from '@/views/PigIntro.vue';
 
 const router = useRouter();
@@ -221,19 +221,19 @@ const toggleDropdown = () => {
   dropdownOpen.value = !dropdownOpen.value;
 };
 
-const isDarkMode = ref(localStorage.getItem('darkMode') === 'true');
+const isDarkMode = ref(localStorage.getItem("darkMode") === "true");
 
 const toggleDarkMode = () => {
   isDarkMode.value = !isDarkMode.value;
-  document.documentElement.classList.toggle('dark', isDarkMode.value);
+  document.documentElement.classList.toggle("dark", isDarkMode.value);
   // 다크 모드 상태를 로컬 스토리지에 저장
-  localStorage.setItem('darkMode', isDarkMode.value);
+  localStorage.setItem("darkMode", isDarkMode.value);
 };
 
 // 페이지가 처음 로드될 때 로컬 스토리지에서 다크 모드 상태를 읽어와서 적용
 onMounted(() => {
   if (isDarkMode.value) {
-    document.documentElement.classList.add('dark');
+    document.documentElement.classList.add("dark");
   }
 });
 
@@ -246,19 +246,19 @@ const loading = ref(true); // 로딩 상태 추가
 
 const fetchData = async () => {
   try {
-    const userId = localStorage.getItem('loggedInUserId');
+    const userId = localStorage.getItem("loggedInUserId");
     if (!userId) {
-      throw new Error('로그인 정보가 없습니다.');
+      throw new Error("로그인 정보가 없습니다.");
     } else {
-      console.log('현재 로그인한 유저 ID:', userId);
+      console.log("현재 로그인한 유저 ID:", userId);
     }
 
     const responseGoal = await axios.get(
-      `http://localhost:3000/user/${userId}`
+      `https://kb-piggybank.glitch.me/user/${userId}`
     );
     savingGoal.value = responseGoal.data.goalSavings;
 
-    const response = await axios.get('http://localhost:3000/money');
+    const response = await axios.get("https://kb-piggybank.glitch.me/money");
     const moneyData = response.data.filter((entry) => entry.userid == userId);
 
     const monthlyTotals = {};
@@ -303,7 +303,9 @@ const fetchData = async () => {
       categoryTotals[catId] += entry.amount;
     });
 
-    const categoryRes = await axios.get('http://localhost:3000/category');
+    const categoryRes = await axios.get(
+      "https://kb-piggybank.glitch.me/category"
+    );
     const categoryMap = categoryRes.data.reduce((map, cat) => {
       map[cat.id] = cat.name;
       return map;
@@ -314,7 +316,7 @@ const fetchData = async () => {
       .sort((a, b) => new Date(b.date) - new Date(a.date))
       .map((entry) => ({
         date: entry.date,
-        category: categoryMap[entry.categoryid] || '기타',
+        category: categoryMap[entry.categoryid] || "기타",
         description: entry.memo,
         amount: entry.typeid === 1 ? entry.amount : -entry.amount,
       }));
@@ -322,12 +324,12 @@ const fetchData = async () => {
     transactions.value = recentTransactions;
     categorySpending.value = Object.entries(categoryTotals).map(
       ([id, amount]) => ({
-        category: categoryMap[id] || '기타',
+        category: categoryMap[id] || "기타",
         amount,
       })
     );
   } catch (error) {
-    console.error('데이터 로딩 실패:', error);
+    console.error("데이터 로딩 실패:", error);
   } finally {
     loading.value = false;
   }
@@ -373,15 +375,15 @@ const savingsRate = computed(() => {
 console.log(savingsRate);
 
 const mypageClick = () => {
-  router.push('./myPage');
+  router.push("./myPage");
 };
 const logout = () => {
-  alert('안녕히가세요!');
+  alert("안녕히가세요!");
 
-  localStorage.removeItem('loggedInUserId');
-  localStorage.removeItem('loggedInUserInfo');
+  localStorage.removeItem("loggedInUserId");
+  localStorage.removeItem("loggedInUserInfo");
 
-  router.push('/');
+  router.push("/");
 };
 
 const isModalOpen = ref(false);
@@ -394,21 +396,21 @@ const closeModal = async () => {
 };
 
 const goToHome = () => {
-  router.push('./home');
+  router.push("./home");
 };
 
 const monthlyClick = () => {
-  router.push('./calendar');
+  router.push("./calendar");
 };
 
 const goToExpenseList = () => {
-  router.push('/expenseList');
+  router.push("/expenseList");
 };
 const goToAgeExpenseAnalysis = () => {
-  router.push('/ageExpenseAnalysis');
+  router.push("/ageExpenseAnalysis");
 };
 const goToMonthlyAnalysis = () => {
-  router.push('/monthlyAnalysis');
+  router.push("/monthlyAnalysis");
 };
 const baseSize = 200;
 
@@ -461,11 +463,11 @@ const noseHoles = computed(() => ({
   },
 }));
 const piggyMessage = computed(() => {
-  if (savingsRate.value < 0) return '돼지가 집을 나가버렸어요 😰';
-  if (savingsRate.value < 50) return '돼지가 배가 고파요 😢';
-  if (savingsRate.value < 70) return '돼지가 괜찮아해요 🙂';
-  if (savingsRate.value < 90) return '돼지가 행복해해요 😄';
-  return '돼지가 완전 포동포동해요 🐷💖';
+  if (savingsRate.value < 0) return "돼지가 집을 나가버렸어요 😰";
+  if (savingsRate.value < 50) return "돼지가 배가 고파요 😢";
+  if (savingsRate.value < 70) return "돼지가 괜찮아해요 🙂";
+  if (savingsRate.value < 90) return "돼지가 행복해해요 😄";
+  return "돼지가 완전 포동포동해요 🐷💖";
 });
 </script>
 

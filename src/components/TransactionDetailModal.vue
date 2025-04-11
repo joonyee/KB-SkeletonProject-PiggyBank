@@ -20,7 +20,7 @@
         </div>
         <div class="info-item">
           <span class="label">소비 유형</span>
-          <div class="info-value">{{ transaction.subCategory || '-' }}</div>
+          <div class="info-value">{{ transaction.subCategory || "-" }}</div>
         </div>
         <div class="info-item">
           <span class="label">내용</span>
@@ -36,7 +36,7 @@ const props = defineProps({
   isOpen: Boolean,
   transaction: Object,
 });
-const emit = defineEmits(['close']);
+const emit = defineEmits(["close"]);
 </script>
 
 <style scoped>

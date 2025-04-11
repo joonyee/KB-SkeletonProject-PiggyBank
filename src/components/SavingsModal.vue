@@ -1,25 +1,25 @@
 <script setup>
-import { ref, defineProps, defineEmits, watch, onMounted } from 'vue';
+import { ref, defineProps, defineEmits, watch, onMounted } from "vue";
 
 const props = defineProps({ show: Boolean });
-const emit = defineEmits(['close', 'update']);
+const emit = defineEmits(["close", "update"]);
 
 const monthlyIncome = ref(0);
 const savingsRate = ref(20);
 const expectedSavings = ref(0);
 
 const closeModal = () => {
-  emit('close');
+  emit("close");
 };
 
 const confirmSettings = async () => {
-  const currentUser = JSON.parse(localStorage.getItem('loggedInUserInfo'));
+  const currentUser = JSON.parse(localStorage.getItem("loggedInUserInfo"));
   if (!currentUser || !currentUser.id) return;
 
   try {
-    await fetch(`http://localhost:3000/user/${currentUser.id}`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
+    await fetch(`https://kb-piggybank.glitch.me/user/${currentUser.id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ goalSavings: savingsRate.value }),
     });
 
@@ -27,14 +27,14 @@ const confirmSettings = async () => {
       ...currentUser,
       goalSavings: savingsRate.value,
     };
-    localStorage.setItem('loggedInUserInfo', JSON.stringify(updatedUser));
+    localStorage.setItem("loggedInUserInfo", JSON.stringify(updatedUser));
 
     // ✅ 확인 후 update만 emit (닫기는 부모가 결정)
-    emit('update', {
+    emit("update", {
       savingsRate: savingsRate.value,
     });
   } catch (error) {
-    console.error('저축률 업데이트 실패:', error);
+    console.error("저축률 업데이트 실패:", error);
   }
 };
 
@@ -45,7 +45,7 @@ watch([monthlyIncome, savingsRate], () => {
 });
 
 onMounted(() => {
-  const currentUser = JSON.parse(localStorage.getItem('loggedInUserInfo'));
+  const currentUser = JSON.parse(localStorage.getItem("loggedInUserInfo"));
   if (currentUser) {
     monthlyIncome.value = currentUser.monthlyIncome || 0;
     savingsRate.value = currentUser.goalSavings || 0;
@@ -117,7 +117,7 @@ onMounted(() => {
   margin: 20px 0;
 }
 
-input[type='number'] {
+input[type="number"] {
   width: 90%;
   padding: 10px;
   margin-top: 15px;

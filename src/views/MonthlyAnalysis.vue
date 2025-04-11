@@ -1,9 +1,9 @@
 <script setup>
-import { ref, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
-import axios from 'axios';
-import ChartCard from '../components/ChartCard.vue';
-import SavingsModal from '../components/SavingsModal.vue';
+import { ref, onMounted } from "vue";
+import { useRouter } from "vue-router";
+import axios from "axios";
+import ChartCard from "../components/ChartCard.vue";
+import SavingsModal from "../components/SavingsModal.vue";
 
 const router = useRouter();
 
@@ -11,25 +11,25 @@ const router = useRouter();
 const isDarkMode = ref(false);
 const toggleDarkMode = () => {
   isDarkMode.value = !isDarkMode.value;
-  document.documentElement.classList.toggle('dark');
+  document.documentElement.classList.toggle("dark");
 };
 
 // 헤더 기능: 마이페이지 이동
 const mypageClick = () => {
-  router.push('/myPage');
-  alert('mypage page');
+  router.push("/myPage");
+  alert("mypage page");
 };
 
 // 헤더 기능: 로그아웃
 const logout = () => {
-  alert('안녕히가세요!');
-  localStorage.removeItem('loggedInUserId');
-  router.push('/');
+  alert("안녕히가세요!");
+  localStorage.removeItem("loggedInUserId");
+  router.push("/");
 };
 
 // 헤더 기능: 홈으로 이동
 const goToHome = () => {
-  router.push('/home');
+  router.push("/home");
 };
 
 // 헤더 기능: 새 거래 추가 모달
@@ -73,15 +73,15 @@ const updateSavingsSettings = async ({
   monthlyIncome,
   savingsRate: newRate,
 }) => {
-  console.log('?');
-  const userId = localStorage.getItem('loggedInUserId');
+  console.log("?");
+  const userId = localStorage.getItem("loggedInUserId");
   if (userId) {
-    await axios.patch(`http://localhost:3000/user/${userId}`, {
+    await axios.patch(`https://kb-piggybank.glitch.me/user/${userId}`, {
       goalSavings: newRate,
     });
     goalRate.value = newRate;
   }
-  console.log('!');
+  console.log("!");
   // closeSavingsModal();
   savingsModalVisible.value = false;
 };
@@ -89,19 +89,21 @@ const updateSavingsSettings = async ({
 // DB에서 월간 데이터 fetch
 const fetchMonthlyData = async () => {
   try {
-    const userId = localStorage.getItem('loggedInUserId');
+    const userId = localStorage.getItem("loggedInUserId");
 
     if (!userId) {
-      alert('로그인이 필요합니다.');
+      alert("로그인이 필요합니다.");
       return;
     }
 
     // 유저 정보에서 goalSavings 가져오기
-    const userRes = await axios.get(`http://localhost:3000/user/${userId}`);
+    const userRes = await axios.get(
+      `https://kb-piggybank.glitch.me/user/${userId}`
+    );
     goalRate.value = userRes.data.goalSavings ?? 0;
 
     // 전체 거래 데이터에서 해당 유저의 지출/수입 필터
-    const res = await axios.get('http://localhost:3000/money');
+    const res = await axios.get("https://kb-piggybank.glitch.me/money");
     const allData = res.data;
     const userData = allData.filter((item) => item.userid === userId);
 
@@ -143,7 +145,7 @@ const fetchMonthlyData = async () => {
         ? Math.floor(totalIncome * (1 - goalRate.value / 100))
         : 0;
   } catch (err) {
-    console.error('데이터 불러오기 실패:', err);
+    console.error("데이터 불러오기 실패:", err);
   }
 };
 
@@ -162,7 +164,7 @@ onMounted(fetchMonthlyData);
       </h1>
       <div class="flex items-center gap-2 relative">
         <button @click="toggleDarkMode" class="darkModeButton">
-          {{ isDarkMode ? '☀️' : '🌙' }}
+          {{ isDarkMode ? "☀️" : "🌙" }}
         </button>
         <button class="mypageButton" @click="mypageClick">마이페이지</button>
         <button class="inputValue" @click="openModal">새 거래추가</button>

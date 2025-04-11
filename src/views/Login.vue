@@ -31,41 +31,41 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
-import Piggyface from '@/components/Piggyface.vue';
-import { useRouter } from 'vue-router';
+import { ref } from "vue";
+import Piggyface from "@/components/Piggyface.vue";
+import { useRouter } from "vue-router";
 const router = useRouter();
 const isEyeClosed = ref(false);
 const eyeOffset = ref({ x: 0, y: 0 });
-const email = ref('');
-const password = ref('');
+const email = ref("");
+const password = ref("");
 
 const handleLogin = async () => {
   try {
-    const response = await fetch('http://localhost:3000/user');
+    const response = await fetch("https://kb-piggybank.glitch.me/user");
     const users = await response.json();
 
     const user = users.find((u) => u.userId === email.value);
 
     if (!user) {
-      alert('아이디 혹은 비밀번호가 일치하지 않습니다!');
+      alert("아이디 혹은 비밀번호가 일치하지 않습니다!");
       return;
     }
 
     if (user.password !== password.value) {
-      alert('아이디 혹은 비밀번호가 일치하지 않습니다!');
+      alert("아이디 혹은 비밀번호가 일치하지 않습니다!");
       return;
     }
 
-    console.log('로그인 성공:', user);
+    console.log("로그인 성공:", user);
     alert(`${user.name}님 환영합니다!`);
 
-    localStorage.setItem('loggedInUserId', user.id);
-    localStorage.setItem('loggedInUserInfo', JSON.stringify(user));
-    router.push('/home');
+    localStorage.setItem("loggedInUserId", user.id);
+    localStorage.setItem("loggedInUserInfo", JSON.stringify(user));
+    router.push("/home");
   } catch (error) {
-    console.error('로그인 오류:', error);
-    alert('로그인 중 오류가 발생했습니다.');
+    console.error("로그인 오류:", error);
+    alert("로그인 중 오류가 발생했습니다.");
   }
 };
 

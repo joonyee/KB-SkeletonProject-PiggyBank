@@ -166,8 +166,8 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
-import axios from 'axios';
+import { ref, onMounted } from "vue";
+import axios from "axios";
 
 // 부모로부터 현재 달 정보를 prop으로 받음
 const props = defineProps({
@@ -175,16 +175,16 @@ const props = defineProps({
   UserId: String,
 });
 
-const emit = defineEmits(['close']);
+const emit = defineEmits(["close"]);
 
 const expenses = ref([]);
 const currentIndex = ref(0);
 const currentExpense = ref({});
 const savingGoal = ref(null);
-const activeTab = ref('add');
+const activeTab = ref("add");
 const newExpense = ref({
   day: null,
-  description: '',
+  description: "",
   amount: null,
   notify: false,
 });
@@ -195,12 +195,12 @@ const editableExpense = ref({});
 
 // 삭제 옵션 관련 상태
 const showDeleteOptions = ref(false);
-const deleteOption = ref('future');
+const deleteOption = ref("future");
 
 const fetchData = async () => {
   try {
-    const UserId = localStorage.getItem('loggedInUserId');
-    const res = await axios.get('http://localhost:3000/fixedExpenses');
+    const UserId = localStorage.getItem("loggedInUserId");
+    const res = await axios.get("https://kb-piggybank.glitch.me/fixedExpenses");
     // deletedAt이 null인 데이터만 필터링
     expenses.value = Array.isArray(res.data)
       ? res.data.filter(
@@ -211,7 +211,7 @@ const fetchData = async () => {
       currentExpense.value = expenses.value[currentIndex.value];
     }
   } catch (error) {
-    console.error('데이터 로딩 실패:', error);
+    console.error("데이터 로딩 실패:", error);
   }
 };
 const prevExpense = () => {
@@ -229,8 +229,8 @@ const nextExpense = () => {
 };
 
 const formatNumber = (num) => {
-  if (!num) return '';
-  return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  if (!num) return "";
+  return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 };
 
 const addFixedExpense = async () => {
@@ -240,15 +240,15 @@ const addFixedExpense = async () => {
       !newExpense.value.description ||
       !newExpense.value.amount
     ) {
-      alert('모든 필드를 입력해주세요.');
+      alert("모든 필드를 입력해주세요.");
       return;
     }
-    const UserId = localStorage.getItem('loggedInUserId');
+    const UserId = localStorage.getItem("loggedInUserId");
     const responseGoal = await axios.get(
-      `http://localhost:3000/user/${UserId}`
+      `https://kb-piggybank.glitch.me/user/${UserId}`
     );
     savingGoal.value = responseGoal.data.goalSavings;
-    await axios.post('http://localhost:3000/fixedExpenses', {
+    await axios.post("https://kb-piggybank.glitch.me/fixedExpenses", {
       day: newExpense.value.day,
       description: newExpense.value.description,
       amount: newExpense.value.amount,
@@ -257,17 +257,17 @@ const addFixedExpense = async () => {
       categoryid: 13,
       deletedAt: null,
     });
-    alert('금융 일정이 성공적으로 추가되었습니다.');
+    alert("금융 일정이 성공적으로 추가되었습니다.");
     newExpense.value = {
       day: null,
-      description: '',
+      description: "",
       amount: null,
       notify: false,
     };
-    emit('close');
+    emit("close");
   } catch (error) {
-    console.error('금융 일정 추가 중 오류 발생:', error);
-    alert('금융 일정 추가에 실패했습니다.');
+    console.error("금융 일정 추가 중 오류 발생:", error);
+    alert("금융 일정 추가에 실패했습니다.");
   }
 };
 
@@ -287,11 +287,11 @@ const updateFixedExpense = async () => {
       !editableExpense.value.description ||
       !editableExpense.value.amount
     ) {
-      alert('모든 필드를 입력해주세요.');
+      alert("모든 필드를 입력해주세요.");
       return;
     }
     const id = editableExpense.value.id;
-    await axios.patch(`http://localhost:3000/fixedExpenses/${id}`, {
+    await axios.patch(`https://kb-piggybank.glitch.me/fixedExpenses/${id}`, {
       day: editableExpense.value.day,
       description: editableExpense.value.description,
       amount: editableExpense.value.amount,
@@ -299,11 +299,11 @@ const updateFixedExpense = async () => {
     });
     currentExpense.value = { ...editableExpense.value };
     expenses.value[currentIndex.value] = { ...editableExpense.value };
-    alert('금융 일정이 수정되었습니다.');
+    alert("금융 일정이 수정되었습니다.");
     editMode.value = false;
   } catch (error) {
-    console.error('금융 일정 수정 중 오류 발생:', error);
-    alert('금융 일정 수정에 실패했습니다.');
+    console.error("금융 일정 수정 중 오류 발생:", error);
+    alert("금융 일정 수정에 실패했습니다.");
   }
 };
 
@@ -328,18 +328,18 @@ const confirmDelete = async () => {
     //   return;
     // }
     const newDeletedAt =
-      deleteOption.value === 'future' ? props.month + 1 : props.month;
-    await axios.patch(`http://localhost:3000/fixedExpenses/${id}`, {
+      deleteOption.value === "future" ? props.month + 1 : props.month;
+    await axios.patch(`https://kb-piggybank.glitch.me/fixedExpenses/${id}`, {
       deletedAt: newDeletedAt,
     });
     // 로컬 데이터에도 반영
     // expenses.value[currentIndex.value].deletedAt = props.month;
-    alert('금융 일정이 삭제되었습니다.');
+    alert("금융 일정이 삭제되었습니다.");
     showDeleteOptions.value = false;
     editMode.value = false;
   } catch (error) {
-    console.error('금융 일정 삭제 중 오류 발생:', error);
-    alert('금융 일정 삭제에 실패했습니다.');
+    console.error("금융 일정 삭제 중 오류 발생:", error);
+    alert("금융 일정 삭제에 실패했습니다.");
   }
 };
 
@@ -375,15 +375,15 @@ onMounted(() => {
   border-color: #6b7280;
 }
 
-.dark input[type='text'],
-.dark input[type='number'] {
+.dark input[type="text"],
+.dark input[type="number"] {
   background-color: #374151;
   color: #f9fafb;
   border: 1px solid #4b5563;
 }
 
-.dark input[type='text']::placeholder,
-.dark input[type='number']::placeholder {
+.dark input[type="text"]::placeholder,
+.dark input[type="number"]::placeholder {
   color: #9ca3af;
 }
 
@@ -497,8 +497,8 @@ h2 {
   margin-bottom: 0.5rem;
 }
 
-input[type='text'],
-input[type='number'] {
+input[type="text"],
+input[type="number"] {
   width: 95%;
   padding: 0.75rem;
   border: 1px solid #e5e7eb;

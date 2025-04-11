@@ -33,7 +33,7 @@
           v-if="confirmPassword"
           :class="passwordMatch ? 'match' : 'not-match'"
         >
-          {{ passwordMatch ? '비밀번호가 같습니다!' : '비밀번호가 다릅니다!' }}
+          {{ passwordMatch ? "비밀번호가 같습니다!" : "비밀번호가 다릅니다!" }}
         </p>
 
         <label class="label-text">연령대</label>
@@ -75,18 +75,18 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
-import axios from 'axios';
-import { useRouter } from 'vue-router';
+import { ref, computed } from "vue";
+import axios from "axios";
+import { useRouter } from "vue-router";
 
 const router = useRouter();
 
-const email = ref('');
-const name = ref('');
-const password = ref('');
-const confirmPassword = ref('');
-const ageGroup = ref('10대');
-const gender = ref('');
+const email = ref("");
+const name = ref("");
+const password = ref("");
+const confirmPassword = ref("");
+const ageGroup = ref("10대");
+const gender = ref("");
 const showPassword = ref(false);
 const showConfirm = ref(false);
 
@@ -108,17 +108,19 @@ const passwordMatch = computed(() => {
 
 const handleSignUp = async () => {
   if (!passwordMatch.value) {
-    alert('비밀번호가 일치하지 않습니다.');
+    alert("비밀번호가 일치하지 않습니다.");
     return;
   }
 
   try {
-    const ageResponse = await axios.get('http://localhost:3000/ageArea');
+    const ageResponse = await axios.get(
+      "https://kb-piggybank.glitch.me/ageArea"
+    );
     const ageEntry = ageResponse.data.find((age) => age.age === ageGroup.value);
     const ageId = ageEntry ? ageEntry.id : null;
 
     if (!ageId) {
-      alert('유효한 연령대를 선택해주세요.');
+      alert("유효한 연령대를 선택해주세요.");
       return;
     }
 
@@ -127,17 +129,17 @@ const handleSignUp = async () => {
       password: password.value,
       name: name.value,
       age: ageId,
-      gender: gender.value || '미선택',
+      gender: gender.value || "미선택",
       goalSavings: 0,
     };
 
-    await axios.post('http://localhost:3000/user', newUser);
+    await axios.post("https://kb-piggybank.glitch.me/user", newUser);
 
-    alert('회원가입 성공!');
-    router.push('/login');
+    alert("회원가입 성공!");
+    router.push("/login");
   } catch (error) {
-    console.error('회원가입 실패:', error);
-    alert('회원가입 중 오류가 발생했습니다.');
+    console.error("회원가입 실패:", error);
+    alert("회원가입 중 오류가 발생했습니다.");
   }
 };
 </script>

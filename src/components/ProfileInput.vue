@@ -1,13 +1,13 @@
 <script setup>
-import { ref, computed, onBeforeMount } from 'vue';
-import axios from 'axios';
+import { ref, computed, onBeforeMount } from "vue";
+import axios from "axios";
 
 const form = ref({});
 const initialForm = ref({});
 const isModifyModalOpen = ref(false);
 
 onBeforeMount(() => {
-  const userInfo = JSON.parse(localStorage.getItem('loggedInUserInfo'));
+  const userInfo = JSON.parse(localStorage.getItem("loggedInUserInfo"));
 
   form.value = {
     ...userInfo,
@@ -23,11 +23,11 @@ const showConfirmPassword = ref(false);
 // 비밀번호 일치 확인
 const passwordMatchMessage = computed(() => {
   if (!form.value.password || !form.value.confirmPassword) {
-    return '비밀번호를 입력해 주세요';
+    return "비밀번호를 입력해 주세요";
   }
   return form.value.password === form.value.confirmPassword
-    ? '비밀번호가 일치합니다.'
-    : '비밀번호가 일치하지 않습니다.';
+    ? "비밀번호가 일치합니다."
+    : "비밀번호가 일치하지 않습니다.";
 });
 
 const isPasswordMatch = computed(
@@ -43,7 +43,7 @@ const initInfo = () => {
 
 // 비밀번호 보기/숨기기
 const toggleShowPassword = (field) => {
-  if (field === 'password') {
+  if (field === "password") {
     showPassword.value = !showPassword.value;
   } else {
     showConfirmPassword.value = !showConfirmPassword.value;
@@ -74,7 +74,7 @@ const confirmModify = async () => {
   }
 
   isModifyModalOpen.value = false;
-  localStorage.setItem('loggedInUserInfo', JSON.stringify(form.value));
+  localStorage.setItem("loggedInUserInfo", JSON.stringify(form.value));
 
   try {
     const userId = form.value.id;
@@ -85,16 +85,16 @@ const confirmModify = async () => {
     };
 
     const response = await axios.patch(
-      `http://localhost:3000/user/${userId}`,
+      `https://kb-piggybank.glitch.me/user/${userId}`,
       updatedData
     );
-    alert('정보가 수정되었습니다.');
+    alert("정보가 수정되었습니다.");
 
     showPassword.value = false;
     showConfirmPassword.value = false;
   } catch (error) {
-    console.error('서버 업데이트 실패:', error);
-    alert('정보를 수정하는 데 실패했어요.');
+    console.error("서버 업데이트 실패:", error);
+    alert("정보를 수정하는 데 실패했어요.");
   }
 };
 </script>
@@ -139,7 +139,7 @@ const confirmModify = async () => {
         class="input-wrapper"
       />
       <button type="button" @click="toggleShowPassword('password')">
-        {{ showPassword ? '숨기기' : '보기' }}
+        {{ showPassword ? "숨기기" : "보기" }}
       </button>
     </div>
 
@@ -151,7 +151,7 @@ const confirmModify = async () => {
         class="input-wrapper"
       />
       <button type="button" @click="toggleShowPassword('confirmPassword')">
-        {{ showConfirmPassword ? '숨기기' : '보기' }}
+        {{ showConfirmPassword ? "숨기기" : "보기" }}
       </button>
     </div>
 

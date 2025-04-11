@@ -5,8 +5,8 @@
 </template>
 
 <script setup>
-import { ref, watch, onMounted } from 'vue';
-import { Bar } from 'vue-chartjs';
+import { ref, watch, onMounted } from "vue";
+import { Bar } from "vue-chartjs";
 import {
   Chart as ChartJS,
   Title,
@@ -15,7 +15,7 @@ import {
   BarElement,
   CategoryScale,
   LinearScale,
-} from 'chart.js';
+} from "chart.js";
 
 ChartJS.register(
   Title,
@@ -39,7 +39,7 @@ const chartOptions = {
   responsive: true,
   plugins: {
     legend: {
-      position: 'bottom',
+      position: "bottom",
     },
     tooltip: {
       callbacks: {
@@ -55,7 +55,7 @@ const chartOptions = {
     y: {
       beginAtZero: true,
       ticks: {
-        callback: (value) => '₩' + value.toLocaleString(),
+        callback: (value) => "₩" + value.toLocaleString(),
       },
     },
   },
@@ -70,7 +70,7 @@ const updateChartData = () => {
     for (let i = 5; i >= 0; i--) {
       const date = new Date(now.getFullYear(), now.getMonth() - i, 1);
       const year = date.getFullYear();
-      const month = (date.getMonth() + 1).toString().padStart(2, '0');
+      const month = (date.getMonth() + 1).toString().padStart(2, "0");
       recentSixMonths.push(`${year}-${month}`);
     }
 
@@ -78,7 +78,7 @@ const updateChartData = () => {
     const filtered = recentSixMonths.map((monthStr) => {
       const found = props.chartData.find((item) => item.month === monthStr);
       return {
-        month: `${parseInt(monthStr.split('-')[1])}월`,
+        month: `${parseInt(monthStr.split("-")[1])}월`,
         income: found?.income || 0,
         expense: found?.expense || 0,
       };
@@ -92,16 +92,16 @@ const updateChartData = () => {
       labels,
       datasets: [
         {
-          label: '수입',
-          backgroundColor: '#4ade80',
-          borderColor: '#4ade80',
+          label: "수입",
+          backgroundColor: "#4ade80",
+          borderColor: "#4ade80",
           borderWidth: 1,
           data: incomeData,
         },
         {
-          label: '지출',
-          backgroundColor: '#f87171',
-          borderColor: '#f87171',
+          label: "지출",
+          backgroundColor: "#f87171",
+          borderColor: "#f87171",
           borderWidth: 1,
           data: expenseData,
         },

@@ -1,14 +1,14 @@
 <script setup>
 // ✅ 기본 Vue 및 라이브러리 임포트
-import { ref, onMounted, computed } from 'vue';
-import { useRouter } from 'vue-router';
-import axios from 'axios';
+import { ref, onMounted, computed } from "vue";
+import { useRouter } from "vue-router";
+import axios from "axios";
 
 // ✅ 모달 컴포넌트 임포트
-import TransactionEditModal from '../components/TransactionEditModal.vue';
-import FilterModal from '../components/FilterModal.vue';
-import TransactionDetailModal from '../components/TransactionDetailModal.vue';
-import TransactionModal from '../components/TransactionModal.vue';
+import TransactionEditModal from "../components/TransactionEditModal.vue";
+import FilterModal from "../components/FilterModal.vue";
+import TransactionDetailModal from "../components/TransactionDetailModal.vue";
+import TransactionModal from "../components/TransactionModal.vue";
 
 // 페이지네이션
 const currentPage = ref(1);
@@ -34,22 +34,22 @@ const goToPage = (page) => {
 
 // ✅ 라우터 이동 관련
 const router = useRouter();
-const goToHome = () => router.push('/home');
-const mypageClick = () => router.push('/myPage');
+const goToHome = () => router.push("/home");
+const mypageClick = () => router.push("/myPage");
 const logout = () => {
-  alert('안녕히가세요!');
+  alert("안녕히가세요!");
 
-  localStorage.removeItem('loggedInUserId');
-  localStorage.removeItem('loggedInUserInfo');
+  localStorage.removeItem("loggedInUserId");
+  localStorage.removeItem("loggedInUserInfo");
 
-  router.push('/');
+  router.push("/");
 };
 
 // ✅ 다크 모드
 const isDarkMode = ref(false);
 const toggleDarkMode = () => {
   isDarkMode.value = !isDarkMode.value;
-  document.documentElement.classList.toggle('dark', isDarkMode.value);
+  document.documentElement.classList.toggle("dark", isDarkMode.value);
 };
 
 // ✅ 거래 관련 상태
@@ -90,7 +90,10 @@ const closeEdit = () => {
 
 const applyEdit = async (updated) => {
   try {
-    await axios.patch(`http://localhost:3000/money/${updated.id}`, updated);
+    await axios.patch(
+      `https://kb-piggybank.glitch.me/money/${updated.id}`,
+      updated
+    );
 
     const categoryName = getCategoryName(updated.categoryid);
     const updatedDisplayData = {
@@ -99,7 +102,7 @@ const applyEdit = async (updated) => {
       category: categoryName,
       amount: updated.amount,
       description: updated.memo,
-      type: updated.typeid === 1 ? 'income' : 'expense',
+      type: updated.typeid === 1 ? "income" : "expense",
     };
 
     const index = transactions.value.findIndex((t) => t.id === updated.id);
@@ -108,38 +111,38 @@ const applyEdit = async (updated) => {
     closeEdit();
     calculateTotals();
   } catch (err) {
-    console.error('수정 실패:', err);
-    alert('수정 중 오류가 발생했습니다.');
+    console.error("수정 실패:", err);
+    alert("수정 중 오류가 발생했습니다.");
   }
 };
 
 const deleteTransaction = async (id) => {
-  if (confirm('정말 삭제하시겠습니까?')) {
+  if (confirm("정말 삭제하시겠습니까?")) {
     try {
-      await axios.delete(`http://localhost:3000/money/${id}`);
+      await axios.delete(`https://kb-piggybank.glitch.me/money/${id}`);
       transactions.value = transactions.value.filter((t) => t.id !== id);
       calculateTotals();
     } catch (err) {
-      console.error('삭제 실패:', err);
-      alert('삭제 중 오류가 발생했습니다.');
+      console.error("삭제 실패:", err);
+      alert("삭제 중 오류가 발생했습니다.");
     }
   }
 };
 
-const sortKey = ref('');
-const sortOrder = ref('asc');
+const sortKey = ref("");
+const sortOrder = ref("asc");
 const sortBy = (key) => {
   if (sortKey.value === key) {
-    sortOrder.value = sortOrder.value === 'asc' ? 'desc' : 'asc';
+    sortOrder.value = sortOrder.value === "asc" ? "desc" : "asc";
   } else {
     sortKey.value = key;
-    sortOrder.value = 'asc';
+    sortOrder.value = "asc";
   }
 
   transactions.value.sort((a, b) => {
-    let aVal = key === 'date' ? new Date(a[key]) : Number(a[key]) || a[key];
-    let bVal = key === 'date' ? new Date(b[key]) : Number(b[key]) || b[key];
-    return sortOrder.value === 'asc'
+    let aVal = key === "date" ? new Date(a[key]) : Number(a[key]) || a[key];
+    let bVal = key === "date" ? new Date(b[key]) : Number(b[key]) || b[key];
+    return sortOrder.value === "asc"
       ? aVal > bVal
         ? 1
         : -1
@@ -151,7 +154,7 @@ const sortBy = (key) => {
 
 const getCategoryName = (id) => {
   const cat = categories.value.find((c) => c.id === id);
-  return cat ? cat.name : '기타';
+  return cat ? cat.name : "기타";
 };
 
 const totalIncome = ref(0);
@@ -160,11 +163,11 @@ const allAccount = ref(0);
 
 const calculateTotals = () => {
   totalIncome.value = transactions.value
-    .filter((item) => item.type === 'income')
+    .filter((item) => item.type === "income")
     .reduce((acc, item) => acc + Number(item.amount), 0);
 
   totalExpense.value = transactions.value
-    .filter((item) => item.type === 'expense')
+    .filter((item) => item.type === "expense")
     .reduce((acc, item) => acc + Number(item.amount), 0);
 
   allAccount.value = totalIncome.value - totalExpense.value;
@@ -172,10 +175,10 @@ const calculateTotals = () => {
 
 const fetchTransactions = async () => {
   try {
-    const userId = localStorage.getItem('loggedInUserId');
-    if (!userId) return alert('로그인이 필요합니다.');
+    const userId = localStorage.getItem("loggedInUserId");
+    if (!userId) return alert("로그인이 필요합니다.");
 
-    const response = await axios.get('http://localhost:3000/money');
+    const response = await axios.get("https://kb-piggybank.glitch.me/money");
     const userData = response.data.filter((item) => item.userid === userId);
     const mapped = userData.map((item) => ({
       id: item.id,
@@ -183,13 +186,13 @@ const fetchTransactions = async () => {
       category: getCategoryName(item.categoryid),
       amount: Number(item.amount),
       description: item.memo,
-      type: item.typeid === 1 ? 'income' : 'expense',
+      type: item.typeid === 1 ? "income" : "expense",
     }));
     transactions.value = mapped;
     originalTransactions.value = mapped;
     calculateTotals();
   } catch (error) {
-    console.error('데이터 불러오기 실패:', error);
+    console.error("데이터 불러오기 실패:", error);
   }
 };
 
@@ -199,7 +202,7 @@ const applyFilter = (filterData) => {
 
   if (startDate) filtered = filtered.filter((t) => t.date >= startDate);
   if (endDate) filtered = filtered.filter((t) => t.date <= endDate);
-  if (type !== 'all') filtered = filtered.filter((t) => t.type === type);
+  if (type !== "all") filtered = filtered.filter((t) => t.type === type);
   if (categories?.length)
     filtered = filtered.filter((t) => categories.includes(t.category));
 
@@ -208,9 +211,9 @@ const applyFilter = (filterData) => {
 };
 const handleAddTransaction = async (newTransaction) => {
   try {
-    const userId = localStorage.getItem('loggedInUserId');
+    const userId = localStorage.getItem("loggedInUserId");
     if (!userId) {
-      alert('로그인이 필요합니다.');
+      alert("로그인이 필요합니다.");
       return;
     }
 
@@ -221,7 +224,10 @@ const handleAddTransaction = async (newTransaction) => {
     };
 
     // POST 요청 → DB 저장
-    const res = await axios.post(`http://localhost:3000/money`, payload);
+    const res = await axios.post(
+      `https://kb-piggybank.glitch.me/money`,
+      payload
+    );
 
     // 응답값 기반으로 프론트에 표시할 데이터 생성
     const newItem = {
@@ -230,7 +236,7 @@ const handleAddTransaction = async (newTransaction) => {
       category: getCategoryName(res.data.categoryid),
       amount: Number(res.data.amount),
       description: res.data.memo,
-      type: res.data.typeid === 1 ? 'income' : 'expense',
+      type: res.data.typeid === 1 ? "income" : "expense",
     };
 
     // 중복 방지 후 추가
@@ -244,20 +250,20 @@ const handleAddTransaction = async (newTransaction) => {
     closeTransactionModal();
     calculateTotals();
   } catch (err) {
-    console.error('추가 실패:', err);
-    alert('추가 중 오류가 발생했습니다.');
+    console.error("추가 실패:", err);
+    alert("추가 중 오류가 발생했습니다.");
   }
 };
 
 onMounted(async () => {
   try {
-    const res = await axios.get('http://localhost:3000/category');
+    const res = await axios.get("https://kb-piggybank.glitch.me/category");
     categories.value = res.data;
 
     // 카테고리 다 받아오고 나서 호출
     await fetchTransactions();
   } catch (err) {
-    console.error('카테고리 불러오기 실패:', err);
+    console.error("카테고리 불러오기 실패:", err);
   }
 });
 </script>
@@ -275,7 +281,7 @@ onMounted(async () => {
         </h1>
         <div class="flex items-center gap-2 relative">
           <button @click="toggleDarkMode" class="darkModeButton">
-            {{ isDarkMode ? '☀️' : '🌙' }}
+            {{ isDarkMode ? "☀️" : "🌙" }}
           </button>
           <button class="mypageButton" @click="mypageClick">마이페이지</button>
           <button class="inputValue" @click="openTransactionModal">

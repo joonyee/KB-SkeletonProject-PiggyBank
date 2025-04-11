@@ -1,8 +1,8 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue';
-import axios from 'axios';
-import ExpenseChart from '../components/ExpenseChart.vue';
-import { useRouter } from 'vue-router';
+import { ref, computed, onMounted } from "vue";
+import axios from "axios";
+import ExpenseChart from "../components/ExpenseChart.vue";
+import { useRouter } from "vue-router";
 
 // 상태 변수
 const selectedCategories = ref([]);
@@ -28,36 +28,36 @@ const router = useRouter();
 const isDarkMode = ref(false);
 const toggleDarkMode = () => {
   isDarkMode.value = !isDarkMode.value;
-  document.documentElement.classList.toggle('dark', isDarkMode.value);
+  document.documentElement.classList.toggle("dark", isDarkMode.value);
 };
-const goToHome = () => router.push('/home');
-const mypageClick = () => router.push('/myPage');
+const goToHome = () => router.push("/home");
+const mypageClick = () => router.push("/myPage");
 const logout = () => {
-  alert('로그아웃되었습니다.');
-  localStorage.removeItem('loggedInUserId');
-  router.push('/');
+  alert("로그아웃되었습니다.");
+  localStorage.removeItem("loggedInUserId");
+  router.push("/");
 };
 
 // 카테고리 이름 매핑 함수
 const getCategoryNameById = (id) => {
   const category = categoryList.value.find((cat) => cat.id === id);
-  return category ? category.name : '';
+  return category ? category.name : "";
 };
 
 // 데이터 로딩 및 계산
 onMounted(async () => {
   try {
-    const loggedInUserId = localStorage.getItem('loggedInUserId');
+    const loggedInUserId = localStorage.getItem("loggedInUserId");
     if (!loggedInUserId) {
-      alert('로그인이 필요합니다.');
-      router.push('/login');
+      alert("로그인이 필요합니다.");
+      router.push("/login");
       return;
     }
 
     const [moneyRes, userRes, categoryRes] = await Promise.all([
-      axios.get('http://localhost:3000/money'),
-      axios.get('http://localhost:3000/user'),
-      axios.get('http://localhost:3000/category'),
+      axios.get("https://kb-piggybank.glitch.me/money"),
+      axios.get("https://kb-piggybank.glitch.me/user"),
+      axios.get("https://kb-piggybank.glitch.me/category"),
     ]);
 
     moneyData.value = moneyRes.data;
@@ -66,7 +66,7 @@ onMounted(async () => {
 
     currentUser.value = userList.value.find((u) => u.id === loggedInUserId);
     if (!currentUser.value) {
-      alert('사용자 정보를 찾을 수 없습니다.');
+      alert("사용자 정보를 찾을 수 없습니다.");
       return;
     }
 
@@ -111,8 +111,8 @@ onMounted(async () => {
         : 0;
     });
   } catch (err) {
-    console.error('데이터 불러오기 오류:', err);
-    alert('데이터를 불러오는 중 오류가 발생했습니다.');
+    console.error("데이터 불러오기 오류:", err);
+    alert("데이터를 불러오는 중 오류가 발생했습니다.");
   }
 });
 
@@ -140,7 +140,7 @@ const filteredAvgSpending = computed(() =>
       </h1>
       <div class="flex items-center gap-2 relative">
         <button @click="toggleDarkMode" class="darkModeButton">
-          {{ isDarkMode ? '☀️' : '🌙' }}
+          {{ isDarkMode ? "☀️" : "🌙" }}
         </button>
         <button class="mypageButton" @click="mypageClick">마이페이지</button>
         <button class="inputValue" @click="openTransactionModal">

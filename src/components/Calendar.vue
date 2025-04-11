@@ -51,9 +51,9 @@
 </template>
 
 <script setup>
-import { ref, watch, onMounted, computed } from 'vue';
-import TransactionModal from './TransactionModal.vue';
-import axios from 'axios';
+import { ref, watch, onMounted, computed } from "vue";
+import TransactionModal from "./TransactionModal.vue";
+import axios from "axios";
 
 function getCalendarDays(year, month) {
   const firstDay = new Date(year, month, 1);
@@ -81,7 +81,7 @@ const props = defineProps({
   month: Number,
 });
 
-const emit = defineEmits(['update:year', 'update:month']);
+const emit = defineEmits(["update:year", "update:month"]);
 
 const currentYear = computed(() => props.year);
 const currentMonth = computed(() => props.month);
@@ -89,7 +89,7 @@ const calendarData = ref([]);
 const transactions = ref([]);
 const fixedExpenses = ref([]);
 
-const dayNames = ['일', '월', '화', '수', '목', '금', '토'];
+const dayNames = ["일", "월", "화", "수", "목", "금", "토"];
 const isModalOpen = ref(false);
 const selectedDate = ref(null);
 
@@ -102,14 +102,14 @@ function closeModal() {
   isModalOpen.value = false;
 }
 function formatNumber(num) {
-  if (!num) return '';
-  return num.toLocaleString('ko-KR');
+  if (!num) return "";
+  return num.toLocaleString("ko-KR");
 }
 
 function updateCalendarData() {
   const days = getCalendarDays(currentYear.value, currentMonth.value);
   days.forEach((day) => {
-    const formatted = day.date.toISOString().split('T')[0];
+    const formatted = day.date.toISOString().split("T")[0];
     const dayTx = transactions.value.filter((tx) => tx.date === formatted);
     const currentDisplayedMonth = currentMonth.value + 1;
 
@@ -148,15 +148,15 @@ const isDataLoaded = ref(false);
 const savingGoal = ref(null);
 onMounted(async () => {
   try {
-    const UserId = localStorage.getItem('loggedInUserId');
+    const UserId = localStorage.getItem("loggedInUserId");
     const responseGoal = await axios.get(
-      `http://localhost:3000/user/${UserId}`
+      `https://kb-piggybank.glitch.me/user/${UserId}`
     );
     savingGoal.value = responseGoal.data.goalSavings;
 
     const [moneyRes, fixedRes] = await Promise.all([
-      axios.get('http://localhost:3000/money'),
-      axios.get('http://localhost:3000/fixedExpenses'),
+      axios.get("https://kb-piggybank.glitch.me/money"),
+      axios.get("https://kb-piggybank.glitch.me/fixedExpenses"),
     ]);
     transactions.value = moneyRes.data.filter(
       (entry) => entry.userid == UserId
@@ -167,7 +167,7 @@ onMounted(async () => {
     isDataLoaded.value = true;
     updateCalendarData(); // 최초 1회 수동 호출
   } catch (error) {
-    console.error('데이터 불러오기 실패:', error);
+    console.error("데이터 불러오기 실패:", error);
   }
 });
 
@@ -180,19 +180,19 @@ watch([currentYear, currentMonth], () => {
 
 function prevMonth() {
   if (currentMonth.value === 0) {
-    emit('update:year', currentYear.value - 1);
-    emit('update:month', 11);
+    emit("update:year", currentYear.value - 1);
+    emit("update:month", 11);
   } else {
-    emit('update:month', currentMonth.value - 1);
+    emit("update:month", currentMonth.value - 1);
   }
 }
 
 function nextMonth() {
   if (currentMonth.value === 11) {
-    emit('update:year', currentYear.value + 1);
-    emit('update:month', 0);
+    emit("update:year", currentYear.value + 1);
+    emit("update:month", 0);
   } else {
-    emit('update:month', currentMonth.value + 1);
+    emit("update:month", currentMonth.value + 1);
   }
 }
 </script>

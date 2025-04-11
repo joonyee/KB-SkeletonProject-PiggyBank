@@ -58,7 +58,7 @@ const confirmDelete = async () => {
       return;
     }
 
-    const res = await fetch(`http://localhost:3000/user/${userId}`, {
+    const res = await fetch(`https://kb-piggybank.glitch.me/user/${userId}`, {
       method: 'DELETE',
     });
 

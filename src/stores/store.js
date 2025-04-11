@@ -1,8 +1,8 @@
-import { defineStore } from 'pinia';
-import { computed, ref } from 'vue';
-import axios from 'axios';
+import { defineStore } from "pinia";
+import { computed, ref } from "vue";
+import axios from "axios";
 
-export const useDashboardStore = defineStore('dashboard', () => {
+export const useDashboardStore = defineStore("dashboard", () => {
   const chartData = ref([]);
   const categorySpending = ref([]);
   const transactions = ref([]);
@@ -10,7 +10,7 @@ export const useDashboardStore = defineStore('dashboard', () => {
 
   const fetchData = async () => {
     try {
-      const response = await axios.get('http://localhost:3000/money');
+      const response = await axios.get("https://kb-piggybank.glitch.me/money");
 
       const moneyData = response.data;
       const monthlyTotals = {};
@@ -76,7 +76,9 @@ export const useDashboardStore = defineStore('dashboard', () => {
 
       console.log(categoryTotals);
 
-      const categoryRes = await axios.get('http://localhost:3000/category');
+      const categoryRes = await axios.get(
+        "https://kb-piggybank.glitch.me/category"
+      );
       const categoryMap = categoryRes.data.reduce((map, cat) => {
         map[cat.id] = cat.name;
         return map;
@@ -90,7 +92,7 @@ export const useDashboardStore = defineStore('dashboard', () => {
         })
         .map((entry) => ({
           date: entry.date,
-          category: categoryMap[entry.categoryid] || '기타',
+          category: categoryMap[entry.categoryid] || "기타",
           description: entry.memo,
           amount: entry.typeid === 1 ? entry.amount : -entry.amount,
         }));
@@ -103,12 +105,12 @@ export const useDashboardStore = defineStore('dashboard', () => {
       transactions.value = recentTransactions;
       categorySpending.value = Object.entries(categoryTotals).map(
         ([id, amount]) => ({
-          category: categoryMap[id] || '기타',
+          category: categoryMap[id] || "기타",
           amount,
         })
       );
     } catch (error) {
-      console.error('데이터 로딩 실패:', error);
+      console.error("데이터 로딩 실패:", error);
     } finally {
       loading.value = false;
     }

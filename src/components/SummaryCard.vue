@@ -1,5 +1,5 @@
 <script setup>
-import { computed } from 'vue';
+import { computed } from "vue";
 
 const props = defineProps({
   title: String,
@@ -8,9 +8,9 @@ const props = defineProps({
 });
 
 const cardClass = computed(() => {
-  if (props.type === 'income') return 'income';
-  if (props.type === 'expense') return 'expense';
-  return 'balance';
+  if (props.type === "income") return "income";
+  if (props.type === "expense") return "expense";
+  return "balance";
 });
 </script>
 

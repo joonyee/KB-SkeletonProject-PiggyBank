@@ -43,7 +43,7 @@
             }"
             @click="openCategoryModal"
           >
-            {{ selectedCategory || '선택해주세요' }}
+            {{ selectedCategory || "선택해주세요" }}
           </div>
           <div v-if="showCategoryError" class="errorMessage">
             카테고리를 선택해주세요
@@ -141,11 +141,11 @@
 </template>
 
 <script setup>
-import { ref, watch, onMounted, onBeforeUnmount } from 'vue';
-import axios from 'axios';
-import CategoryModal from './CategoryModal.vue';
-import { useRouter } from 'vue-router';
-import '../assets/styles/global.css';
+import { ref, watch, onMounted, onBeforeUnmount } from "vue";
+import axios from "axios";
+import CategoryModal from "./CategoryModal.vue";
+import { useRouter } from "vue-router";
+import "../assets/styles/global.css";
 
 // 외부에서 전달받은 모달 열림 상태
 const props = defineProps({
@@ -155,41 +155,41 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits(['save', 'close']);
+const emit = defineEmits(["save", "close"]);
 const router = useRouter();
 
 // 상태 변수 정의
 const isModalOpen = ref(props.isOpen);
 const isCategoryModalOpen = ref(false);
-const activeTab = ref('expense');
+const activeTab = ref("expense");
 const selectedDate = ref(formatDate(new Date()));
-const selectedCategory = ref('');
-const amount = ref('');
-const description = ref('');
-const paymentMethod = ref('account');
-const tendency = ref('planned');
+const selectedCategory = ref("");
+const amount = ref("");
+const description = ref("");
+const paymentMethod = ref("account");
+const tendency = ref("planned");
 const showCategoryError = ref(false);
 const isMobile = ref(false);
 
 // 로그인된 유저 정보
-const userInfo = JSON.parse(localStorage.getItem('loggedInUserInfo') || '{}');
-const userId = ref(userInfo.id || ''); // 유저 고유ID
+const userInfo = JSON.parse(localStorage.getItem("loggedInUserInfo") || "{}");
+const userId = ref(userInfo.id || ""); // 유저 고유ID
 const userAgeId = ref(userInfo.age || null); // 연령대 ID
 
 // 카테고리 정의
 const categories = {
-  income: ['급여', '용돈', '부수입', '환급/지원금', '기타수입'],
+  income: ["급여", "용돈", "부수입", "환급/지원금", "기타수입"],
   expense: [
-    '식사/카페',
-    '배달/간식',
-    '쇼핑',
-    '교통/차량',
-    '주거/관리',
-    '건강/병원',
-    '취미/여가',
-    '구독서비스',
-    '여행/외출',
-    '기타지출',
+    "식사/카페",
+    "배달/간식",
+    "쇼핑",
+    "교통/차량",
+    "주거/관리",
+    "건강/병원",
+    "취미/여가",
+    "구독서비스",
+    "여행/외출",
+    "기타지출",
   ],
 };
 
@@ -198,17 +198,17 @@ const categoryMap = {
   급여: 1,
   용돈: 2,
   부수입: 3,
-  '환급/지원금': 4,
+  "환급/지원금": 4,
   기타수입: 5,
-  '식사/카페': 6,
-  '배달/간식': 7,
+  "식사/카페": 6,
+  "배달/간식": 7,
   쇼핑: 8,
-  '교통/차량': 9,
-  '주거/관리': 10,
-  '건강/병원': 11,
-  '취미/여가': 12,
+  "교통/차량": 9,
+  "주거/관리": 10,
+  "건강/병원": 11,
+  "취미/여가": 12,
   구독서비스: 13,
-  '여행/외출': 14,
+  "여행/외출": 14,
   기타지출: 15,
 };
 
@@ -236,15 +236,15 @@ watch(
 
 // 탭 전환 시 카테고리 초기화
 watch(activeTab, () => {
-  selectedCategory.value = '';
+  selectedCategory.value = "";
 });
 
 // 날짜 포맷
 function formatDate(date) {
   const d = new Date(date);
   const year = d.getFullYear();
-  const month = ('0' + (d.getMonth() + 1)).slice(-2);
-  const day = ('0' + d.getDate()).slice(-2);
+  const month = ("0" + (d.getMonth() + 1)).slice(-2);
+  const day = ("0" + d.getDate()).slice(-2);
   return `${year}-${month}-${day}`;
 }
 
@@ -271,13 +271,13 @@ function handleCategoryTabChange(tab) {
 // 거래 저장
 async function saveTransaction() {
   if (!userId.value) {
-    alert('로그인이 필요합니다.');
-    router.push('/login');
+    alert("로그인이 필요합니다.");
+    router.push("/login");
     return;
   }
 
   if (!userAgeId.value) {
-    alert('회원 정보에 연령대가 없습니다.');
+    alert("회원 정보에 연령대가 없습니다.");
     return;
   }
 
@@ -286,13 +286,13 @@ async function saveTransaction() {
     return;
   }
 
-  const isIncome = activeTab.value === 'income';
+  const isIncome = activeTab.value === "income";
   const typeId = isIncome ? 1 : 2;
   const categoryId = categoryMap[selectedCategory.value];
 
   if (!categoryId) {
-    alert('유효하지 않은 카테고리입니다.');
-    console.error('카테고리 매핑 오류:', selectedCategory.value);
+    alert("유효하지 않은 카테고리입니다.");
+    console.error("카테고리 매핑 오류:", selectedCategory.value);
     return;
   }
 
@@ -310,28 +310,28 @@ async function saveTransaction() {
 
   try {
     const response = await axios.post(
-      'http://localhost:3000/money',
+      "https://kb-piggybank.glitch.me/money",
       transaction
     );
-    console.log('저장 성공:', response.data);
-    alert('거래가 저장되었습니다');
+    console.log("저장 성공:", response.data);
+    alert("거래가 저장되었습니다");
 
-    emit('save', response.data);
+    emit("save", response.data);
     resetForm();
     closeModal();
   } catch (error) {
-    console.error('저장 실패:', error);
-    alert('저장 중 오류가 발생했습니다.');
+    console.error("저장 실패:", error);
+    alert("저장 중 오류가 발생했습니다.");
   }
 }
 
 // 초기화 및 모달 닫기
 function resetForm() {
-  selectedCategory.value = '';
-  amount.value = '';
-  description.value = '';
-  paymentMethod.value = 'account';
-  tendency.value = 'planned';
+  selectedCategory.value = "";
+  amount.value = "";
+  description.value = "";
+  paymentMethod.value = "account";
+  tendency.value = "planned";
   selectedDate.value = formatDate(new Date());
   showCategoryError.value = false;
 }
@@ -339,22 +339,22 @@ function resetForm() {
 function closeModal() {
   resetForm();
   isModalOpen.value = false;
-  emit('close');
+  emit("close");
 }
 
 // 화면 크기 감지 및 로그인 체크
 onMounted(() => {
   checkScreenSize();
-  window.addEventListener('resize', checkScreenSize);
+  window.addEventListener("resize", checkScreenSize);
 
   if (!userId.value) {
-    alert('로그인이 필요합니다.');
-    router.push('/login');
+    alert("로그인이 필요합니다.");
+    router.push("/login");
   }
 });
 
 onBeforeUnmount(() => {
-  window.removeEventListener('resize', checkScreenSize);
+  window.removeEventListener("resize", checkScreenSize);
 });
 </script>
 
@@ -586,13 +586,13 @@ onBeforeUnmount(() => {
   background-color: #ffa6d8;
 }
 
-input[type='number']::-webkit-outer-spin-button,
-input[type='number']::-webkit-inner-spin-button {
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
 
-input[type='number'] {
+input[type="number"] {
   appearance: textfield;
   -moz-appearance: textfield;
 }

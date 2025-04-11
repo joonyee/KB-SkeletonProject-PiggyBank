@@ -1,13 +1,13 @@
 <script setup>
-import { defineProps, defineEmits, ref, watch, computed } from 'vue';
-import axios from 'axios';
+import { defineProps, defineEmits, ref, watch, computed } from "vue";
+import axios from "axios";
 
 const props = defineProps({
   isOpen: Boolean,
   transaction: Object,
 });
 
-const emits = defineEmits(['close', 'update']);
+const emits = defineEmits(["close", "update"]);
 
 const editedTransaction = ref({});
 
@@ -21,32 +21,32 @@ watch(
   { immediate: true }
 );
 
-const paymentMethods = ['카드결제', '계좌거래', '현금'];
+const paymentMethods = ["카드결제", "계좌거래", "현금"];
 
 const expenseCategories = [
-  '식사/카페',
-  '배달/간식',
-  '쇼핑',
-  '교통/차량',
-  '주거/관리',
-  '건강/병원',
-  '취미/여가',
-  '구독서비스',
-  '여행/외출',
-  '기타지출',
+  "식사/카페",
+  "배달/간식",
+  "쇼핑",
+  "교통/차량",
+  "주거/관리",
+  "건강/병원",
+  "취미/여가",
+  "구독서비스",
+  "여행/외출",
+  "기타지출",
 ];
-const incomeCategories = ['급여', '용돈', '부수입', '환급/지원금', '기타수입'];
+const incomeCategories = ["급여", "용돈", "부수입", "환급/지원금", "기타수입"];
 
 const categories = ref([]);
 
 const categoryList = computed(() =>
-  editedTransaction.value?.type === 'expense'
+  editedTransaction.value?.type === "expense"
     ? expenseCategories
     : incomeCategories
 );
 
 const closeModal = () => {
-  emits('close');
+  emits("close");
 };
 
 const categoryToId = (name) => {
@@ -60,7 +60,7 @@ const paymentToId = (method) => {
 };
 
 const consumptionToId = (feel) => {
-  const map = { '계획적 지출': 1, '충동적 지출': 2, 수입: 3 };
+  const map = { "계획적 지출": 1, "충동적 지출": 2, 수입: 3 };
   return map[feel];
 };
 
@@ -69,7 +69,7 @@ const saveTransaction = async () => {
     const payload = {
       id: editedTransaction.value.id,
       userid: editedTransaction.value.userid,
-      typeid: editedTransaction.value.type === 'income' ? 1 : 2,
+      typeid: editedTransaction.value.type === "income" ? 1 : 2,
       categoryid: categoryToId(editedTransaction.value.category),
       date: editedTransaction.value.date,
       amount: editedTransaction.value.amount,
@@ -78,12 +78,15 @@ const saveTransaction = async () => {
       memo: editedTransaction.value.description,
     };
 
-    await axios.patch(`http://localhost:3000/money/${payload.id}`, payload);
-    emits('update', payload);
+    await axios.patch(
+      `https://kb-piggybank.glitch.me/money/${payload.id}`,
+      payload
+    );
+    emits("update", payload);
     closeModal();
   } catch (err) {
-    console.error('거래 수정 실패:', err);
-    alert('수정 중 오류가 발생했습니다.');
+    console.error("거래 수정 실패:", err);
+    alert("수정 중 오류가 발생했습니다.");
   }
 };
 
@@ -96,9 +99,9 @@ const setConsumption = (type) => {
 };
 
 // 카테고리 데이터 불러오기
-import { onMounted } from 'vue';
+import { onMounted } from "vue";
 onMounted(async () => {
-  const res = await axios.get('http://localhost:3000/category');
+  const res = await axios.get("https://kb-piggybank.glitch.me/category");
   categories.value = res.data;
 });
 </script>

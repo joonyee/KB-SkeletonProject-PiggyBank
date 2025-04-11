@@ -61,8 +61,8 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
-import axios from 'axios';
+import { ref, computed, onMounted } from "vue";
+import axios from "axios";
 
 const props = defineProps({
   year: { type: Number, required: true },
@@ -75,7 +75,7 @@ const fixedExpenses = ref([]);
 // 전달받은 연도와 월에 해당하는 거래 내역 필터링
 const monthlyTransactions = computed(() => {
   return transactions.value.filter((tx) => {
-    const [txYear, txMonth] = tx.date.split('-');
+    const [txYear, txMonth] = tx.date.split("-");
     return Number(txYear) === props.year && Number(txMonth) === props.month;
   });
 });
@@ -83,7 +83,7 @@ const incomeCategoryIds = computed(() => Object.keys(categoryIncomes.value));
 const expenseCategoryIds = computed(() => Object.keys(categoryExpenses.value));
 const getCategoryName = (catId) => {
   const cat = categoryData.value.find((c) => c.id === Number(catId));
-  return cat ? cat.name : '기타';
+  return cat ? cat.name : "기타";
 };
 
 // 총 수입: typeid === 1
@@ -161,23 +161,23 @@ const getIncomeBarWidth = (catId) => {
 
 // 금액을 천 단위 콤마로 포맷
 const formatMoney = (num) => {
-  if (!num) return '0';
-  return num.toLocaleString('ko-KR');
+  if (!num) return "0";
+  return num.toLocaleString("ko-KR");
 };
 const savingGoal = ref(null);
 // 거래 데이터 로드
 onMounted(async () => {
   try {
-    const UserId = localStorage.getItem('loggedInUserId');
+    const UserId = localStorage.getItem("loggedInUserId");
     const responseGoal = await axios.get(
-      `http://localhost:3000/user/${UserId}`
+      `https://kb-piggybank.glitch.me/user/${UserId}`
     );
     savingGoal.value = responseGoal.data.goalSavings;
 
     const [moneyRes, categoryRes, expenseRes] = await Promise.all([
-      axios.get('http://localhost:3000/money'),
-      axios.get('http://localhost:3000/category'),
-      axios.get('http://localhost:3000/fixedExpenses'),
+      axios.get("https://kb-piggybank.glitch.me/money"),
+      axios.get("https://kb-piggybank.glitch.me/category"),
+      axios.get("https://kb-piggybank.glitch.me/fixedExpenses"),
     ]);
 
     transactions.value = moneyRes.data.filter(
@@ -191,7 +191,7 @@ onMounted(async () => {
         categoryid: Number(entry.categoryid),
       }));
   } catch (error) {
-    console.error('Failed to fetch transactions or categories:', error);
+    console.error("Failed to fetch transactions or categories:", error);
   }
 });
 </script>

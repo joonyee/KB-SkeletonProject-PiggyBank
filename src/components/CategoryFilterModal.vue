@@ -1,5 +1,5 @@
 <script setup>
-import { ref, watch } from 'vue';
+import { ref, watch } from "vue";
 
 const props = defineProps({
   isOpen: Boolean,
@@ -89,7 +89,7 @@ const allCategories = props.categories;
   gap: 10px;
 }
 
-.checkbox-item input[type='checkbox'] {
+.checkbox-item input[type="checkbox"] {
   accent-color: var(--primary-color);
   width: 16px;
   height: 16px;

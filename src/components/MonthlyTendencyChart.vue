@@ -20,7 +20,7 @@ onMounted(async () => {
   const userId = userInfo.id;
 
   // 전체 거래 내역 불러오기
-  const res = await fetch("http://localhost:3000/money");
+  const res = await fetch("https://kb-piggybank.glitch.me/money");
   const data = await res.json();
 
   // 로그인된 유저의 거래만 필터링

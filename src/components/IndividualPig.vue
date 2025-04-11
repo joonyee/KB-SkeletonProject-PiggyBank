@@ -99,8 +99,8 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
-import axios from 'axios';
+import { ref, computed, onMounted } from "vue";
+import axios from "axios";
 const chartData = ref([]);
 const categorySpending = ref([]);
 const transactions = ref([]);
@@ -108,14 +108,14 @@ const loading = ref(true); // 로딩 상태 추가
 
 const fetchData = async () => {
   try {
-    const userId = localStorage.getItem('loggedInUserId');
+    const userId = localStorage.getItem("loggedInUserId");
     if (!userId) {
-      throw new Error('로그인 정보가 없습니다.');
+      throw new Error("로그인 정보가 없습니다.");
     } else {
-      console.log('현재 로그인한 유저 ID:', userId);
+      console.log("현재 로그인한 유저 ID:", userId);
     }
 
-    const response = await axios.get('http://localhost:3000/money');
+    const response = await axios.get("https://kb-piggybank.glitch.me/money");
     const moneyData = response.data.filter((entry) => entry.userid == userId); // 👈 유저별 필터
 
     const monthlyTotals = {};
@@ -175,7 +175,9 @@ const fetchData = async () => {
       categoryTotals[catId] += entry.amount;
     });
 
-    const categoryRes = await axios.get('http://localhost:3000/category');
+    const categoryRes = await axios.get(
+      "https://kb-piggybank.glitch.me/category"
+    );
     const categoryMap = categoryRes.data.reduce((map, cat) => {
       map[cat.id] = cat.name;
       return map;
@@ -188,7 +190,7 @@ const fetchData = async () => {
       })
       .map((entry) => ({
         date: entry.date,
-        category: categoryMap[entry.categoryid] || '기타',
+        category: categoryMap[entry.categoryid] || "기타",
         description: entry.memo,
         amount: entry.typeid === 1 ? entry.amount : -entry.amount,
       }));
@@ -196,12 +198,12 @@ const fetchData = async () => {
     transactions.value = recentTransactions;
     categorySpending.value = Object.entries(categoryTotals).map(
       ([id, amount]) => ({
-        category: categoryMap[id] || '기타',
+        category: categoryMap[id] || "기타",
         amount,
       })
     );
   } catch (error) {
-    console.error('데이터 로딩 실패:', error);
+    console.error("데이터 로딩 실패:", error);
   } finally {
     loading.value = false;
   }

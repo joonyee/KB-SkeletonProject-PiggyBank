@@ -21,8 +21,8 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
-import axios from 'axios';
+import { ref, onMounted } from "vue";
+import axios from "axios";
 
 // 고정 지출 데이터
 const expenses = ref([]);
@@ -33,13 +33,13 @@ const savingGoal = ref(null);
 // 데이터 가져오기
 const fetchData = async () => {
   try {
-    const UserId = localStorage.getItem('loggedInUserId');
+    const UserId = localStorage.getItem("loggedInUserId");
     const responseGoal = await axios.get(
-      `http://localhost:3000/user/${UserId}`
+      `https://kb-piggybank.glitch.me/user/${UserId}`
     );
     savingGoal.value = responseGoal.data.goalSavings;
 
-    const res = await axios.get('http://localhost:3000/fixedExpenses');
+    const res = await axios.get("https://kb-piggybank.glitch.me/fixedExpenses");
     expenses.value = Array.isArray(res.data)
       ? res.data
           .filter((entry) => entry.userid == UserId && entry.deletedAt === null)
@@ -52,7 +52,7 @@ const fetchData = async () => {
       0
     );
   } catch (error) {
-    console.error('데이터 로딩 실패:', error);
+    console.error("데이터 로딩 실패:", error);
   }
 };
 

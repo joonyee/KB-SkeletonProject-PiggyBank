@@ -1,9 +1,9 @@
 <template>
   <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="200"
-      height="200"
-      viewBox="0 0 200 200"
+    xmlns="http://www.w3.org/2000/svg"
+    width="200"
+    height="200"
+    viewBox="0 0 200 200"
   >
     <!-- 그라디언트 정의 -->
     <defs>
@@ -35,35 +35,35 @@
     <g v-if="!isEyeClosed">
       <!-- 왼쪽 눈 -->
       <rect
-          :x="70 + eyeOffset.x"
-          :y="80 + eyeOffset.y"
-          width="10"
-          height="25"
-          rx="3"
-          fill="#000"
-          class="blink"
+        :x="70 + eyeOffset.x"
+        :y="80 + eyeOffset.y"
+        width="10"
+        height="25"
+        rx="3"
+        fill="#000"
+        class="blink"
       />
       <circle
-          :cx="75 + eyeOffset.x"
-          :cy="85 + eyeOffset.y"
-          r="2"
-          fill="white"
+        :cx="75 + eyeOffset.x"
+        :cy="85 + eyeOffset.y"
+        r="2"
+        fill="white"
       />
       <!-- 오른쪽 눈 -->
       <rect
-          :x="120 + eyeOffset.x"
-          :y="80 + eyeOffset.y"
-          width="10"
-          height="25"
-          rx="3"
-          fill="#000"
-          class="blink"
+        :x="120 + eyeOffset.x"
+        :y="80 + eyeOffset.y"
+        width="10"
+        height="25"
+        rx="3"
+        fill="#000"
+        class="blink"
       />
       <circle
-          :cx="125 + eyeOffset.x"
-          :cy="85 + eyeOffset.y"
-          r="2"
-          fill="white"
+        :cx="125 + eyeOffset.x"
+        :cy="85 + eyeOffset.y"
+        r="2"
+        fill="white"
       />
     </g>
 
@@ -71,23 +71,23 @@
     <g v-else>
       <!-- 왼쪽 눈 감기 -->
       <line
-          :x1="70 + eyeOffset.x"
-          :y1="92 + eyeOffset.y"
-          :x2="80 + eyeOffset.x"
-          :y2="92 + eyeOffset.y"
-          stroke="black"
-          stroke-width="2"
-          stroke-linecap="round"
+        :x1="70 + eyeOffset.x"
+        :y1="92 + eyeOffset.y"
+        :x2="80 + eyeOffset.x"
+        :y2="92 + eyeOffset.y"
+        stroke="black"
+        stroke-width="2"
+        stroke-linecap="round"
       />
       <!-- 오른쪽 눈 감기 -->
       <line
-          :x1="120 + eyeOffset.x"
-          :y1="92 + eyeOffset.y"
-          :x2="130 + eyeOffset.x"
-          :y2="92 + eyeOffset.y"
-          stroke="black"
-          stroke-width="2"
-          stroke-linecap="round"
+        :x1="120 + eyeOffset.x"
+        :y1="92 + eyeOffset.y"
+        :x2="130 + eyeOffset.x"
+        :y2="92 + eyeOffset.y"
+        stroke="black"
+        stroke-width="2"
+        stroke-linecap="round"
       />
     </g>
 
@@ -121,10 +121,13 @@ defineProps({
 
 /* 기본 깜박이는 모션 */
 @keyframes blinkAnim {
-  0%, 94%, 100% {
+  0%,
+  94%,
+  100% {
     transform: scaleY(1);
   }
-  95%, 97% {
+  95%,
+  97% {
     transform: scaleY(0.1);
   }
 }
