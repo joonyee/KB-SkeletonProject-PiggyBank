@@ -57,7 +57,7 @@
       "name": "ee",
       "age": "3",
       "gender": "남성",
-      "goalSavings": 0
+      "goalSavings": "58"
     }
   ],
   "ageArea": [
@@ -216,6 +216,16 @@
       "categoryid": 13,
       "description": "헬스장 3개월 결제",
       "amount": 150000,
+      "deletedAt": null
+    },
+    {
+      "id": "5616",
+      "day": 5,
+      "description": "ㅇㅇ",
+      "amount": 100,
+      "notify": false,
+      "userid": "ff81",
+      "categoryid": 13,
       "deletedAt": null
     }
   ],
@@ -867,6 +877,7 @@
     },
     {
       "id": "984c",
+      "userid": "ff81",
       "typeid": 1,
       "categoryid": 1,
       "date": "2025-04-11",
@@ -874,6 +885,189 @@
       "tendencyid": 3,
       "payment": 4,
       "memo": "어무이가 주신 용돈",
+      "ageid": "3"
+    },
+    {
+      "id": "4c9b",
+      "userid": "ff81",
+      "typeid": 1,
+      "categoryid": 1,
+      "date": "2025-04-11",
+      "amount": 1,
+      "tendencyid": 3,
+      "payment": 4,
+      "memo": "1",
+      "ageid": 2
+    },
+    {
+      "id": "c3f3",
+      "userid": "ff81",
+      "typeid": 1,
+      "categoryid": 1,
+      "date": "2025-04-11",
+      "amount": 1,
+      "tendencyid": 3,
+      "payment": 4,
+      "memo": "1",
+      "ageid": 2
+    },
+    {
+      "id": "d4d8",
+      "userid": "ff81",
+      "typeid": 1,
+      "categoryid": 1,
+      "date": "2025-04-11",
+      "amount": 1,
+      "tendencyid": 3,
+      "payment": 4,
+      "memo": "1",
+      "ageid": 2
+    },
+    {
+      "id": "1400",
+      "userid": "ff81",
+      "typeid": 1,
+      "categoryid": 1,
+      "date": "2025-04-11",
+      "amount": 1,
+      "tendencyid": 3,
+      "payment": 4,
+      "memo": "1",
+      "ageid": 2
+    },
+    {
+      "id": "843e",
+      "userid": "ff81",
+      "typeid": 2,
+      "categoryid": 7,
+      "date": "2025-04-11",
+      "amount": 10000,
+      "tendencyid": 1,
+      "payment": 3,
+      "memo": "치킩",
+      "ageid": "3"
+    },
+    {
+      "id": "5255",
+      "typeid": 2,
+      "categoryid": 6,
+      "date": "2025-04-11",
+      "amount": 100,
+      "tendencyid": 1,
+      "payment": 1,
+      "memo": "dd",
+      "ageid": "3"
+    },
+    {
+      "id": "23ef",
+      "userid": "ff81",
+      "typeid": 2,
+      "categoryid": 6,
+      "date": "2025-04-11",
+      "amount": 100,
+      "tendencyid": 1,
+      "payment": 1,
+      "memo": "1",
+      "ageid": "3"
+    },
+    {
+      "id": "f651",
+      "typeid": 1,
+      "categoryid": 1,
+      "date": "2025-04-11",
+      "amount": 100,
+      "tendencyid": 3,
+      "payment": 4,
+      "memo": "1",
+      "ageid": "3"
+    },
+    {
+      "id": "d52f",
+      "typeid": 1,
+      "categoryid": 1,
+      "date": "2025-04-11",
+      "amount": 1,
+      "tendencyid": 3,
+      "payment": 4,
+      "memo": "1",
+      "ageid": "3"
+    },
+    {
+      "id": "99ea",
+      "typeid": 1,
+      "categoryid": 1,
+      "date": "2025-04-11",
+      "amount": 1,
+      "tendencyid": 3,
+      "payment": 4,
+      "memo": "1",
+      "ageid": "3"
+    },
+    {
+      "id": "b140",
+      "typeid": 1,
+      "categoryid": 1,
+      "date": "2025-04-11",
+      "amount": 1,
+      "tendencyid": 3,
+      "payment": 4,
+      "memo": "1",
+      "ageid": "3"
+    },
+    {
+      "id": "3dbf",
+      "typeid": 1,
+      "categoryid": 1,
+      "date": "2025-04-11",
+      "amount": 1,
+      "tendencyid": 3,
+      "payment": 4,
+      "memo": "1",
+      "ageid": "3"
+    },
+    {
+      "id": "dedf",
+      "typeid": 1,
+      "categoryid": 1,
+      "date": "2025-04-11",
+      "amount": 1,
+      "tendencyid": 3,
+      "payment": 4,
+      "memo": "1",
+      "ageid": "3"
+    },
+    {
+      "id": "782a",
+      "typeid": 1,
+      "categoryid": 1,
+      "date": "2025-04-11",
+      "amount": 1,
+      "tendencyid": 3,
+      "payment": 4,
+      "memo": "1",
+      "ageid": "3"
+    },
+    {
+      "id": "9d55",
+      "typeid": 1,
+      "categoryid": 2,
+      "date": "2025-04-11",
+      "amount": 1,
+      "tendencyid": 3,
+      "payment": 4,
+      "memo": "1",
+      "ageid": "3"
+    },
+    {
+      "id": "d385",
+      "userid": "ff81",
+      "typeid": 1,
+      "categoryid": 1,
+      "date": "2025-04-11",
+      "amount": 1,
+      "tendencyid": 3,
+      "payment": 4,
+      "memo": "1",
       "ageid": "3"
     }
   ],
