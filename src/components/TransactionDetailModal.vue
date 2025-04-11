@@ -59,6 +59,13 @@ const emit = defineEmits(['close']);
   max-width: 420px;
   width: 90%;
 }
+.dark .modal-card {
+  background-color: var(--background-color);
+  padding: 28px;
+  border-radius: 16px;
+  max-width: 420px;
+  width: 90%;
+}
 .modal-header {
   display: flex;
   justify-content: space-between;

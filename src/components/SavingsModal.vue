@@ -100,7 +100,7 @@ onMounted(() => {
 }
 
 .modal-content {
-  background-color: var(--background-color);
+  background-color: white;
   padding: 30px 30px;
   border-radius: 16px;
   width: 350px;
@@ -128,6 +128,7 @@ input[type='number'] {
 .slider-container {
   margin: 20px 0;
   text-align: center;
+  color: black;
 }
 
 .slider-wrapper {
@@ -159,7 +160,7 @@ input[type='number'] {
 .slider-label {
   margin-left: 10px;
   font: var(--ng-bold-20);
-  color: var(--text-color);
+  color: black;
 }
 
 .expected-savings {

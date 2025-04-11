@@ -129,48 +129,62 @@ const filteredAvgSpending = computed(() =>
 </script>
 
 <template>
-  <header class="dashboardHeader">
-    <h1 class="dashboardTitle">
-      <img
-        src="/src/assets/icons/logo.png"
-        class="iconImage"
-        @click="goToHome"
-      />Piggy Bank
-    </h1>
-    <div class="flex items-center gap-2 relative">
-      <button @click="toggleDarkMode" class="darkModeButton">
-        {{ isDarkMode ? '☀️' : '🌙' }}
-      </button>
-      <button class="mypageButton" @click="mypageClick">마이페이지</button>
-      <button class="inputValue" @click="openTransactionModal">
-        새 거래추가
-      </button>
-      <button class="logout" @click="logout">로그아웃</button>
+  <div class="dashboard">
+    <header class="dashboardHeader">
+      <h1 class="dashboardTitle">
+        <img
+          src="/src/assets/icons/logo.png"
+          class="iconImage"
+          @click="goToHome"
+        />Piggy Bank
+      </h1>
+      <div class="flex items-center gap-2 relative">
+        <button @click="toggleDarkMode" class="darkModeButton">
+          {{ isDarkMode ? '☀️' : '🌙' }}
+        </button>
+        <button class="mypageButton" @click="mypageClick">마이페이지</button>
+        <button class="inputValue" @click="openTransactionModal">
+          새 거래추가
+        </button>
+        <button class="logout" @click="logout">로그아웃</button>
+      </div>
+    </header>
+
+    <div class="age-expense-analysis">
+      <div class="header"></div>
+
+      <ExpenseChart
+        :labels="filteredLabels"
+        :my-data="filteredMySpending"
+        :avg-data="filteredAvgSpending"
+        :isDarkMode="isDarkMode"
+      />
+
+      <!-- <CategoryFilterModal
+        v-if="isFilterModalOpen"
+        :isOpen="isFilterModalOpen"
+        :categories="allLabels"
+        :selectedCategories="selectedCategories"
+        @close="closeFilterModal"
+        @apply="applyFilter"
+      /> -->
     </div>
-  </header>
-
-  <div class="age-expense-analysis">
-    <div class="header"></div>
-
-    <ExpenseChart
-      :labels="filteredLabels"
-      :my-data="filteredMySpending"
-      :avg-data="filteredAvgSpending"
-      :isDarkMode="isDarkMode"
-    />
-
-    <CategoryFilterModal
-      v-if="isFilterModalOpen"
-      :isOpen="isFilterModalOpen"
-      :categories="allLabels"
-      :selectedCategories="selectedCategories"
-      @close="closeFilterModal"
-      @apply="applyFilter"
-    />
   </div>
 </template>
 
 <style scoped>
+.dashboard {
+  padding: 2rem;
+  margin: 0;
+  background: linear-gradient(to bottom, #fff9fe, #ffffff);
+  font-family: sans-serif;
+  box-sizing: border-box;
+  color: black;
+}
+.dark .dashboard {
+  background: linear-gradient(to bottom, #121212, #121212);
+  color: #1a1a2e;
+}
 .age-expense-analysis {
   padding: 20px;
   max-width: 1200px;
@@ -206,16 +220,10 @@ const filteredAvgSpending = computed(() =>
   background-color: var(--background-color);
 }
 
-.dark body {
+.dark .dashboard,
+.dark,
+.dark .body {
   background-color: #121212;
-  color: #f5f5f5;
-}
-.dashboard {
-  padding: 2rem;
-  margin: 0;
-  background: linear-gradient(to bottom, #fff9fe, #ffffff);
-  font-family: sans-serif;
-  box-sizing: border-box;
   color: black;
 }
 
@@ -233,7 +241,7 @@ const filteredAvgSpending = computed(() =>
   display: flex;
   align-items: center;
   gap: 10px;
-  font-size: 24px;
+  font-size: 32px;
   font-weight: bold;
 }
 .iconImage {
@@ -266,7 +274,7 @@ const filteredAvgSpending = computed(() =>
   cursor: pointer;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
-  font: var(--ng-reg-16);
+  font: var(--ng-reg-18);
   color: #333;
 }
 .logout {
@@ -277,8 +285,9 @@ const filteredAvgSpending = computed(() =>
   cursor: pointer;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
-  font: var(--ng-reg-16);
+  font: var(--ng-reg-18);
   color: #333;
+  margin-right: 20px;
 }
 
 /* 새 거래추가 버튼 */
@@ -290,11 +299,11 @@ const filteredAvgSpending = computed(() =>
   cursor: pointer;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
-  font: var(--ng-reg-16);
+  font: var(--ng-reg-18);
   color: #333;
 }
 .dark .age-expense-analysis {
-  background: linear-gradient(to bottom, #1a1a1a, #121212);
+  /* background: linear-gradient(to bottom, #1a1a1a, #121212); */
   color: #f5f5f5;
 }
 
@@ -318,5 +327,126 @@ const filteredAvgSpending = computed(() =>
   background-color: #222;
   color: #fff;
   border: 1px solid #444;
+}
+
+/* 반응형  */
+@media (max-width: 1024px) {
+  .dashboardHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .dashboardTitle {
+    font-size: 20px;
+  }
+
+  .inputValue,
+  .logout,
+  .mypageButton {
+    padding: 10px 18px;
+    font-size: 14px;
+  }
+
+  .chart-title {
+    font-size: 20px;
+  }
+
+  .age-expense-analysis {
+    padding: 16px;
+  }
+}
+
+@media (max-width: 768px) {
+  .dashboardTitle {
+    font-size: 18px;
+    gap: 8px;
+  }
+
+  .iconImage {
+    width: 50px;
+    height: 50px;
+  }
+
+  .inputValue,
+  .logout,
+  .mypageButton {
+    width: 100%;
+    padding: 10px;
+    font-size: 13px;
+    margin-bottom: 6px;
+  }
+
+  .darkModeButton {
+    font-size: 1rem;
+    padding: 6px 10px;
+  }
+
+  .chart-title {
+    font-size: 18px;
+  }
+
+  .filter-button {
+    font-size: 13px;
+    padding: 6px 12px;
+  }
+
+  .age-expense-analysis {
+    padding: 10px;
+  }
+
+  .header {
+    flex-direction: column;
+    align-items: flex-end;
+    padding-right: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .dashboardHeader {
+    padding: 0.8rem;
+  }
+
+  .dashboardTitle {
+    font-size: 16px;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .iconImage {
+    width: 40px;
+    height: 40px;
+  }
+
+  .inputValue,
+  .logout,
+  .mypageButton {
+    font-size: 12px;
+    padding: 8px;
+  }
+
+  .darkModeButton {
+    font-size: 0.9rem;
+    padding: 5px 8px;
+  }
+
+  .chart-title {
+    font-size: 16px;
+    margin-bottom: 12px;
+  }
+
+  .filter-button {
+    font-size: 12px;
+    padding: 5px 10px;
+  }
+
+  .age-expense-analysis {
+    padding: 8px;
+  }
+
+  .header {
+    padding-right: 0;
+    margin-bottom: 16px;
+  }
 }
 </style>

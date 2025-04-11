@@ -147,147 +147,153 @@ onMounted(fetchMonthlyData);
 </script>
 
 <template>
-  <header class="dashboardHeader">
-    <h1 class="dashboardTitle">
-      <img
-        src="/src/assets/icons/logo.png"
-        class="iconImage"
-        @click="goToHome"
-      />Piggy Bank
-    </h1>
-    <div class="flex items-center gap-2 relative">
-      <button @click="toggleDarkMode" class="darkModeButton">
-        {{ isDarkMode ? '☀️' : '🌙' }}
-      </button>
-      <button class="mypageButton" @click="mypageClick">마이페이지</button>
-      <button class="inputValue" @click="openModal">새 거래추가</button>
-      <button class="logout" @click="logout">로그아웃</button>
-    </div>
-  </header>
-  <div class="monthly-analysis-container">
-    <!-- 수입, 지출, 잔액, 저축률  -->
-    <div class="summary-cards">
-      <div class="summary-card">
-        <h3>이번 달 수입</h3>
-        <p class="income">{{ income.toLocaleString() }}원</p>
+  <div class="dashboard">
+    <header class="dashboardHeader">
+      <h1 class="dashboardTitle">
+        <img
+          src="/src/assets/icons/logo.png"
+          class="iconImage"
+          @click="goToHome"
+        />Piggy Bank
+      </h1>
+      <div class="flex items-center gap-2 relative">
+        <button @click="toggleDarkMode" class="darkModeButton">
+          {{ isDarkMode ? '☀️' : '🌙' }}
+        </button>
+        <button class="mypageButton" @click="mypageClick">마이페이지</button>
+        <button class="inputValue" @click="openModal">새 거래추가</button>
+        <button class="logout" @click="logout">로그아웃</button>
       </div>
-      <div class="summary-card">
-        <h3>이번 달 지출</h3>
-        <p class="expense">{{ expense.toLocaleString() }}원</p>
-      </div>
-      <div class="summary-card">
-        <h3>이번 달 잔액</h3>
-        <p class="balance">{{ balance.toLocaleString() }}원</p>
-      </div>
+    </header>
+    <div class="monthly-analysis-container">
+      <!-- 수입, 지출, 잔액, 저축률  -->
+      <div class="summary-cards">
+        <div class="summary-card">
+          <h3>이번 달 수입</h3>
+          <p class="income">{{ income.toLocaleString() }}원</p>
+        </div>
+        <div class="summary-card">
+          <h3>이번 달 지출</h3>
+          <p class="expense">{{ expense.toLocaleString() }}원</p>
+        </div>
+        <div class="summary-card">
+          <h3>이번 달 잔액</h3>
+          <p class="balance">{{ balance.toLocaleString() }}원</p>
+        </div>
 
-      <!-- 저축률  -->
-      <div class="summary-card savings-card" @click="toggleSavingsModal">
-        <h3>저축률</h3>
-        <div class="savings-content">
-          <div class="savings-section">
-            <p class="savings-rate">{{ savingsRate }}%</p>
-            <p class="savings-label">현재 저축률</p>
-          </div>
-          <div class="divider"></div>
-          <div class="savings-section">
-            <p class="goal-rate">{{ goalRate }}%</p>
-            <p class="goal-label">목표 저축률</p>
+        <!-- 저축률  -->
+        <div class="summary-card savings-card" @click="toggleSavingsModal">
+          <h3>저축률</h3>
+          <div class="savings-content">
+            <div class="savings-section">
+              <p class="savings-rate">{{ savingsRate }}%</p>
+              <p class="savings-label">현재 저축률</p>
+            </div>
+            <div class="divider"></div>
+            <div class="savings-section">
+              <p class="goal-rate">{{ goalRate }}%</p>
+              <p class="goal-label">목표 저축률</p>
+            </div>
           </div>
         </div>
-      </div>
 
-      <!-- 저축률 설정 모달  -->
-      <SavingsModal
-        v-if="savingsModalVisible"
-        :show="savingsModalVisible"
-        @close="closeSavingsModal"
-        @update="updateSavingsSettings"
-      />
-    </div>
-
-    <div class="month-header">
-      <h2>{{ month }}월 {{ year }}년</h2>
-    </div>
-
-    <div class="middle-section">
-      <!-- 이번달 총 지출 -->
-      <div class="part-card total-expense-card">
-        <div class="expense-header">
-          <i class="fa-solid fa-magnifying-glass"></i>
-          <h3>이번달 총 지출</h3>
-        </div>
-        <p class="total-expense">{{ expense.toLocaleString() }}원</p>
-        <p class="comparison">
-          지난 달보다
-          <span class="comparison-money">
-            {{ (expense - previousExpense).toLocaleString() }}원
-          </span>
-        </p>
-      </div>
-
-      <!-- 월별 비교 -->
-      <div class="part-card">
-        <h2>월별 수입/지출 비교</h2>
-        <ChartCard
-          chartType="bar"
-          :chartData="{
-            labels: ['지난 달', '이번 달'],
-            datasets: [
-              {
-                label: '지출',
-                data: [previousExpense, expense],
-                backgroundColor: '#ffc7ef',
-              },
-              {
-                label: '수입',
-                data: [1000000, income],
-                backgroundColor: '#ffe8fc',
-              },
-            ],
-          }"
-          :options="{
-            plugins: {
-              legend: { display: true },
-            },
-            scales: {
-              x: { stacked: true },
-              y: { stacked: true },
-            },
-          }"
+        <!-- 저축률 설정 모달  -->
+        <SavingsModal
+          v-if="savingsModalVisible"
+          :show="savingsModalVisible"
+          @close="closeSavingsModal"
+          @update="updateSavingsSettings"
         />
       </div>
 
-      <!-- 예산 대비 -->
-      <div class="part-card">
-        <h2>예산 대비 지출</h2>
-        <ChartCard
-          chartType="doughnut"
-          :chartData="{
-            labels: ['예산', '실제 지출'],
-            datasets: [
-              {
-                label: '비율',
-                data: [budget - expense, expense],
-                backgroundColor: ['#ffe8fc', '#ffc7ef'],
+      <div class="month-header">
+        <h2>{{ month }}월 {{ year }}년</h2>
+      </div>
+
+      <div class="middle-section">
+        <!-- 이번달 총 지출 -->
+        <div class="part-card total-expense-card">
+          <div class="expense-header">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <h3>이번달 총 지출</h3>
+          </div>
+          <p class="total-expense">{{ expense.toLocaleString() }}원</p>
+          <p class="comparison">
+            지난 달보다
+            <span class="comparison-money">
+              {{ (expense - previousExpense).toLocaleString() }}원
+            </span>
+          </p>
+        </div>
+
+        <!-- 월별 비교 -->
+        <div class="part-card">
+          <h2>월별 수입/지출 비교</h2>
+          <ChartCard
+            chartType="bar"
+            :chartData="{
+              labels: ['지난 달', '이번 달'],
+              datasets: [
+                {
+                  label: '지출',
+                  data: [previousExpense, expense],
+                  backgroundColor: '#ffc7ef',
+                },
+                {
+                  label: '수입',
+                  data: [1000000, income],
+                  backgroundColor: '#ffe8fc',
+                },
+              ],
+            }"
+            :options="{
+              plugins: {
+                legend: { display: true },
               },
-            ],
-          }"
-        />
+              scales: {
+                x: { stacked: true },
+                y: { stacked: true },
+              },
+            }"
+          />
+        </div>
+
+        <!-- 예산 대비 -->
+        <div class="part-card">
+          <h2>예산 대비 지출</h2>
+          <ChartCard
+            chartType="doughnut"
+            :chartData="{
+              labels: ['예산', '실제 지출'],
+              datasets: [
+                {
+                  label: '비율',
+                  data: [budget - expense, expense],
+                  backgroundColor: ['#ffe8fc', '#ffc7ef'],
+                },
+              ],
+            }"
+          />
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <style scoped>
-body {
-  background-color: var(--background-color);
-  color: var(--text-color);
-  margin: 0 auto;
-  padding: 0;
-  min-height: 100vh;
+.dashboard {
+  padding: 2rem;
+  margin: 0;
+  background: linear-gradient(to bottom, #fff9fe, #ffffff);
+  font-family: sans-serif;
   box-sizing: border-box;
+  color: black;
 }
 
+.dark .dashboard {
+  background: linear-gradient(to bottom, #121212, #121212);
+  color: #1a1a2e;
+}
 .monthly-analysis-container {
   max-width: 1200px;
   background-color: var(--background-color);
@@ -464,8 +470,9 @@ body {
   display: flex;
   align-items: center;
   gap: 10px;
-  font-size: 24px;
+  font-size: 30px;
   font-weight: bold;
+  color: black;
 }
 .iconImage {
   width: 60px;
@@ -487,8 +494,6 @@ body {
   border-radius: 0.5rem;
   cursor: pointer;
 }
-
-/* 마이페이지 버튼 */
 .mypageButton {
   background-color: rgb(254, 235, 253);
   border: 1px solid rgb(251, 209, 251);
@@ -497,7 +502,7 @@ body {
   cursor: pointer;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
-  font: var(--ng-reg-16);
+  font: var(--ng-reg-18);
   color: #333;
 }
 .logout {
@@ -508,8 +513,9 @@ body {
   cursor: pointer;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
-  font: var(--ng-reg-16);
+  font: var(--ng-reg-18);
   color: #333;
+  margin-right: 20px;
 }
 
 /* 새 거래추가 버튼 */
@@ -521,10 +527,12 @@ body {
   cursor: pointer;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
-  font: var(--ng-reg-16);
+  font: var(--ng-reg-18);
   color: #333;
 }
-
+.dark {
+  color: black;
+}
 .dark body {
   background-color: #121212;
   color: #f5f5f5;
@@ -554,10 +562,164 @@ body {
 .dark .savings-label,
 .dark .goal-label,
 .dark .comparison {
-  color: #cccccc;
+  color: black;
 }
 
 .dark canvas {
   background-color: transparent !important;
+}
+
+/* 반응형  */
+
+@media (max-width: 1024px) {
+  .summary-cards {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .summary-card {
+    min-width: 45%;
+    margin: 10px 0;
+  }
+
+  .middle-section {
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .part-card {
+    min-width: 100%;
+  }
+
+  .dashboardHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .mypageButton,
+  .inputValue,
+  .logout {
+    font-size: 14px;
+    padding: 10px 18px;
+  }
+
+  .dashboardTitle {
+    font-size: 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  .summary-cards {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .summary-card {
+    width: 90%;
+  }
+
+  .middle-section {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .part-card {
+    width: 100%;
+  }
+
+  .dashboardHeader {
+    padding: 0.8rem;
+  }
+
+  .dashboardTitle {
+    font-size: 18px;
+    gap: 8px;
+  }
+
+  .iconImage {
+    width: 50px;
+    height: 50px;
+  }
+
+  .darkModeButton {
+    font-size: 1rem;
+    padding: 6px 10px;
+  }
+
+  .mypageButton,
+  .inputValue,
+  .logout {
+    padding: 10px;
+    font-size: 13px;
+    margin-bottom: 6px;
+  }
+
+  .savings-card {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .savings-content {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .divider {
+    width: 80%;
+    height: 1px;
+  }
+
+  .month-header {
+    margin-left: 0;
+    text-align: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .summary-card,
+  .part-card {
+    width: 100%;
+    padding: 16px;
+  }
+
+  .dashboardTitle {
+    font-size: 16px;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .iconImage {
+    width: 40px;
+    height: 40px;
+  }
+
+  .mypageButton,
+  .inputValue,
+  .logout {
+    font-size: 12px;
+    padding: 8px;
+  }
+
+  .darkModeButton {
+    font-size: 0.9rem;
+    padding: 5px 8px;
+  }
+
+  .total-expense {
+    font-size: 22px;
+  }
+
+  .comparison {
+    font-size: 14px;
+  }
+
+  .comparison-money {
+    font-size: 18px;
+  }
+
+  .chart-container {
+    height: 200px;
+  }
 }
 </style>
