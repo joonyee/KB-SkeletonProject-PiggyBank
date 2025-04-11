@@ -9,7 +9,7 @@ const isLogoutModalOpen = ref(false);
 const isDarkMode = ref(false);
 
 const goToHome = () => {
-  router.push('./home');
+  router.push('/home');
 };
 
 const toggleDarkMode = () => {
@@ -19,12 +19,9 @@ const toggleDarkMode = () => {
 
 // 로그아웃 처리
 const logout = () => {
-  alert('안녕히가세요!');
-
-  localStorage.removeItem('loggedInUserId');
-  localStorage.removeItem('loggedInUserInfo');
-
-  router.push('/');
+  localStorage.removeItem('accessToken');
+  localStorage.removeItem('refreshToken');
+  router.push('/login');
 };
 
 const openLogoutModal = () => {
@@ -39,12 +36,54 @@ const confirmLogout = () => {
 const cancelLogout = () => {
   isLogoutModalOpen.value = false;
 };
+
+// 회원 탈퇴
+const isDeleteModalOpen = ref(false);
+
+const openDeleteModal = () => {
+  isDeleteModalOpen.value = true;
+};
+
+const cancelDelete = () => {
+  isDeleteModalOpen.value = false;
+};
+
+const confirmDelete = async () => {
+  try {
+    const userInfo = JSON.parse(localStorage.getItem('loggedInUserInfo'));
+    const userId = userInfo?.id;
+
+    if (!userId) {
+      alert('유저 정보를 찾을 수 없습니다.');
+      return;
+    }
+
+    const res = await fetch(`http://localhost:3000/user/${userId}`, {
+      method: 'DELETE',
+    });
+
+    if (res.ok) {
+      localStorage.removeItem('accessToken');
+      localStorage.removeItem('refreshToken');
+      localStorage.removeItem('loggedInUserInfo');
+      router.push('/login');
+    } else {
+      alert('회원 탈퇴에 실패했습니다.');
+    }
+  } catch (err) {
+    console.error('회원 탈퇴 에러:', err);
+    alert('문제가 발생했습니다.');
+  } finally {
+    isDeleteModalOpen.value = false;
+  }
+};
+
 </script>
 
 <template>
   <div :class="['dashboard', { dark: isDarkMode }]">
     <header class="dashboardHeader">
-      <h1 class="dashboardTitle">
+      <h1 class="dashboardTitle" @click="goToHome">
         <img
           src="/src/assets/icons/logo.png"
           class="iconImage"
@@ -57,12 +96,25 @@ const cancelLogout = () => {
         </button>
 
         <button class="logout" @click="openLogoutModal">로그아웃</button>
+        <button class="logout" @click="openDeleteModal">회원탈퇴</button>
         <div v-if="isLogoutModalOpen" class="modal">
           <div class="modal-content">
             <p>로그아웃 하시겠습니까?</p>
             <div class="button-group">
               <button @click="cancelLogout">취소</button>
               <button @click="confirmLogout">확인</button>
+            </div>
+          </div>
+        </div>
+        <!-- 탈퇴 모달 -->
+        <div v-if="isDeleteModalOpen" class="modal">
+          <div class="modal-content">
+            <p>
+              <h2>회원탈퇴</h2>계정 정보가 모두 삭제됩니다.
+            </p>
+            <div class="button-group">
+              <button @click="cancelDelete">취소</button>
+              <button @click="confirmDelete">확인</button>
             </div>
           </div>
         </div>
@@ -95,7 +147,6 @@ const cancelLogout = () => {
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-/* 다크모드 버튼 */
 .darkModeButton {
   padding: 8px 12px;
   font-size: 1.2rem;
@@ -103,17 +154,7 @@ const cancelLogout = () => {
   border-radius: 0.5rem;
   cursor: pointer;
 }
-.mypageButton {
-  background-color: rgb(254, 235, 253);
-  border: 1px solid rgb(251, 209, 251);
-  border-radius: 0.5rem;
-  padding: 12px 24px;
-  cursor: pointer;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
-  font: var(--ng-reg-18);
-  color: #333;
-}
+
 .logout {
   background-color: rgb(254, 235, 253);
   border: 1px solid rgb(251, 209, 251);
@@ -122,23 +163,10 @@ const cancelLogout = () => {
   cursor: pointer;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
-  font: var(--ng-reg-18);
+  font-weight: 600;
   color: #333;
-  margin-right: 20px;
 }
 
-/* 새 거래추가 버튼 */
-.inputValue {
-  background-color: rgb(254, 235, 253);
-  border: 1px solid rgb(251, 209, 251);
-  border-radius: 0.5rem;
-  padding: 12px 24px;
-  cursor: pointer;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
-  font: var(--ng-reg-18);
-  color: #333;
-}
 .dashboardTitle {
   cursor: pointer;
 }
@@ -199,6 +227,28 @@ const cancelLogout = () => {
   display: flex;
   align-items: center;
   gap: 1rem;
+}
+
+.darkModeButton {
+  padding: 8px 12px;
+  font-size: 1.2rem;
+  border: 1px solid #ccc;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  align-self: center;
+}
+
+.mypageButton,
+.logout {
+  background-color: rgb(254, 235, 253);
+  border: 1px solid rgb(251, 209, 251);
+  border-radius: 0.5rem;
+  padding: 12px 24px;
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  font-weight: 600;
+  color: #333;
 }
 
 .page-title {
