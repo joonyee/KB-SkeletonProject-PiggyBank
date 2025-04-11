@@ -418,4 +418,92 @@ onMounted(async () => {
   font-size: 0.875rem;
   color: #374151;
 }
+@media (max-width: 1024px) {
+  .summary-header {
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .summary-box {
+    flex: 1 1 calc(50% - 1rem);
+    margin: 0.5rem;
+  }
+
+  .graphs-flex-container {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .category-bars h3 {
+    font-size: 1.1rem;
+  }
+
+  .label {
+    font-size: 0.8rem;
+  }
+
+  .amount {
+    font-size: 0.8rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .summary-header {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .summary-box {
+    flex: none;
+    width: 100%;
+    margin: 0.5rem 0;
+  }
+
+  .graphs-flex-container {
+    gap: 1rem;
+  }
+
+  .category-bars h3 {
+    font-size: 1rem;
+  }
+
+  .label {
+    font-size: 0.75rem;
+  }
+
+  .amount {
+    font-size: 0.75rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .month-summary-container {
+    padding: 0.5rem;
+  }
+
+  .summary-header {
+    gap: 0.5rem;
+  }
+
+  .summary-box {
+    padding: 0.75rem;
+    font-size: 0.9rem;
+  }
+
+  .graphs-flex-container {
+    gap: 0.5rem;
+  }
+
+  .category-bars h3 {
+    font-size: 0.9rem;
+  }
+
+  .label {
+    font-size: 0.7rem;
+  }
+
+  .amount {
+    font-size: 0.7rem;
+  }
+}
 </style>

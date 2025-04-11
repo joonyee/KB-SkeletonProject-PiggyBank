@@ -341,4 +341,118 @@ onMounted(async () => {
 .segment.segment-planned {
   background-color: #10b981; /* 계획적 소비: 초록색 */
 }
+@media (max-width: 1024px) {
+  .dashboard {
+    padding: 1.5rem;
+  }
+
+  .dashboardHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .calendar-dashboard {
+    padding: 1.5rem;
+  }
+
+  .analysis-section {
+    flex-direction: column; /* 세로 정렬 */
+    gap: 1rem;
+  }
+
+  .analysis-card {
+    flex: none;
+    width: 100%; /* 카드가 화면 너비에 맞게 확장 */
+  }
+
+  .analysis-card h3 {
+    font-size: 1.1rem;
+  }
+
+  .negative,
+  .positive {
+    font-size: 1.8rem;
+  }
+
+  .summary {
+    font-size: 0.8rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .dashboard {
+    padding: 1rem;
+  }
+
+  .calendar-dashboard {
+    padding: 1rem;
+  }
+
+  .dashboardHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .analysis-section {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .analysis-card {
+    padding: 1rem;
+  }
+
+  .analysis-card h3 {
+    font-size: 1rem;
+  }
+
+  .negative,
+  .positive {
+    font-size: 1.5rem;
+  }
+
+  .summary {
+    font-size: 0.75rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .dashboard {
+    padding: 0.5rem;
+  }
+
+  .calendar-dashboard {
+    padding: 0.5rem;
+  }
+
+  .dashboardHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .analysis-section {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .analysis-card {
+    padding: 0.75rem;
+  }
+
+  .analysis-card h3 {
+    font-size: 0.9rem;
+  }
+
+  .negative,
+  .positive {
+    font-size: 1.2rem;
+  }
+
+  .summary {
+    font-size: 0.7rem;
+  }
+}
 </style>
