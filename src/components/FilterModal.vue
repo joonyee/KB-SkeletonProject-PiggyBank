@@ -27,6 +27,7 @@ const applyFilter = () => {
     type: selectedType.value,
     categories: selectedCategories.value,
   });
+  closeModal(); // 모달 닫기 추가!
 };
 
 const categories = {
@@ -106,8 +107,8 @@ const isCategorySelected = (category) => {
         </div>
       </div>
       <div class="modal-footer">
-        <button class="cancel-btn" @click="$emit('close')">취소</button>
         <button class="apply-btn" @click="applyFilter">완료</button>
+        <button class="cancel-btn" @click="$emit('close')">취소</button>
       </div>
     </div>
   </div>

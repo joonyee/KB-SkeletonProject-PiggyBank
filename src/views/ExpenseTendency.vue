@@ -11,7 +11,7 @@
       </h1>
       <div class="flex items-center gap-2 relative">
         <button @click="toggleDarkMode" class="darkModeButton">
-          {{ isDarkMode ? "☀️" : "🌙" }}
+          {{ isDarkMode ? '☀️' : '🌙' }}
         </button>
         <button class="mypageButton" @click="mypageClick">마이페이지</button>
         <button class="logout" @click="logout">로그아웃</button>
@@ -26,40 +26,40 @@
 </template>
 
 <script setup>
-import SummaryCards from "@/components/TendencyCount.vue";
-import MonthlyPatternChart from "@/components/MonthlyTendencyChart.vue";
-import { useRouter } from "vue-router";
-import { ref, onMounted } from "vue";
+import SummaryCards from '@/components/TendencyCount.vue';
+import MonthlyPatternChart from '@/components/MonthlyTendencyChart.vue';
+import { useRouter } from 'vue-router';
+import { ref, onMounted } from 'vue';
 
 const router = useRouter();
-const isDarkMode = ref(localStorage.getItem("darkMode") === "true"); // 다크모드 상태
+const isDarkMode = ref(localStorage.getItem('darkMode') === 'true'); // 다크모드 상태
 
 // 다크모드 상태 (localStorage 적용)
 onMounted(() => {
-  const savedMode = localStorage.getItem("darkMode");
+  const savedMode = localStorage.getItem('darkMode');
   if (isDarkMode.value) {
-    document.documentElement.classList.add("dark");
+    document.documentElement.classList.add('dark');
   }
 });
 
 const mypageClick = () => {
-  router.push("/myPage");
+  router.push('/myPage');
 };
 const toggleDarkMode = () => {
   isDarkMode.value = !isDarkMode.value;
-  document.documentElement.classList.toggle("dark", isDarkMode.value);
-  localStorage.setItem("darkMode", isDarkMode.value);
+  document.documentElement.classList.toggle('dark', isDarkMode.value);
+  localStorage.setItem('darkMode', isDarkMode.value);
 };
 const goToHome = () => {
-  router.push("/home");
+  router.push('/home');
 };
 const logout = () => {
-  alert("안녕히가세요!");
+  alert('안녕히가세요!');
 
-  localStorage.removeItem("loggedInUserId");
-  localStorage.removeItem("loggedInUserInfo");
+  localStorage.removeItem('loggedInUserId');
+  localStorage.removeItem('loggedInUserInfo');
 
-  router.push("/");
+  router.push('/');
 };
 </script>
 
@@ -103,6 +103,7 @@ const logout = () => {
   gap: 1rem;
 }
 
+/* 다크모드 버튼 */
 .darkModeButton {
   padding: 8px 12px;
   font-size: 1.2rem;
@@ -111,8 +112,18 @@ const logout = () => {
   cursor: pointer;
 }
 
-.mypageButton,
-.inputValue,
+/* 마이페이지 버튼 */
+.mypageButton {
+  background-color: rgb(254, 235, 253);
+  border: 1px solid rgb(251, 209, 251);
+  border-radius: 0.5rem;
+  padding: 12px 24px;
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  font: var(--ng-reg-16);
+  color: #333;
+}
 .logout {
   background-color: rgb(254, 235, 253);
   border: 1px solid rgb(251, 209, 251);
@@ -121,7 +132,20 @@ const logout = () => {
   cursor: pointer;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
-  font-weight: 600;
+  font: var(--ng-reg-16);
+  color: #333;
+}
+
+/* 새 거래추가 버튼 */
+.inputValue {
+  background-color: rgb(254, 235, 253);
+  border: 1px solid rgb(251, 209, 251);
+  border-radius: 0.5rem;
+  padding: 12px 24px;
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  font: var(--ng-reg-16);
   color: #333;
 }
 

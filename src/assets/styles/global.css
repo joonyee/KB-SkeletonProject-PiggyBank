@@ -66,7 +66,7 @@
   --neo-light-8: 300 8px var(--font-nanum-square-neo);
 
   /* 색상 */
-  --primary-color: #ffc7ef;
+  /* --primary-color: #ffc7ef; */
   --secondary-color: #ffe8fc;
   --hot-pink: #ff69b4;
   --background-color: white;
@@ -83,16 +83,34 @@
   --text-saving: #8b5cf6;
   --text-balance: #3b82f6;
 
-  /* 주간별 분석 그래프  */
-  --weekly-bar-color: #3b82f6;
-  --weekly-bg-color: #e0e7ff;
-  --weekly-highlight-color: #ffc7ef;
-  --weekly-average-color: #64748b;
-  --weekly-text-color: #333333;
-  --weekly-number-color: #64748b;
-
   /* 헤더  */
   --header-bg: #fbcee8; /* 밝은 핑크 */
+
+  /* 기본 컬러 (라이트 모드 기준) */
+  --bg-main: #fff9fe;
+  --bg-sub: #ffffff;
+  --text-color: #333;
+  --text-secondary: #888;
+  /* --primary-color: #fbcee8; */
+
+  --income-color: #10b981;
+  --expense-color: #ef4444;
+  --balance-color: #6366f1;
+  --saving-color: #f9a8d4;
+
+  --card-bg: #ffffff;
+  --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+
+  --background-color: ##fff9fe;
+  --text-color: #333;
+  --text-secondary: #888;
+  --text-white: #fff;
+  --primary-color: #fbcee8;
+  --text-income: #10b981;
+  --text-expense: #ef4444;
+  --text-balance: #6366f1;
+  --text-error: #e74c3c;
+  --hot-pink: #f472b6;
 }
 
 body {
@@ -134,6 +152,13 @@ h6 {
 }
 
 .dark {
-  --background-color: #1f1f1f;
-  --text-color: #ffffff;
+  --bg-main: #121212;
+  --bg-sub: #1e1e1e;
+  --text-color: #f1f1f1;
+  --text-secondary: #aaa;
+  --card-bg: #e7e5e4;
+  --background-color: #f0f0f0;
+  --text-color: #1a1a2e;
+  --text-secondary: #888;
+  --text-white: #f9f9f9;
 }

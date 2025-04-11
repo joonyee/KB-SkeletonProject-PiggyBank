@@ -1,6 +1,4 @@
-<script setup>
-import TransactionModal from "./components/TransactionModal.vue";
-</script>
+<script setup></script>
 
 <template>
   <router-view />
