@@ -805,4 +805,202 @@ const piggyMessage = computed(() => {
 .balance .summaryAmount {
   color: #6366f1;
 }
+
+/* 반응형 디자인 추가 */
+@media (max-width: 1024px) {
+  .sectionGrid {
+    grid-template-columns: 1fr; /* 1열로 표시 */
+  }
+
+  .summaryGrid {
+    grid-template-columns: 1fr 1fr; /* 2열로 표시 */
+  }
+
+  .monthlyChart,
+  .transactionHistory {
+    flex: 1; /* 100% width */
+  }
+
+  .categorySummary,
+  .piggyAni {
+    flex: 1; /* 100% width */
+  }
+
+  .summaryCards {
+    flex-direction: column; /* 카드들이 세로로 쌓이게 */
+  }
+}
+
+@media (max-width: 768px) {
+  .dashboard {
+    padding: 1rem; /* 작은 화면에서 패딩 축소 */
+  }
+
+  .dashboardHeader {
+    flex-direction: column; /* 헤더를 세로로 배치 */
+    align-items: flex-start;
+  }
+
+  .flex {
+    flex-direction: column; /* 버튼들 세로로 배치 */
+    align-items: flex-start;
+  }
+
+  .summaryCard {
+    flex: 1 1 100%; /* 카드가 100% 너비로 보이도록 설정 */
+    margin-bottom: 16px;
+  }
+
+  .chartSection,
+  .transactionSection {
+    flex-direction: column; /* 차트와 트랜잭션 섹션 세로로 배치 */
+  }
+
+  .legendItem {
+    flex-direction: column; /* 범례 아이템 세로로 배치 */
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 480px) {
+  .piggyMessage {
+    font-size: 14px; /* 폰트 크기 조정 */
+  }
+
+  .dashboardTitle {
+    font-size: 14px;
+  }
+
+  .iconImage {
+    width: 50px;
+    height: 50px;
+  }
+
+  .darkModeButton,
+  .mypageButton,
+  .logout,
+  .inputValue {
+    font-size: 1rem; /* 버튼 크기 축소 */
+    padding: 8px 16px; /* 버튼 패딩 축소 */
+  }
+
+  .sectionTitle {
+    font-size: 14px; /* 섹션 제목 크기 축소 */
+  }
+}
+/* 모바일 최적화 추가 */
+@media (max-width: 768px) {
+  .dashboard {
+    padding: 1rem; /* 작은 화면에서 패딩 축소 */
+  }
+
+  .dashboardHeader {
+    flex-direction: column; /* 헤더를 세로로 배치 */
+    align-items: flex-start;
+  }
+
+  .flex {
+    flex-direction: column; /* 버튼들 세로로 배치 */
+    align-items: flex-start;
+  }
+
+  .piggyMessage {
+    font-size: 14px; /* 폰트 크기 축소 */
+  }
+
+  .dashboardTitle {
+    font-size: 14px;
+  }
+
+  .iconImage {
+    width: 50px;
+    height: 50px;
+  }
+
+  .summaryCard {
+    flex: 1 1 100%; /* 카드가 100% 너비로 보이도록 설정 */
+    margin-bottom: 16px;
+  }
+
+  .chartSection,
+  .transactionSection {
+    flex-direction: column; /* 차트와 트랜잭션 섹션 세로로 배치 */
+  }
+
+  .legendItem {
+    flex-direction: column; /* 범례 아이템 세로로 배치 */
+    align-items: flex-start;
+  }
+
+  .darkModeButton,
+  .mypageButton,
+  .logout,
+  .inputValue {
+    font-size: 1rem; /* 버튼 크기 축소 */
+    padding: 8px 16px; /* 버튼 패딩 축소 */
+  }
+
+  .sectionTitle {
+    font-size: 14px; /* 섹션 제목 크기 축소 */
+  }
+
+  /* 메뉴 및 버튼들 모바일 화면에서 잘 보이도록 설정 */
+  .flex {
+    gap: 0.5rem; /* 버튼들 간 간격 줄이기 */
+  }
+
+  .dashboardHeader {
+    padding: 1rem;
+    gap: 0.5rem;
+    justify-content: center; /* 모바일에서는 중앙 정렬 */
+  }
+
+  /* 아이콘 크기 조정 */
+  .iconImage {
+    width: 40px;
+    height: 40px;
+  }
+}
+
+/* 아주 작은 화면 (최대 480px)에서의 최적화 */
+@media (max-width: 480px) {
+  .piggyMessage {
+    font-size: 12px; /* 폰트 크기 더 줄이기 */
+  }
+
+  .dashboardTitle {
+    font-size: 12px;
+  }
+
+  .iconImage {
+    width: 35px;
+    height: 35px;
+  }
+
+  .darkModeButton,
+  .mypageButton,
+  .logout,
+  .inputValue {
+    font-size: 0.9rem; /* 버튼 크기 더 축소 */
+    padding: 6px 12px; /* 버튼 패딩 축소 */
+  }
+
+  .summaryCard {
+    flex: 1 1 100%; /* 카드가 100% 너비로 보이도록 설정 */
+    margin-bottom: 12px; /* 카드 간 간격 축소 */
+  }
+
+  .chartSection,
+  .transactionSection {
+    flex-direction: column; /* 세로로 배치 */
+  }
+
+  .legendItem {
+    flex-direction: column; /* 범례 아이템 세로로 배치 */
+  }
+
+  .dashboardHeader {
+    padding: 0.8rem; /* 작은 화면에서 패딩 축소 */
+  }
+}
 </style>
