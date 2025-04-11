@@ -300,7 +300,7 @@ onMounted(fetchMonthlyData);
 }
 .monthly-analysis-container {
   max-width: 1200px;
-  background-color: var(--background-color);
+  background-color: var(--bg-main);
   margin: 0 auto;
   padding: 20px;
   display: flex;
