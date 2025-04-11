@@ -300,8 +300,14 @@ function nextMonth() {
   margin-top: 1rem;
   display: flex;
   flex-direction: column;
-
   font-size: 0.85rem;
+}
+.income,
+.expense,
+.fixed-expense {
+  margin: 0.8rem 0 0.1rem 0;
+  padding: 0;
+  line-height: 1.2;
 }
 
 .income {
@@ -315,5 +321,100 @@ function nextMonth() {
 .non-current {
   opacity: 0.5;
   pointer-events: none; /* 비활성화된 날짜는 클릭 불가 */
+}
+@media (max-width: 1024px) {
+  .calendar-wrapper {
+    padding: 1rem;
+  }
+
+  .calendar-grid {
+    gap: 0.5rem;
+  }
+
+  .calendar-cell {
+    height: 80px;
+    padding: 6px;
+  }
+
+  .cell-details {
+    font-size: 0.75rem;
+  }
+
+  .income,
+  .expense,
+  .fixed-expense {
+    display: none; /* 수입, 지출, 고정 지출 숨기기 */
+  }
+
+  .arrow-button img {
+    width: 40px;
+    height: 40px;
+  }
+}
+
+@media (max-width: 768px) {
+  .calendar-header {
+    flex-direction: column; /* 헤더를 세로로 정렬 */
+    align-items: flex-start;
+  }
+
+  .label-section {
+    margin-left: 0;
+    margin-bottom: 1rem;
+  }
+
+  .calendar-grid {
+    gap: 0.5rem;
+  }
+
+  .calendar-cell {
+    height: 70px;
+    padding: 4px;
+  }
+
+  .cell-details {
+    font-size: 0.7rem;
+  }
+
+  .income,
+  .expense,
+  .fixed-expense {
+    display: none; /* 수입, 지출, 고정 지출 숨기기 */
+  }
+
+  .arrow-button img {
+    width: 30px;
+    height: 30px;
+  }
+}
+
+@media (max-width: 480px) {
+  .calendar-wrapper {
+    padding: 0.5rem;
+  }
+
+  .calendar-grid {
+    gap: 0.25rem;
+  }
+
+  .calendar-cell {
+    height: 60px;
+    padding: 4px;
+  }
+
+  .cell-details {
+    font-size: 0.65rem;
+  }
+
+  .income,
+  .expense,
+  .fixed-expense {
+    display: none; /* 수입, 지출, 고정 지출 숨기기 */
+  }
+
+  .arrow-button img {
+    width: 25px;
+    height: 25px;
+  }
 }
 </style>
