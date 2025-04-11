@@ -263,187 +263,210 @@ onMounted(async () => {
 </script>
 
 <template>
-  <header class="dashboardHeader">
-    <h1 class="dashboardTitle">
-      <img
-        src="/src/assets/icons/logo.png"
-        class="iconImage"
-        @click="goToHome"
-      />Piggy Bank
-    </h1>
-    <div class="flex items-center gap-2 relative">
-      <button @click="toggleDarkMode" class="darkModeButton">
-        {{ isDarkMode ? '☀️' : '🌙' }}
-      </button>
-      <button class="mypageButton" @click="mypageClick">마이페이지</button>
-      <button class="inputValue" @click="openTransactionModal">
-        새 거래추가
-      </button>
-      <button class="logout" @click="logout">로그아웃</button>
-    </div>
-  </header>
-  <div class="expense-list-container">
-    <div class="container">
-      <div class="summary-header">
-        <div class="summary-cards">
-          <div class="summary-card">
-            <span>총 수입</span>
-            <span class="income">{{ totalIncome.toLocaleString() }}원</span>
-          </div>
-          <div class="summary-card">
-            <span>총 지출</span>
-            <span class="expense">{{ totalExpense.toLocaleString() }}원</span>
-          </div>
-          <div class="summary-card">
-            <span>총 자산</span>
-            <span class="balance">{{ allAccount.toLocaleString() }}원</span>
-          </div>
+  <body>
+    <div class="dashboard">
+      <header class="dashboardHeader">
+        <h1 class="dashboardTitle">
+          <img
+            src="/src/assets/icons/logo.png"
+            class="iconImage"
+            @click="goToHome"
+          />Piggy Bank
+        </h1>
+        <div class="flex items-center gap-2 relative">
+          <button @click="toggleDarkMode" class="darkModeButton">
+            {{ isDarkMode ? '☀️' : '🌙' }}
+          </button>
+          <button class="mypageButton" @click="mypageClick">마이페이지</button>
+          <button class="inputValue" @click="openTransactionModal">
+            새 거래추가
+          </button>
+          <button class="logout" @click="logout">로그아웃</button>
         </div>
-      </div>
-      <!-- 필터 버튼 상단 우측 -->
-      <div class="table-toolbar">
-        <button class="round-btn" @click="openFilterModal">
-          <i class="fa-solid fa-filter"></i>
-          <span>필터</span>
-        </button>
-        <button
-          class="round-btn"
-          @click="
-            applyFilter({
-              startDate: '',
-              endDate: '',
-              type: 'all',
-              categories: [],
-            })
-          "
-        >
-          <i class="fa-solid fa-arrow-rotate-left"></i>
-          <span>초기화</span>
-        </button>
-      </div>
+      </header>
+      <div class="expense-list-container">
+        <div class="container">
+          <div class="summary-header">
+            <div class="summary-cards">
+              <div class="summary-card">
+                <span>총 수입</span>
+                <span class="income">{{ totalIncome.toLocaleString() }}원</span>
+              </div>
+              <div class="summary-card">
+                <span>총 지출</span>
+                <span class="expense"
+                  >{{ totalExpense.toLocaleString() }}원</span
+                >
+              </div>
+              <div class="summary-card">
+                <span>총 자산</span>
+                <span class="balance">{{ allAccount.toLocaleString() }}원</span>
+              </div>
+            </div>
+          </div>
+          <!-- 필터 버튼 상단 우측 -->
+          <div class="table-toolbar">
+            <button class="round-btn" @click="openFilterModal">
+              <i class="fa-solid fa-filter"></i>
+              <span>필터</span>
+            </button>
+            <button
+              class="round-btn"
+              @click="
+                applyFilter({
+                  startDate: '',
+                  endDate: '',
+                  type: 'all',
+                  categories: [],
+                })
+              "
+            >
+              <i class="fa-solid fa-arrow-rotate-left"></i>
+              <span>초기화</span>
+            </button>
+          </div>
 
-      <!-- 거래 목록 -->
-      <table class="transaction-table" v-if="paginatedTransactions.length">
-        <thead>
-          <tr>
-            <th @click="sortBy('date')">
-              날짜
-              <i class="fa-solid fa-sort"></i>
-            </th>
-            <th>카테고리</th>
-            <th @click="sortBy('amount')">
-              금액
-              <i class="fa-solid fa-sort"></i>
-            </th>
-            <th>내용</th>
-            <th></th>
-          </tr>
-        </thead>
+          <!-- 거래 목록 -->
+          <table class="transaction-table" v-if="paginatedTransactions.length">
+            <thead>
+              <tr>
+                <th @click="sortBy('date')">
+                  날짜
+                  <i class="fa-solid fa-sort"></i>
+                </th>
+                <th>카테고리</th>
+                <th @click="sortBy('amount')">
+                  금액
+                  <i class="fa-solid fa-sort"></i>
+                </th>
+                <th>내용</th>
+                <th></th>
+              </tr>
+            </thead>
 
-        <tbody>
-          <!-- <tr
+            <tbody>
+              <!-- <tr
             v-for="transaction in transactions"
             :key="transaction.id"
             @click="openDetailModal(transaction)"
           > -->
-          <tr
-            v-for="transaction in paginatedTransactions"
-            :key="transaction.id"
-            @click="openDetailModal(transaction)"
-          >
-            <td>{{ transaction?.date }}</td>
-            <td>{{ transaction?.category }}</td>
-            <td :class="['transaction-amount', transaction?.type]">
-              {{ transaction?.amount.toLocaleString() }}원
-            </td>
-            <td>{{ transaction?.description }}</td>
-            <td class="action-icons">
-              <i
-                class="fa-solid fa-pen-to-square edit-icon"
-                @click.stop="handleEditClick(transaction)"
-              ></i>
+              <tr
+                v-for="transaction in paginatedTransactions"
+                :key="transaction.id"
+                @click="openDetailModal(transaction)"
+              >
+                <td>{{ transaction?.date }}</td>
+                <td>{{ transaction?.category }}</td>
+                <td :class="['transaction-amount', transaction?.type]">
+                  {{ transaction?.amount.toLocaleString() }}원
+                </td>
+                <td>{{ transaction?.description }}</td>
+                <td class="action-icons">
+                  <i
+                    class="fa-solid fa-pen-to-square edit-icon"
+                    @click.stop="handleEditClick(transaction)"
+                  ></i>
 
-              <i
-                class="fa-solid fa-trash delete-icon"
-                @click="
-                  (e) => {
-                    e.stopPropagation();
-                    deleteTransaction(transaction.id);
-                  }
-                "
-              ></i>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+                  <i
+                    class="fa-solid fa-trash delete-icon"
+                    @click="
+                      (e) => {
+                        e.stopPropagation();
+                        deleteTransaction(transaction.id);
+                      }
+                    "
+                  ></i>
+                </td>
+              </tr>
+            </tbody>
+          </table>
 
-      <!-- 페이지네이션 컨트롤 -->
-      <div class="pagination">
-        <button
-          class="pagination-btn"
-          @click="goToPage(currentPage - 1)"
-          :disabled="currentPage === 1"
-        >
-          이전
-        </button>
+          <!-- 페이지네이션 컨트롤 -->
+          <div class="pagination">
+            <button
+              class="pagination-btn"
+              @click="goToPage(currentPage - 1)"
+              :disabled="currentPage === 1"
+            >
+              이전
+            </button>
 
-        <button
-          v-for="page in totalPages"
-          :key="page"
-          :class="['pagination-btn', { active: page === currentPage }]"
-          @click="goToPage(page)"
-        >
-          {{ page }}
-        </button>
+            <button
+              v-for="page in totalPages"
+              :key="page"
+              :class="['pagination-btn', { active: page === currentPage }]"
+              @click="goToPage(page)"
+            >
+              {{ page }}
+            </button>
 
-        <button
-          class="pagination-btn"
-          @click="goToPage(currentPage + 1)"
-          :disabled="currentPage === totalPages"
-        >
-          다음
-        </button>
+            <button
+              class="pagination-btn"
+              @click="goToPage(currentPage + 1)"
+              :disabled="currentPage === totalPages"
+            >
+              다음
+            </button>
+          </div>
+
+          <!-- 수정 모달 -->
+          <TransactionEditModal
+            v-if="showEditModal && editTarget"
+            :isOpen="showEditModal"
+            :transaction="editTarget"
+            @close="closeEdit"
+            @update="applyEdit"
+          />
+
+          <!-- 필터 모달  -->
+          <FilterModal
+            v-if="isFilterModalOpen"
+            :isOpen="isFilterModalOpen"
+            @close="closeFilterModal"
+            @apply="applyFilter"
+          />
+
+          <TransactionDetailModal
+            v-if="isDetailModalOpen"
+            :isOpen="isDetailModalOpen"
+            :transaction="selectedDetailTransaction"
+            @close="closeDetailModal"
+          />
+
+          <!-- 거래 추가 버튼 -->
+          <button class="add-button" @click="openTransactionModal">
+            <i class="fa-solid fa-plus"></i>
+          </button>
+          <TransactionModal
+            v-if="isTransactionModalOpen"
+            :isOpen="isTransactionModalOpen"
+            @close="closeTransactionModal"
+            @add="handleAddTransaction"
+          />
+        </div>
       </div>
-
-      <!-- 수정 모달 -->
-      <TransactionEditModal
-        v-if="showEditModal && editTarget"
-        :isOpen="showEditModal"
-        :transaction="editTarget"
-        @close="closeEdit"
-        @update="applyEdit"
-      />
-
-      <!-- 필터 모달  -->
-      <FilterModal
-        v-if="isFilterModalOpen"
-        :isOpen="isFilterModalOpen"
-        @close="closeFilterModal"
-        @apply="applyFilter"
-      />
-
-      <TransactionDetailModal
-        v-if="isDetailModalOpen"
-        :isOpen="isDetailModalOpen"
-        :transaction="selectedDetailTransaction"
-        @close="closeDetailModal"
-      />
-
-      <!-- 거래 추가 버튼 -->
-      <button class="add-button" @click="openTransactionModal">
-        <i class="fa-solid fa-plus"></i>
-      </button>
-      <TransactionModal
-        v-if="isTransactionModalOpen"
-        :isOpen="isTransactionModalOpen"
-        @close="closeTransactionModal"
-        @add="handleAddTransaction"
-      />
     </div>
-  </div>
+  </body>
 </template>
 
 <style scoped>
+.dashboard {
+  padding: 2rem;
+  margin: 0;
+  background: linear-gradient(to bottom, #fff9fe, #ffffff);
+  font-family: sans-serif;
+  box-sizing: border-box;
+  color: black;
+}
+body {
+  background-color: var(--background-color);
+  color: var(--text-color);
+  margin: 0 auto;
+  padding: 0;
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+
 .container {
   padding: 20px;
 }
@@ -648,7 +671,7 @@ th i {
   justify-content: space-between;
   align-items: center;
   background-color: #fbcee8;
-  padding: 1rem;
+  padding: 2rem;
   border-radius: 1rem;
   margin-bottom: 1.5rem;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -657,7 +680,7 @@ th i {
   display: flex;
   align-items: center;
   gap: 10px;
-  font-size: 24px;
+  font-size: 30px;
   font-weight: bold;
 }
 .iconImage {
@@ -680,8 +703,6 @@ th i {
   border-radius: 0.5rem;
   cursor: pointer;
 }
-
-/* 마이페이지 버튼 */
 .mypageButton {
   background-color: rgb(254, 235, 253);
   border: 1px solid rgb(251, 209, 251);
@@ -690,7 +711,7 @@ th i {
   cursor: pointer;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
-  font: var(--ng-reg-16);
+  font: var(--ng-reg-18);
   color: #333;
 }
 .logout {
@@ -701,8 +722,9 @@ th i {
   cursor: pointer;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
-  font: var(--ng-reg-16);
+  font: var(--ng-reg-18);
   color: #333;
+  margin-right: 20px;
 }
 
 /* 새 거래추가 버튼 */
@@ -714,15 +736,17 @@ th i {
   cursor: pointer;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
-  font: var(--ng-reg-16);
+  font: var(--ng-reg-18);
   color: #333;
 }
-
 /* 다크모드 */
-/* 다크 모드 전체 적용 */
-.dark {
+.dark .dashboard {
+  background: linear-gradient(to bottom, #121212, #121212);
+  color: #1a1a2e;
+}
+.dark body {
   background-color: #121212;
-  color: #f5f5f5;
+  color: black;
 }
 
 /* 다크 모드에서 컨테이너 배경 */
@@ -806,5 +830,111 @@ th i {
 .pagination button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+/* 반응형  */
+
+@media (max-width: 1024px) {
+  .summary-cards {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .summary-card {
+    width: 90%;
+    max-width: 400px;
+  }
+
+  .transaction-table th,
+  .transaction-table td {
+    font-size: 14px;
+    padding: 10px 6px;
+  }
+
+  .dashboardHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .pagination {
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 768px) {
+  .dashboardHeader {
+    font-size: 18px;
+  }
+
+  .dashboardTitle {
+    font-size: 20px;
+    flex-wrap: wrap;
+  }
+
+  .inputValue,
+  .logout,
+  .mypageButton {
+    padding: 10px 18px;
+    font-size: 14px;
+  }
+
+  .table-toolbar {
+    flex-direction: column;
+    align-items: flex-end;
+  }
+
+  .transaction-table th,
+  .transaction-table td {
+    font-size: 13px;
+  }
+
+  .summary-card {
+    padding: 20px;
+  }
+
+  .add-button {
+    width: 60px;
+    height: 60px;
+    font-size: 18px;
+  }
+}
+
+@media (max-width: 480px) {
+  .dashboardHeader {
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+  }
+
+  .inputValue,
+  .logout,
+  .mypageButton {
+    width: 100%;
+    padding: 10px;
+    font-size: 13px;
+    margin-bottom: 6px;
+  }
+
+  .summary-card {
+    width: 95%;
+  }
+
+  .transaction-table {
+    font-size: 12px;
+  }
+
+  .action-icons i {
+    font-size: 14px;
+  }
+
+  .round-btn {
+    font-size: 13px;
+    padding: 6px 10px;
+  }
+
+  .pagination button {
+    padding: 5px 10px;
+    font-size: 12px;
+  }
 }
 </style>

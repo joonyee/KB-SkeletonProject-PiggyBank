@@ -539,7 +539,7 @@ const piggyMessage = computed(() => {
   cursor: pointer;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
-  font: var(--ng-reg-16);
+  font: var(--ng-reg-18);
   color: #333;
 }
 .logout {
@@ -550,8 +550,9 @@ const piggyMessage = computed(() => {
   cursor: pointer;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
-  font: var(--ng-reg-16);
+  font: var(--ng-reg-18);
   color: #333;
+  margin-right: 20px;
 }
 
 /* 새 거래추가 버튼 */
@@ -563,7 +564,7 @@ const piggyMessage = computed(() => {
   cursor: pointer;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
-  font: var(--ng-reg-16);
+  font: var(--ng-reg-18);
   color: #333;
 }
 .dark .dashboard {
@@ -584,6 +585,10 @@ const piggyMessage = computed(() => {
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
+.cardLabel {
+  font: var(--ng-bold-20);
+  margin-bottom: 10px;
+}
 .sectionGrid {
   display: grid;
   grid-template-columns: 2fr 1fr;
@@ -626,21 +631,21 @@ const piggyMessage = computed(() => {
 } */
 .incomeCard > .cardValue {
   color: #10b981;
-  font: var(--ng-reg-20);
+  font: var(--ng-bold-28);
 }
 .expenseCard > .cardValue {
   color: #ef4444;
-  font: var(--ng-reg-20);
+  font: var(--ng-bold-28);
 }
 .balanceCard > .cardValue {
   color: #6366f1;
-  font: var(--ng-reg-20);
+  font: var(--ng-bold-28);
 }
 
 .savingsCard > .nowSavings > .cardValue,
 .goalSavings > .cardValue {
   color: #f9a8d4;
-  font: var(--ng-reg-20);
+  font: var(--ng-bold-28);
 }
 
 .chartSection,
@@ -691,7 +696,7 @@ const piggyMessage = computed(() => {
 }
 
 .sectionTitle {
-  font: var(--ng-bold-20);
+  font: var(--ng-bold-24);
   margin-bottom: 16px;
   display: flex;
   justify-content: center; /* 가운데 정렬 */
@@ -711,7 +716,7 @@ const piggyMessage = computed(() => {
 }
 
 .transactionDate {
-  font: var(--ng-reg-16);
+  font: var(--ng-reg-18);
   color: #888;
   margin-bottom: 4px;
 }
@@ -724,12 +729,12 @@ const piggyMessage = computed(() => {
 
 .amountIncome {
   color: #1abc9c;
-  font: var(--ng-reg-20);
+  font: var(--ng-reg-22);
 }
 
 .amountExpense {
   color: #e74c3c;
-  font: var(--ng-reg-20);
+  font: var(--ng-reg-22);
 }
 .chartLegend {
   display: flex;
@@ -737,14 +742,14 @@ const piggyMessage = computed(() => {
   align-items: center;
   gap: 2rem;
   margin-top: 1rem;
-  font: var(--ng-reg-16);
+  font: var(--ng-reg-18);
   color: #333;
 }
 
 .legendItem {
   display: flex;
   align-items: center;
-  font: var(--ng-reg-16);
+  font: var(--ng-reg-18);
 }
 
 .legendDot {
@@ -782,13 +787,13 @@ const piggyMessage = computed(() => {
 }
 
 .summaryLabel {
-  font: var(--ng-reg-20);
+  font: var(--ng-reg-22);
   color: #6b7280;
   margin-bottom: 8px;
 }
 
 .summaryAmount {
-  font: var(--ng-reg-20);
+  font: var(--ng-reg-22);
 }
 
 .income .summaryAmount {

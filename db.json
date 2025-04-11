@@ -8,7 +8,7 @@
       "age": 2,
       "gender": "남성",
       "userImg": "",
-      "goalSavings": 10
+      "goalSavings": "54"
     },
     {
       "id": "fb5c",
@@ -206,7 +206,6 @@
       "day": 25,
       "categoryid": 13,
       "description": "헬스장 3개월 결제",
-
       "amount": 150000,
       "deletedAt": null
     }

@@ -224,6 +224,17 @@ onMounted(async () => {
   flex-direction: column;
   gap: 16px;
 }
+.dark .modal-content {
+  background-color: black;
+  border-radius: 16px;
+  padding: 28px;
+  width: 100%;
+  max-width: 480px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
 .modal-body {
   display: flex;
   flex-direction: column;
@@ -232,6 +243,11 @@ onMounted(async () => {
 label {
   font: var(--ng-reg-16);
   color: var(--text-subtitle);
+  margin-bottom: 4px;
+}
+.dark label {
+  font: var(--ng-reg-16);
+  color: white;
   margin-bottom: 4px;
 }
 .input-field,
@@ -311,9 +327,18 @@ select.input-field:focus {
   font: var(--ng-bold-20);
   color: var(--text-color);
 }
+.dark .title {
+  font: var(--ng-bold-20);
+  color: white;
+}
 .close-icon {
   font-size: 24px;
   cursor: pointer;
   color: var(--text-color);
+}
+.dark .close-icon {
+  font-size: 24px;
+  cursor: pointer;
+  color: white;
 }
 </style>

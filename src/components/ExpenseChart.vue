@@ -29,7 +29,9 @@ const barChartHeight = computed(() => {
 const initBarChart = () => {
   if (barChart) barChart.destroy();
 
-  const tickColor = props.isDarkMode ? '#f5f5f5' : '#333';
+  const tickColor = props.isDarkMode ? '#fdfdfd' : '#333'; // 기존 #f5f5f5 → 더 밝게
+
+  const textColor = props.isDarkMode ? '#fdfdfd' : '#333'; // 도넛 차트 글씨 색상도 통일
 
   barChart = new Chart(barChartRef.value, {
     type: 'bar',
@@ -155,7 +157,11 @@ watch(
   <div class="chart-container">
     <div class="chart-section" :style="{ height: barChartHeight }">
       <h3 class="chart-title">카테고리별 소비 비교</h3>
-      <canvas ref="barChartRef" class="chart-canvas"></canvas>
+      <canvas
+        ref="barChartRef"
+        class="chart-canvas"
+        :height="parseInt(barChartHeight)"
+      ></canvas>
     </div>
 
     <div class="summary-section">
@@ -192,14 +198,15 @@ watch(
   gap: 50px;
   align-items: center;
   width: 100%;
-  padding: 30px 10px;
+  height: 100%;
+  padding: 10px 10px;
   margin-bottom: 50px;
 }
 
 .chart-section {
   width: 100%;
   max-width: 1000px;
-  height: 400px;
+  height: 500px;
 }
 
 .chart-title {
@@ -211,12 +218,14 @@ watch(
 
 .chart-canvas {
   width: 100%;
-  height: 100%;
+  height: 100% !important;
+  display: block;
 }
 
 .summary-section {
   text-align: center;
   margin-top: 30px;
+  height: 100%;
   font: var(--ng-reg-20);
   color: var(--text-color);
 }
@@ -245,21 +254,31 @@ watch(
 .dark .chart-title {
   color: #f9a8d4;
 }
+.dark .chart-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  /* padding: 10px 10px; */
+  margin-bottom: 50px;
+}
 
 .dark .summary-section {
-  background-color: #1e1e1e;
+  background-color: #e7e5e4;
   color: #f5f5f5;
   border-radius: 1rem;
-  padding: 1.5rem;
+  height: 100%;
+  padding: 2.5rem;
   box-shadow: 0 2px 6px rgba(255, 255, 255, 0.05);
 }
 
 .dark .summary-text {
-  color: #f5f5f5;
+  color: black;
 }
 
 .dark .result-text {
-  color: #f5f5f5;
+  color: black;
 }
 
 .dark .good-msg {
@@ -271,13 +290,17 @@ watch(
 }
 
 .dark .chart-section {
-  background-color: #1a1a1a;
+  background-color: #e7e5e4;
+  padding: 2rem 2rem 5.5rem 2rem;
   border-radius: 1rem;
-  padding: 1rem;
+  width: 100%;
+  max-width: 1000px;
+  min-height: 500px;
+  position: relative;
   box-shadow: 0 2px 6px rgba(255, 255, 255, 0.05);
 }
 
-.dark canvas {
-  background-color: transparent !important;
+.dark .chart-title {
+  color: #ec4899;
 }
 </style>

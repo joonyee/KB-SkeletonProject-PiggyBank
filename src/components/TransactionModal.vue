@@ -526,6 +526,7 @@ onBeforeUnmount(() => {
   color: #969696;
   font: var(--ng-reg-14);
   transition: all 0.2s;
+  margin-bottom: 20px;
 }
 
 .paymentMethodButton.active {

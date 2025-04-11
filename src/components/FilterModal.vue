@@ -137,6 +137,19 @@ const isCategorySelected = (category) => {
   flex-direction: column;
   gap: 12px;
 }
+
+.dark .modal-content {
+  background-color: #1f2937;
+  color: white;
+  padding: 30px 30px;
+  border-radius: 16px;
+  min-width: 350px;
+  max-width: 420px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
 .modal-header {
   display: flex;
   justify-content: space-between;
@@ -148,6 +161,9 @@ const isCategorySelected = (category) => {
 .title {
   font: var(--ng-bold-20);
   color: var(--text-color);
+}
+.dark .title {
+  color: white;
 }
 .close-icon {
   cursor: pointer;
@@ -164,6 +180,12 @@ const isCategorySelected = (category) => {
 .filter-section label {
   font: var(--ng-reg-15);
   color: var(--text-color);
+  margin-bottom: 8px;
+  display: block;
+}
+.dark .filter-section label {
+  font: var(--ng-reg-15);
+  color: white;
   margin-bottom: 8px;
   display: block;
 }
@@ -208,6 +230,12 @@ button {
 .apply-btn {
   background-color: #f4f4f4;
   color: var(--text-color);
+  border: 1px solid transparent;
+}
+.dark .cancel-btn,
+.dark .apply-btn {
+  background-color: #f4f4f4;
+  color: black;
   border: 1px solid transparent;
 }
 
